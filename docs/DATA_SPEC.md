@@ -71,17 +71,24 @@ Rule: if a table's concept has no canonical key, the extractor derives one (snak
 
 ## Source registry (fill URL when downloaded)
 
+Registry populated 2026-07-18; download via `python pipeline/download_sources.py`.
+
 | # | Publisher | Document | File | URL |
 |---|-----------|----------|------|-----|
-| 1 | INSEED | Bulletin trimestriel de conjoncture (dernier) | | |
-| 2 | INSEED | Note IHPC mensuelle x3 (recentes) | | |
-| 3 | INSEED | Note IPI (derniere) | | |
-| 4 | INSEED | Note IPPI (derniere) | | |
-| 5 | INSEED | Comptes nationaux trimestriels (dernier) | | |
-| 6 | BCEAO | Bulletin mensuel de statistiques x2 | | |
-| 7 | BCEAO | Rapport politique monetaire (dernier) | | |
-| 8 | BCEAO | Statistiques SFD / microfinance (dernier) | | |
-| 9 | UEMOA | Rapport surveillance multilaterale (dernier) | | |
-| 10 | BCEAO | Balance des paiements Togo (derniere) | | |
+| 1 | INSEED | Bulletin mensuel des statistiques, sept. 2025 | inseed_bulletin_mensuel_2025-09.pdf | https://inseed.tg/download/7822/ |
+| 2 | INSEED | Bulletin mensuel des statistiques, août 2025 | inseed_bulletin_mensuel_2025-08.pdf | https://inseed.tg/download/7819/ |
+| 3 | INSEED | Bulletin mensuel des statistiques, juil. 2025 | inseed_bulletin_mensuel_2025-07.pdf | https://inseed.tg/download/7816/ |
+| 4 | INSEED | Communiqué inflation, juin 2026 | inseed_communique_inflation_2026-06.pdf | https://inseed.tg/download/7876/ |
+| 5 | INSEED | IHPC, juin 2026 | inseed_ihpc_2026-06.pdf | https://inseed.tg/download/7866/ |
+| 6 | INSEED | IHPC, mai 2026 | inseed_ihpc_2026-05.pdf | https://inseed.tg/download/7798/ |
+| 7 | INSEED | IHPC, avril 2026 | inseed_ihpc_2026-04.pdf | https://inseed.tg/download/7729/ |
+| 8 | INSEED | IPI mensuel rénové 2015-2026 | inseed_ipi_mensuel_2015-2026.pdf | https://inseed.tg/download/7924/ |
+| 9 | INSEED | IPI trimestriel, T4 2025 | inseed_ipi_trimestriel_2025-T4.pdf | https://inseed.tg/download/7551/ |
+| 10 | INSEED | Premières estimations PIB 2025 | inseed_pib_estimations_2025.pdf | https://inseed.tg/download/7746/ |
+| 11 | INSEED | Comptes nationaux trimestriels, T4 2025 | inseed_comptes_trimestriels_2025-T4.pdf | https://inseed.tg/download/7750/ |
+| 12 | INSEED | Indice CA services, T1 2026 | inseed_ica_services_2026-T1.pdf | https://inseed.tg/download/7894/ |
+| 13 | BCEAO | Rapport politique monétaire, juin 2023 | bceao_politique_monetaire_2023-06.pdf | bceao.int (sites/default/files/2023-07) |
+
+To add later (recent editions are behind a JS listing; grab manually when energy returns): BCEAO bulletin mensuel de statistiques récent, statistiques SFD/microfinance, balance des paiements Togo.
 
 Licensing note: these are public official publications; Sika stores extracted facts (not copyrightable) plus short passages for verification, and links every fact back to its source. Attribution is systematic by design.
