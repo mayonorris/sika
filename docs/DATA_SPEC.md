@@ -82,11 +82,13 @@ Registry populated 2026-07-18; download via `python pipeline/download_sources.py
 | 5 | INSEED | IHPC, juin 2026 | inseed_ihpc_2026-06.pdf | https://inseed.tg/download/7866/ |
 | 6 | INSEED | IHPC, mai 2026 | inseed_ihpc_2026-05.pdf | https://inseed.tg/download/7798/ |
 | 7 | INSEED | IHPC, avril 2026 | inseed_ihpc_2026-04.pdf | https://inseed.tg/download/7729/ |
-| 8 | INSEED | IPI mensuel rénové 2015-2026 | inseed_ipi_mensuel_2015-2026.pdf | https://inseed.tg/download/7924/ |
-| 9 | INSEED | IPI trimestriel, T4 2025 | inseed_ipi_trimestriel_2025-T4.pdf | https://inseed.tg/download/7551/ |
+| 8 | INSEED | IPI mensuel rénové 2015-2026 (Excel) | inseed_ipi_mensuel_2015-2026.xlsx | https://inseed.tg/download/7924/ |
+| 9 | INSEED | IPI trimestriel, T4 2025 (Excel) | inseed_ipi_trimestriel_2025-T4.xlsx | https://inseed.tg/download/7551/ |
 | 10 | INSEED | Premières estimations PIB 2025 | inseed_pib_estimations_2025.pdf | https://inseed.tg/download/7746/ |
 | 11 | INSEED | Comptes nationaux trimestriels, T4 2025 | inseed_comptes_trimestriels_2025-T4.pdf | https://inseed.tg/download/7750/ |
-| 12 | INSEED | Indice CA services, T1 2026 | inseed_ica_services_2026-T1.pdf | https://inseed.tg/download/7894/ |
+| 12 | INSEED | Indice CA services, T1 2026 (Excel) | inseed_ica_services_2026-T1.xlsx | https://inseed.tg/download/7894/ |
+
+Excel ingestion rule: .xlsx sources are parsed deterministically with pandas/openpyxl (no LLM for table values); the LLM may only assist with header/indicator labeling. Same observation schema and provenance rules apply (source_page = sheet name index, noted as page 1 if single-sheet).
 | 13 | BCEAO | Rapport politique monétaire, juin 2023 | bceao_politique_monetaire_2023-06.pdf | bceao.int (sites/default/files/2023-07) |
 
 To add later (recent editions are behind a JS listing; grab manually when energy returns): BCEAO bulletin mensuel de statistiques récent, statistiques SFD/microfinance, balance des paiements Togo.

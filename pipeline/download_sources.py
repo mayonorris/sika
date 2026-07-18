@@ -45,6 +45,12 @@ def download(name: str, url: str) -> bool:
     try:
         with urllib.request.urlopen(req, timeout=120) as resp:
             data = resp.read()
+        if data.startswith(b"PK\x03\x04"):
+            # ZIP signature: the publisher shipped an Excel workbook, not a PDF.
+            dest = dest.with_suffix(".xlsx")
+            dest.write_bytes(data)
+            print(f"  ok {dest.name} ({len(data)//1024} KB) [Excel, saved as .xlsx]")
+            return True
         if not data.startswith(b"%PDF"):
             print(f"  WARNING: {name} is not a PDF (got {data[:20]!r}), skipped")
             return False
