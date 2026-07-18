@@ -1,0 +1,29 @@
+{
+  "_warning": "SYNTHETIC DEVELOPMENT DATA. Values are plausible magnitudes but INVENTED. Never demo or ship answers built on this. Replace with real ingestion (pipeline/extract.py) before any recording or deployment.",
+  "observations": [
+    {"indicator": "inflation_rate_yoy", "indicator_label": "Inflation, glissement annuel", "geography": "Togo", "period": "2024-Q1", "value": 3.2, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 1, "confidence": 1.0},
+    {"indicator": "inflation_rate_yoy", "indicator_label": "Inflation, glissement annuel", "geography": "Togo", "period": "2024-Q2", "value": 2.9, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 1, "confidence": 1.0},
+    {"indicator": "inflation_rate_yoy", "indicator_label": "Inflation, glissement annuel", "geography": "Togo", "period": "2024-Q3", "value": 2.5, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 1, "confidence": 1.0},
+    {"indicator": "inflation_rate_yoy", "indicator_label": "Inflation, glissement annuel", "geography": "Togo", "period": "2024-Q4", "value": 2.8, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 1, "confidence": 1.0},
+    {"indicator": "inflation_rate_yoy", "indicator_label": "Inflation, glissement annuel", "geography": "Togo", "period": "2025-Q1", "value": 3.0, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 2, "confidence": 1.0},
+    {"indicator": "inflation_rate_yoy", "indicator_label": "Inflation, glissement annuel", "geography": "Togo", "period": "2025-Q2", "value": 2.6, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 2, "confidence": 1.0},
+    {"indicator": "industrial_production_index", "indicator_label": "Indice de la Production Industrielle", "geography": "Togo", "period": "2024-Q4", "value": 112.4, "unit": "index", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 3, "confidence": 1.0},
+    {"indicator": "industrial_production_index", "indicator_label": "Indice de la Production Industrielle", "geography": "Togo", "period": "2025-Q1", "value": 115.1, "unit": "index", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 3, "confidence": 1.0},
+    {"indicator": "industrial_production_index", "indicator_label": "Indice de la Production Industrielle", "geography": "Togo", "period": "2025-Q2", "value": 117.8, "unit": "index", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 3, "confidence": 1.0},
+    {"indicator": "deposits_microfinance", "indicator_label": "Depots des SFD", "geography": "Togo", "period": "2023", "value": 388.0, "unit": "milliards FCFA", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 4, "confidence": 1.0},
+    {"indicator": "deposits_microfinance", "indicator_label": "Depots des SFD", "geography": "Togo", "period": "2024", "value": 415.6, "unit": "milliards FCFA", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 4, "confidence": 1.0},
+    {"indicator": "deposits_microfinance", "indicator_label": "Depots des SFD", "geography": "Togo", "period": "2025", "value": 447.5, "unit": "milliards FCFA", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 4, "confidence": 1.0},
+    {"indicator": "credit_microfinance", "indicator_label": "Credits des SFD", "geography": "Togo", "period": "2023", "value": 310.2, "unit": "milliards FCFA", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 4, "confidence": 1.0},
+    {"indicator": "credit_microfinance", "indicator_label": "Credits des SFD", "geography": "Togo", "period": "2024", "value": 331.7, "unit": "milliards FCFA", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 4, "confidence": 1.0},
+    {"indicator": "credit_microfinance", "indicator_label": "Credits des SFD", "geography": "Togo", "period": "2025", "value": 352.1, "unit": "milliards FCFA", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 4, "confidence": 1.0},
+    {"indicator": "policy_rate", "indicator_label": "Taux directeur BCEAO", "geography": "UEMOA", "period": "2024-Q4", "value": 3.5, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 5, "confidence": 1.0},
+    {"indicator": "policy_rate", "indicator_label": "Taux directeur BCEAO", "geography": "UEMOA", "period": "2025-Q1", "value": 3.5, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 5, "confidence": 1.0},
+    {"indicator": "policy_rate", "indicator_label": "Taux directeur BCEAO", "geography": "UEMOA", "period": "2025-Q2", "value": 3.25, "unit": "%", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 5, "confidence": 1.0},
+    {"indicator": "turnover_index_industry", "indicator_label": "Indice du chiffre d'affaires industrie", "geography": "Togo", "period": "2025-Q1", "value": 121.3, "unit": "index", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 6, "confidence": 1.0},
+    {"indicator": "turnover_index_industry", "indicator_label": "Indice du chiffre d'affaires industrie", "geography": "Togo", "period": "2025-Q2", "value": 124.9, "unit": "index", "source_doc": "FIXTURE_synthetic.pdf", "source_page": 6, "confidence": 1.0}
+  ],
+  "passages": [
+    {"source_doc": "FIXTURE_synthetic.pdf", "page": 1, "text": "SYNTHETIC: L'inflation en glissement annuel au Togo s'est etablie a des niveaux moderes sur la periode, refletant la detente des prix alimentaires."},
+    {"source_doc": "FIXTURE_synthetic.pdf", "page": 4, "text": "SYNTHETIC: Les depots et credits des systemes financiers decentralises poursuivent leur progression, confirmant le role de la microfinance dans l'inclusion financiere."}
+  ]
+}
