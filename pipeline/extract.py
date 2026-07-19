@@ -4,15 +4,17 @@ Usage:
     python pipeline/extract.py data/raw/            # process every PDF
     python pipeline/extract.py data/raw/foo.pdf     # process one file
 """
+import argparse
 import json
 import os
 import sqlite3
 import sys
+import time
 from pathlib import Path
 
 import pdfplumber
 from dotenv import load_dotenv
-from openai import BadRequestError, OpenAI
+from openai import BadRequestError, OpenAI, RateLimitError
 
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -92,18 +94,29 @@ def parse_observations(content: str | None) -> list[dict]:
     return observations if isinstance(observations, list) else []
 
 
+def create_completion(kwargs: dict[str, object], json_mode: bool) -> object:
+    for retry in range(6):
+        try:
+            extra = {"response_format": {"type": "json_object"}} if json_mode else {}
+            return client.chat.completions.create(**kwargs, **extra)
+        except RateLimitError:
+            if retry == 5:
+                raise
+            delay = min(15 * (2**retry), 120)
+            print(f"  rate limited; retrying same page in {delay}s ({retry + 1}/5)")
+            time.sleep(delay)
+
+
 def extract_page(payload: str) -> list[dict]:
     kwargs = {
         "model": MODEL,
         "messages": [{"role": "user", "content": EXTRACT_PROMPT + payload}],
     }
     try:
-        resp = client.chat.completions.create(
-            **kwargs, response_format={"type": "json_object"}
-        )
+        resp = create_completion(kwargs, json_mode=True)
     except BadRequestError:
         print("  compatibility endpoint rejected JSON mode; retrying without it")
-        resp = client.chat.completions.create(**kwargs)
+        resp = create_completion(kwargs, json_mode=False)
     try:
         content = resp.choices[0].message.content
     except (AttributeError, IndexError):
@@ -143,8 +156,27 @@ def process_pdf(pdf_path: Path, con: sqlite3.Connection) -> int:
     return count
 
 
-def main() -> None:
-    target = Path(sys.argv[1] if len(sys.argv) > 1 else "data/raw")
+def source_has_observations(con: sqlite3.Connection, source_doc: str) -> bool:
+    row = con.execute(
+        "SELECT 1 FROM observations WHERE source_doc = ? LIMIT 1", (source_doc,)
+    ).fetchone()
+    return row is not None
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Extract observations from PDFs")
+    parser.add_argument("target", nargs="?", default="data/raw")
+    parser.add_argument(
+        "--skip-existing",
+        action="store_true",
+        help="skip files that already have observations in the database",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    target = Path(args.target)
     pdfs = [target] if target.is_file() else sorted(target.glob("*.pdf"))
     if not pdfs:
         sys.exit(f"No PDFs found in {target}")
@@ -152,6 +184,9 @@ def main() -> None:
     con = sqlite3.connect(DB_PATH)
     con.executescript(SCHEMA)
     for pdf in pdfs:
+        if args.skip_existing and source_has_observations(con, pdf.name):
+            print(f"Skipping {pdf.name}: observations already exist")
+            continue
         print(f"Processing {pdf.name} ...")
         n = process_pdf(pdf, con)
         print(f"  -> {n} observations")
