@@ -54,11 +54,19 @@ function drawChart(rows, kind, title) {
   const div = document.createElement('div');
   div.className = 'chart';
   chat.appendChild(div);
+  rows.sort((a, b) => a.period.localeCompare(b.period));
   const x = rows.map(r => r.period), y = rows.map(r => r.value);
+  const unit = rows[0].unit || '';
+  const sources = rows.map(r => `${r.source_doc}, p. ${r.source_page}`);
   Plotly.newPlot(div, [{ x, y, type: kind === 'bar' ? 'bar' : 'scatter',
-    mode: 'lines+markers', line: { color: '#f59e0b' }, marker: { color: '#f59e0b' } }],
+    mode: kind === 'bar' ? undefined : 'lines+markers', customdata: sources,
+    hovertemplate: `%{x}<br>%{y} ${unit}<br>%{customdata}<extra></extra>`,
+    line: { color: '#f59e0b', width: 3 }, marker: { color: '#f59e0b', size: 6 } }],
     { title: { text: title, font: { color: '#e2e8f0' } }, paper_bgcolor: '#1e293b',
-      plot_bgcolor: '#1e293b', font: { color: '#94a3b8' }, margin: { t: 48, r: 24 } },
+      plot_bgcolor: '#1e293b', font: { color: '#94a3b8' },
+      xaxis: { title: 'Période', gridcolor: '#334155' },
+      yaxis: { title: unit, gridcolor: '#334155', rangemode: 'tozero' },
+      margin: { t: 56, r: 24, b: 56, l: 64 } },
     { displayModeBar: false, responsive: true });
   chat.scrollTop = chat.scrollHeight;
 }
