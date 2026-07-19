@@ -6,11 +6,12 @@ import sqlite3
 import unicodedata
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from openai import OpenAI
-from pydantic import BaseModel
+from openai import APIError, APITimeoutError, OpenAI
+from pydantic import BaseModel, Field
 
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -22,6 +23,15 @@ app = FastAPI(title="Sika", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 
+@app.exception_handler(APITimeoutError)
+@app.exception_handler(APIError)
+async def openai_failure(_request: Request, _error: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "Le service d'analyse est temporairement indisponible. Réessayez dans un instant."},
+    )
+
+
 def db() -> sqlite3.Connection:
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row
@@ -29,7 +39,7 @@ def db() -> sqlite3.Connection:
 
 
 class Ask(BaseModel):
-    question: str
+    question: str = Field(min_length=2, max_length=500)
 
 
 INDICATOR_RULES = (
@@ -164,7 +174,16 @@ Context passages:
 
 @app.post("/ask")
 def ask(q: Ask):
-    con = db()
+    try:
+        con = db()
+        con.execute("SELECT 1 FROM observations LIMIT 1")
+    except sqlite3.Error:
+        return {
+            "answer": "La base de données est vide ou indisponible. Chargez les sources puis réessayez.",
+            "rows": [],
+            "chart": "none",
+            "title": "",
+        }
     if client is None:
         response = fallback_response(q.question, con)
         con.close()
@@ -241,6 +260,11 @@ Data:
 
 @app.post("/brief")
 def brief(req: BriefReq):
+    if client is None:
+        return {
+            "brief": "La génération de briefs nécessite le service d'analyse. Réessayez lorsqu'il est disponible.",
+            "n_observations": 0,
+        }
     con = db()
     rows = [
         dict(row)
@@ -270,18 +294,21 @@ def brief(req: BriefReq):
 
 @app.get("/indicators")
 def indicators():
-    con = db()
-    out = [
-        dict(row)
-        for row in con.execute(
-            """SELECT indicator, indicator_label, geography,
-                      COUNT(*) AS n, MIN(period) AS from_p, MAX(period) AS to_p
-               FROM observations
-               GROUP BY indicator, geography ORDER BY n DESC"""
-        )
-    ]
-    con.close()
-    return out
+    try:
+        con = db()
+        out = [
+            dict(row)
+            for row in con.execute(
+                """SELECT indicator, indicator_label, geography,
+                          COUNT(*) AS n, MIN(period) AS from_p, MAX(period) AS to_p
+                   FROM observations
+                   GROUP BY indicator, geography ORDER BY n DESC"""
+            )
+        ]
+        con.close()
+        return out
+    except sqlite3.Error:
+        return []
 
 
 app.mount("/", StaticFiles(directory="app", html=True), name="app")

@@ -20,8 +20,17 @@
   form { display:flex; gap:10px; padding:18px 24px; max-width:900px; width:100%; margin:0 auto; }
   input { flex:1; padding:13px 16px; border-radius:10px; border:1px solid #334155; background:var(--card); color:var(--text); font-size:15px; }
   button { padding:13px 22px; border:none; border-radius:10px; background:var(--accent); color:#0f172a; font-weight:700; cursor:pointer; font-size:15px; }
+  button:disabled { opacity:.55; cursor:wait; }
   button.secondary { background:#334155; color:var(--text); }
   .hint { color:var(--muted); font-size:13px; text-align:center; padding-bottom:14px; }
+  @media (max-width:640px) {
+    header { align-items:flex-start; flex-direction:column; padding:16px; }
+    #chat { padding:14px; }
+    .msg { margin-left:0; margin-right:0; }
+    form { flex-wrap:wrap; padding:12px 14px; }
+    input { flex-basis:100%; }
+    button { flex:1; padding:12px 8px; }
+  }
 </style>
 </head>
 <body>
@@ -39,6 +48,7 @@
 const chat = document.getElementById('chat');
 const form = document.getElementById('f');
 const q = document.getElementById('q');
+const submitBtn = form.querySelector("button[type=submit]");
 
 function add(cls, text) {
   const d = document.createElement('div');
@@ -71,21 +81,41 @@ function drawChart(rows, kind, title) {
   chat.scrollTop = chat.scrollHeight;
 }
 
+async function request(path, body) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+  try {
+    const response = await fetch(path, { method: 'POST', signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await response.json().catch(() => ({}));
+    const detail = Array.isArray(data.detail) ? data.detail[0]?.msg : data.detail;
+    if (!response.ok) throw new Error(detail || 'Réponse serveur invalide.');
+    return data;
+  } finally { clearTimeout(timeout); }
+}
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const question = q.value.trim();
-  if (!question) return;
+  if (!question) {
+    add('bot', 'Écrivez une question économique avant de lancer la recherche.');
+    return;
+  }
   add('user', question);
   q.value = '';
   const wait = add('bot', 'Recherche dans les publications officielles...');
+  submitBtn.disabled = true;
   try {
-    const r = await fetch('/ask', { method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question }) });
-    const data = await r.json();
+    const data = await request('/ask', { question });
     wait.textContent = data.answer;
     drawChart(data.rows || [], data.chart, data.title);
-  } catch { wait.textContent = 'Erreur de connexion au serveur.'; }
+  } catch (error) {
+    wait.textContent = error.name === 'AbortError'
+      ? 'La recherche prend trop de temps. Réessayez dans un instant.'
+      : `Le serveur est momentanément inaccessible. ${error.message || 'Réessayez.'}`;
+  } finally {
+    submitBtn.disabled = false;
+    q.focus();
+  }
 });
 
 document.getElementById('briefBtn').addEventListener('click', async () => {
@@ -94,10 +124,7 @@ document.getElementById('briefBtn').addEventListener('click', async () => {
   add('user', 'Brief demandé : ' + topic);
   const wait = add('bot', 'Rédaction du brief économique...');
   try {
-    const r = await fetch('/brief', { method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic }) });
-    const data = await r.json();
+    const data = await request('/brief', { topic });
     wait.textContent = data.brief + '\n\n[' + data.n_observations + ' observations mobilisées]';
   } catch { wait.textContent = 'Erreur de connexion au serveur.'; }
 });
