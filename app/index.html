@@ -12,6 +12,7 @@
   header { padding:20px 24px; border-bottom:1px solid #334155; display:flex; align-items:baseline; gap:14px; }
   header h1 { font-size:22px; color:var(--accent); letter-spacing:1px; }
   header span { color:var(--muted); font-size:14px; }
+  .nav-button { margin-left:auto; padding:8px 14px; background:#334155; color:var(--text); }
   #chat { flex:1; overflow-y:auto; padding:24px; max-width:900px; width:100%; margin:0 auto; }
   .msg { margin:12px 0; padding:14px 16px; border-radius:12px; line-height:1.55; white-space:pre-wrap; }
   .user { background:#334155; margin-left:15%; }
@@ -23,8 +24,19 @@
   button:disabled { opacity:.55; cursor:wait; }
   button.secondary { background:#334155; color:var(--text); }
   .hint { color:var(--muted); font-size:13px; text-align:center; padding-bottom:14px; }
+  .sources-panel { max-width:900px; width:calc(100% - 48px); margin:16px auto; padding:20px;
+    background:var(--card); border:1px solid #334155; border-radius:12px; }
+  .sources-panel h2 { color:var(--accent); margin-bottom:8px; }
+  .sources-panel > p { color:var(--muted); line-height:1.5; margin-bottom:14px; }
+  .sources-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .source-card { border:1px solid #334155; border-radius:10px; padding:14px; }
+  .source-card h3 { font-size:15px; margin-bottom:8px; }
+  .source-card p,.source-card small { color:var(--muted); display:block; margin-bottom:7px; }
+  .source-card a { color:var(--accent); }
   @media (max-width:640px) {
     header { align-items:flex-start; flex-direction:column; padding:16px; }
+    .nav-button { margin-left:0; width:100%; }
+    .sources-panel { width:calc(100% - 28px); margin:10px auto; }
     #chat { padding:14px; }
     .msg { margin-left:0; margin-right:0; }
     form { flex-wrap:wrap; padding:12px 14px; }
@@ -34,10 +46,16 @@
 </style>
 </head>
 <body>
-<header><h1>SIKA</h1><span>Les statistiques officielles d'Afrique de l'Ouest, interrogeables en langage naturel</span></header>
+<header><h1>SIKA</h1><span>Les statistiques officielles d'Afrique de l'Ouest, interrogeables en langage naturel</span>
+  <button type="button" class="nav-button" id="sourcesBtn">Sources</button></header>
 <div id="chat">
   <div class="msg bot">Bonjour. Posez-moi une question sur l'économie togolaise ou de l'UEMOA : inflation, production industrielle, crédit, microfinance... Chaque réponse est sourcée (document officiel, page). Essayez : « Quelle est l'évolution de l'inflation au Togo ? »</div>
 </div>
+<section id="sourcesPanel" class="sources-panel" hidden>
+  <h2>Sources officielles</h2>
+  <p>Chaque chiffre de Sika conserve son document et sa page ou feuille d'origine. Les sources synthétiques de développement sont exclues de ce catalogue.</p>
+  <div id="sourcesList" class="sources-grid">Chargement des sources…</div>
+</section>
 <form id="f">
   <input id="q" placeholder="Votre question..." autocomplete="off" />
   <button type="submit">Demander</button>
@@ -49,6 +67,9 @@ const chat = document.getElementById('chat');
 const form = document.getElementById('f');
 const q = document.getElementById('q');
 const submitBtn = form.querySelector("button[type=submit]");
+const sourcesBtn = document.getElementById('sourcesBtn');
+const sourcesPanel = document.getElementById('sourcesPanel');
+const sourcesList = document.getElementById('sourcesList');
 
 function add(cls, text) {
   const d = document.createElement('div');
@@ -93,6 +114,44 @@ async function request(path, body) {
     return data;
   } finally { clearTimeout(timeout); }
 }
+function sourceCard(source) {
+  const card = document.createElement('article');
+  card.className = 'source-card';
+  const title = document.createElement('h3');
+  title.textContent = source.title;
+  const meta = document.createElement('p');
+  meta.textContent = `${source.publisher} · ${source.observations} observations · ${source.pages} page(s)/feuille(s) · ${source.from_p}–${source.to_p}`;
+  const file = document.createElement('small');
+  file.textContent = source.source_doc;
+  card.append(title, meta, file);
+  if (source.url) {
+    const link = document.createElement('a');
+    link.href = source.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Ouvrir la publication officielle';
+    card.appendChild(link);
+  }
+  return card;
+}
+
+sourcesBtn.addEventListener('click', async () => {
+  sourcesPanel.hidden = !sourcesPanel.hidden;
+  if (sourcesPanel.hidden) return;
+  sourcesBtn.disabled = true;
+  try {
+    const response = await fetch('/sources');
+    if (!response.ok) throw new Error();
+    const sources = await response.json();
+    sourcesList.replaceChildren(...sources.map(sourceCard));
+    if (!sources.length) sourcesList.textContent = 'Aucune source ingérée pour le moment.';
+    sourcesPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch {
+    sourcesList.textContent = 'Le catalogue des sources est momentanément indisponible.';
+  } finally {
+    sourcesBtn.disabled = false;
+  }
+});
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const question = q.value.trim();

@@ -42,6 +42,25 @@ class Ask(BaseModel):
     question: str = Field(min_length=2, max_length=500)
 
 
+SOURCE_METADATA = {
+    "inseed_ipi_mensuel_2015-2026.xlsx": {
+        "publisher": "INSEED Togo",
+        "title": "Indice de la production industrielle mensuel rénové, 2015–2026",
+        "url": "https://inseed.tg/download/7924/",
+    },
+    "inseed_ipi_trimestriel_2025-T4.xlsx": {
+        "publisher": "INSEED Togo",
+        "title": "Indice des prix de production de l'industrie, T4 2025",
+        "url": "https://inseed.tg/download/7551/",
+    },
+    "inseed_ica_services_2026-T1.xlsx": {
+        "publisher": "INSEED Togo",
+        "title": "Indice du chiffre d'affaires dans les services, T1 2026",
+        "url": "https://inseed.tg/download/7894/",
+    },
+}
+
+
 INDICATOR_RULES = (
     (("inflation", "ihpc", "prix"), ("inflation_rate_yoy",)),
     (
@@ -310,5 +329,33 @@ def indicators():
     except sqlite3.Error:
         return []
 
+@app.get("/sources")
+def sources():
+    try:
+        con = db()
+        rows = con.execute(
+            """SELECT source_doc, COUNT(*) AS observations,
+                      COUNT(DISTINCT source_page) AS pages,
+                      MIN(period) AS from_p, MAX(period) AS to_p
+               FROM observations
+               WHERE source_doc NOT LIKE 'FIXTURE%'
+               GROUP BY source_doc ORDER BY observations DESC"""
+        )
+        result = []
+        for row in rows:
+            item = dict(row)
+            metadata = SOURCE_METADATA.get(
+                item["source_doc"],
+                {
+                    "publisher": "Source officielle",
+                    "title": item["source_doc"],
+                    "url": None,
+                },
+            )
+            result.append({**item, **metadata})
+        con.close()
+        return result
+    except sqlite3.Error:
+        return []
 
 app.mount("/", StaticFiles(directory="app", html=True), name="app")

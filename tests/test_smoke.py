@@ -45,3 +45,13 @@ def test_ask_gq1_returns_cited_series() -> None:
     assert [row["period"] for row in payload["rows"]] == sorted(
         row["period"] for row in payload["rows"]
     )
+
+
+def test_sources_lists_only_real_ingested_documents() -> None:
+    response = client.get("/sources")
+    sources = response.json()
+    assert response.status_code == 200
+    assert len(sources) == 3
+    assert sum(source["observations"] for source in sources) == 224
+    assert all(not source["source_doc"].startswith("FIXTURE") for source in sources)
+    assert all(source["publisher"] and source["title"] and source["pages"] for source in sources)
