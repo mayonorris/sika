@@ -12,10 +12,12 @@ from pathlib import Path
 
 import pdfplumber
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import BadRequestError, OpenAI
 
 load_dotenv()
-client = OpenAI()
+API_KEY = os.getenv("OPENAI_API_KEY", "")
+BASE_URL = os.getenv("OPENAI_BASE_URL", "").strip()
+client = OpenAI(api_key=API_KEY, base_url=BASE_URL or None)
 MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6")
 DB_PATH = os.getenv("SIKA_DB", "data/processed/sika.db")
 
@@ -66,17 +68,47 @@ def page_payload(page) -> str:
     return (text + "\n\nTABLES:\n" + rendered)[:12000]
 
 
-def extract_page(payload: str) -> list[dict]:
-    resp = client.chat.completions.create(
-        model=MODEL,
-        response_format={"type": "json_object"},
-        messages=[{"role": "user", "content": EXTRACT_PROMPT + payload}],
-    )
-    try:
-        return json.loads(resp.choices[0].message.content).get("observations", [])
-    except (json.JSONDecodeError, AttributeError):
+def parse_observations(content: str | None) -> list[dict]:
+    if not content:
         return []
+    cleaned = content.strip()
+    fence = chr(96) * 3
+    if cleaned.startswith(fence):
+        cleaned = cleaned.removeprefix(fence).strip()
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:].lstrip()
+        cleaned = cleaned.removesuffix(fence).strip()
+    try:
+        parsed = json.loads(cleaned)
+    except json.JSONDecodeError:
+        start, end = cleaned.find("{"), cleaned.rfind("}")
+        if start < 0 or end <= start:
+            return []
+        try:
+            parsed = json.loads(cleaned[start : end + 1])
+        except json.JSONDecodeError:
+            return []
+    observations = parsed.get("observations", []) if isinstance(parsed, dict) else []
+    return observations if isinstance(observations, list) else []
 
+
+def extract_page(payload: str) -> list[dict]:
+    kwargs = {
+        "model": MODEL,
+        "messages": [{"role": "user", "content": EXTRACT_PROMPT + payload}],
+    }
+    try:
+        resp = client.chat.completions.create(
+            **kwargs, response_format={"type": "json_object"}
+        )
+    except BadRequestError:
+        print("  compatibility endpoint rejected JSON mode; retrying without it")
+        resp = client.chat.completions.create(**kwargs)
+    try:
+        content = resp.choices[0].message.content
+    except (AttributeError, IndexError):
+        return []
+    return parse_observations(content)
 
 def process_pdf(pdf_path: Path, con: sqlite3.Connection) -> int:
     count = 0

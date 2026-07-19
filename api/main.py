@@ -15,7 +15,12 @@ from pydantic import BaseModel, Field
 
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
-client = OpenAI(api_key=API_KEY) if API_KEY and "your-key" not in API_KEY else None
+BASE_URL = os.getenv("OPENAI_BASE_URL", "").strip()
+client = (
+    OpenAI(api_key=API_KEY, base_url=BASE_URL or None)
+    if API_KEY and "your-" not in API_KEY
+    else None
+)
 MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6")
 DB_PATH = os.getenv("SIKA_DB", "data/processed/sika.db")
 

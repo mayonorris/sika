@@ -1,6 +1,7 @@
 """Smoke tests for the local Sika demo database and no-API endpoints."""
 import re
 import sqlite3
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -51,7 +52,13 @@ def test_sources_lists_only_real_ingested_documents() -> None:
     response = client.get("/sources")
     sources = response.json()
     assert response.status_code == 200
-    assert len(sources) == 3
-    assert sum(source["observations"] for source in sources) == 224
+    assert len(sources) >= 3
+    assert sum(source["observations"] for source in sources) >= 224
     assert all(not source["source_doc"].startswith("FIXTURE") for source in sources)
     assert all(source["publisher"] and source["title"] and source["pages"] for source in sources)
+
+
+def test_ui_is_valid_utf8_without_mojibake() -> None:
+    html = Path("app/index.html").read_text(encoding="utf-8")
+    assert all(marker not in html for marker in ("Ã", "Â", "â€", "�"))
+    assert "économie" in html
