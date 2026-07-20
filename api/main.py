@@ -148,10 +148,22 @@ def fallback_answer(question: str, rows: list[dict]) -> str:
         prefix = "Donnée synthétique de développement — ne pas utiliser en production"
     elif "chiffre" in normalized(question) and "services" in first["indicator"]:
         prefix = "Donnée disponible la plus proche (services, pas industrie)"
+    if len(rows) <= 2:
+        return (
+            f"{prefix} : {first['indicator_label']} au {first['geography']}. "
+            f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)} ; "
+            f"{latest['period']} : {latest['value']:g} {latest['unit']} {citation(latest)}."
+        )
+    minimum = min(rows, key=lambda row: row["value"])
+    maximum = max(rows, key=lambda row: row["value"])
     return (
         f"{prefix} : {first['indicator_label']} au {first['geography']}. "
-        f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)} ; "
-        f"{latest['period']} : {latest['value']:g} {latest['unit']} {citation(latest)}."
+        f"Couverture : {len(rows)} observations de {first['period']} à "
+        f"{latest['period']} {citation(first)} {citation(latest)}. "
+        f"Première valeur : {first['value']:g} {first['unit']} {citation(first)} ; "
+        f"dernière valeur : {latest['value']:g} {latest['unit']} {citation(latest)} ; "
+        f"minimum : {minimum['value']:g} {minimum['unit']} {citation(minimum)} ; "
+        f"maximum : {maximum['value']:g} {maximum['unit']} {citation(maximum)}."
     )
 
 
@@ -282,37 +294,101 @@ Data:
 {rows}"""
 
 
-@app.post("/brief")
-def brief(req: BriefReq):
-    if client is None:
-        return {
-            "brief": "La génération de briefs nécessite le service d'analyse. Réessayez lorsqu'il est disponible.",
-            "n_observations": 0,
-        }
-    con = db()
-    rows = [
+def select_brief_rows(con: sqlite3.Connection, req: BriefReq) -> list[dict]:
+    return [
         dict(row)
         for row in con.execute(
             """SELECT * FROM observations WHERE geography LIKE ?
+               AND confidence >= 0.5
                AND (indicator_label LIKE ? OR indicator LIKE ?)
                ORDER BY period LIMIT 150""",
             (f"%{req.geography}%", f"%{req.topic}%", f"%{req.topic}%"),
         ).fetchall()
     ]
-    text = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {
-                "role": "user",
-                "content": BRIEF_PROMPT.format(
-                    topic=req.topic,
-                    geography=req.geography,
-                    rows=json.dumps(rows, ensure_ascii=False),
-                ),
-            }
-        ],
-    ).choices[0].message.content
-    con.close()
+
+
+def brief_series(rows: list[dict]) -> list[list[dict]]:
+    grouped: dict[tuple[str, str, str], list[dict]] = {}
+    for row in rows:
+        key = (row["indicator"], row["geography"], row["unit"])
+        grouped.setdefault(key, []).append(row)
+    return sorted(grouped.values(), key=len, reverse=True)
+
+
+def series_key_figure(rows: list[dict]) -> str:
+    first, latest = rows[0], rows[-1]
+    minimum = min(rows, key=lambda row: row["value"])
+    maximum = max(rows, key=lambda row: row["value"])
+    return (
+        f"- {first['indicator_label']} ({first['unit']}, {len(rows)} observations, "
+        f"{first['period']}–{latest['period']}) : début {first['value']:g} "
+        f"{first['unit']} {citation(first)} ; fin {latest['value']:g} "
+        f"{latest['unit']} {citation(latest)} ; minimum {minimum['value']:g} "
+        f"{minimum['unit']} {citation(minimum)} ; maximum {maximum['value']:g} "
+        f"{maximum['unit']} {citation(maximum)}."
+    )
+
+
+def deterministic_brief(req: BriefReq, rows: list[dict]) -> str:
+    title = f"# Note économique — {req.topic.strip().capitalize()} — {req.geography}"
+    label = "**synthèse automatique sans analyse LLM**"
+    if not rows:
+        return (
+            f"{title}\n\n{label}\n\n## Couverture\n"
+            "Aucune observation correspondante n'est disponible dans la base.\n\n"
+            "## Lacunes des données\nLe sujet demandé n'est pas couvert par les "
+            "sources actuellement ingérées ; aucun chiffre n'est estimé ou inventé."
+        )
+    first, latest = rows[0], rows[-1]
+    series = brief_series(rows)
+    figures = "\n".join(series_key_figure(group) for group in series[:3])
+    extra = len(series) - 3
+    gaps = [
+        "Aucune valeur manquante n'est interpolée et aucune causalité n'est déduite.",
+        f"La couverture dépend des {len(set(row['source_doc'] for row in rows))} "
+        "documents correspondant au filtre demandé.",
+    ]
+    if extra > 0:
+        gaps.append(f"{extra} série(s) supplémentaire(s) ne sont pas détaillées ici.")
+    missing_pages = sum(row.get("source_page") is None for row in rows)
+    if missing_pages:
+        gaps.append(f"{missing_pages} observation(s) n'ont pas de page source renseignée.")
+    gap_text = "\n".join(f"- {gap}" for gap in gaps)
+    return (
+        f"{title}\n\n{label}\n\n## Couverture\n{len(rows)} observations, "
+        f"de {first['period']} à {latest['period']} {citation(first)} "
+        f"{citation(latest)}.\n\n## Chiffres clés\n{figures}\n\n"
+        f"## Lacunes des données\n{gap_text}"
+    )
+
+
+@app.post("/brief")
+def brief(req: BriefReq):
+    try:
+        con = db()
+        rows = select_brief_rows(con, req)
+        con.close()
+    except sqlite3.Error:
+        rows = []
+    fallback = {"brief": deterministic_brief(req, rows), "n_observations": len(rows)}
+    if client is None or not rows:
+        return fallback
+    try:
+        text = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    "role": "user",
+                    "content": BRIEF_PROMPT.format(
+                        topic=req.topic,
+                        geography=req.geography,
+                        rows=json.dumps(rows, ensure_ascii=False),
+                    ),
+                }
+            ],
+        ).choices[0].message.content
+    except (APIError, APITimeoutError):
+        return fallback
     return {"brief": text, "n_observations": len(rows)}
 
 

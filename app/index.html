@@ -17,7 +17,10 @@
   .msg { margin:12px 0; padding:14px 16px; border-radius:12px; line-height:1.55; white-space:pre-wrap; }
   .user { background:#334155; margin-left:15%; }
   .bot { background:var(--card); margin-right:5%; border-left:3px solid var(--accent); }
-  .chart { background:var(--card); border-radius:12px; margin:8px 5% 8px 0; padding:8px; }
+  .chart { display:block; position:relative; clear:both; width:95%; height:320px;
+    min-height:320px; margin:12px 5% 20px 0; overflow:hidden;
+    background:var(--card); border-radius:12px; }
+  .chart .plot-container,.chart .svg-container { width:100% !important; height:100% !important; }
   form { display:flex; gap:10px; padding:18px 24px; max-width:900px; width:100%; margin:0 auto; }
   input { flex:1; padding:13px 16px; border-radius:10px; border:1px solid #334155; background:var(--card); color:var(--text); font-size:15px; }
   button { padding:13px 22px; border:none; border-radius:10px; background:var(--accent); color:#0f172a; font-weight:700; cursor:pointer; font-size:15px; }
@@ -39,6 +42,7 @@
     .sources-panel { width:calc(100% - 28px); margin:10px auto; }
     #chat { padding:14px; }
     .msg { margin-left:0; margin-right:0; }
+    .chart { width:100%; margin-right:0; }
     form { flex-wrap:wrap; padding:12px 14px; }
     input { flex-basis:100%; }
     button { flex:1; padding:12px 8px; }
@@ -80,28 +84,36 @@ function add(cls, text) {
   return d;
 }
 
-function drawChart(rows, kind, title) {
+function drawChart(rows, kind, title, answerEl) {
   if (kind === 'none' || !rows.length) return;
   const div = document.createElement('div');
   div.className = 'chart';
-  chat.appendChild(div);
-  rows.sort((a, b) => a.period.localeCompare(b.period));
-  const x = rows.map(r => r.period), y = rows.map(r => r.value);
-  const unit = rows[0].unit || '';
-  const sources = rows.map(r => `${r.source_doc}, p. ${r.source_page}`);
-  Plotly.newPlot(div, [{ x, y, type: kind === 'bar' ? 'bar' : 'scatter',
+  div.setAttribute('role', 'img');
+  div.setAttribute('aria-label', title || 'Graphique de la série statistique');
+  if (answerEl && answerEl.parentNode === chat) {
+    answerEl.insertAdjacentElement('afterend', div);
+  } else {
+    chat.appendChild(div);
+  }
+  const orderedRows = [...rows].sort((a, b) => a.period.localeCompare(b.period));
+  const x = orderedRows.map(r => r.period), y = orderedRows.map(r => r.value);
+  const unit = orderedRows[0].unit || '';
+  const sources = orderedRows.map(r => `${r.source_doc}, p. ${r.source_page}`);
+  const trace = { x, y, type: kind === 'bar' ? 'bar' : 'scatter',
     mode: kind === 'bar' ? undefined : 'lines+markers', customdata: sources,
     hovertemplate: `%{x}<br>%{y} ${unit}<br>%{customdata}<extra></extra>`,
-    line: { color: '#f59e0b', width: 3 }, marker: { color: '#f59e0b', size: 6 } }],
-    { title: { text: title, font: { color: '#e2e8f0' } }, paper_bgcolor: '#1e293b',
-      plot_bgcolor: '#1e293b', font: { color: '#94a3b8' },
-      xaxis: { title: 'Période', gridcolor: '#334155' },
-      yaxis: { title: unit, gridcolor: '#334155', rangemode: 'tozero' },
-      margin: { t: 56, r: 24, b: 56, l: 64 } },
-    { displayModeBar: false, responsive: true });
-  chat.scrollTop = chat.scrollHeight;
+    line: { color: '#f59e0b', width: 3 }, marker: { color: '#f59e0b', size: 6 } };
+  const layout = { autosize: true, height: 320,
+    title: { text: title, font: { color: '#e2e8f0' } },
+    paper_bgcolor: '#1e293b', plot_bgcolor: '#1e293b', font: { color: '#94a3b8' },
+    xaxis: { title: 'Période', gridcolor: '#334155' },
+    yaxis: { title: unit, gridcolor: '#334155', rangemode: 'tozero' },
+    margin: { t: 58, r: 24, b: 54, l: 62 } };
+  requestAnimationFrame(() => {
+    Plotly.newPlot(div, [trace], layout, { displayModeBar: false, responsive: true })
+      .then(() => { Plotly.Plots.resize(div); chat.scrollTop = chat.scrollHeight; });
+  });
 }
-
 async function request(path, body) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20000);
@@ -166,7 +178,7 @@ form.addEventListener('submit', async e => {
   try {
     const data = await request('/ask', { question });
     wait.textContent = data.answer;
-    drawChart(data.rows || [], data.chart, data.title);
+    drawChart(data.rows || [], data.chart, data.title, wait);
   } catch (error) {
     wait.textContent = error.name === 'AbortError'
       ? 'La recherche prend trop de temps. Réessayez dans un instant.'
