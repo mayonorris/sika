@@ -277,7 +277,12 @@ def fallback_answer(question: str, rows: list[dict]) -> str:
         prefix = "Donnée synthétique de développement — ne pas utiliser en production"
     elif "chiffre" in normalized(question) and "services" in first["indicator"]:
         prefix = "Donnée disponible la plus proche (services, pas industrie)"
-    if len(rows) <= 2:
+    if len(rows) == 1:
+        return (
+            f"{prefix} : {label} au {first['geography']}. "
+            f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)}."
+        )
+    if len(rows) == 2:
         return (
             f"{prefix} : {label} au {first['geography']}. "
             f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)} ; "

@@ -100,7 +100,7 @@ def test_specific_month_returns_one_cited_headline_value() -> None:
     assert len(payload["rows"]) == 1
     assert payload["rows"][0]["period"] == "2026-05"
     assert api.pick_headline_rows(payload["rows"]) == payload["rows"]
-    assert re.search(r"\(.*, p\. \d+\)", payload["answer"])
+    assert len(re.findall(r"\(.*, p\. \d+\)", payload["answer"])) == 1
 
 
 def test_missing_year_does_not_substitute_another_period() -> None:
