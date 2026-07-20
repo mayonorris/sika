@@ -199,8 +199,36 @@ def test_sources_lists_only_real_ingested_documents() -> None:
 def test_ui_is_valid_utf8_without_mojibake() -> None:
     html = Path("app/index.html").read_text(encoding="utf-8")
     assert all(marker not in html for marker in ("Ã", "Â", "â€", "�"))
-    assert "économie" in html
+    assert "économique" in html
     assert "height:320px" in html
     assert "height: 320" in html
     assert "insertAdjacentElement('afterend', div)" in html
     assert "drawChart(data.rows || [], data.chart, data.title, wait)" in html
+
+def test_ui_uses_responsive_statistical_workspace() -> None:
+    html = Path("app/index.html").read_text(encoding="utf-8")
+    chat_css = re.search(r"#chat\s*\{([^}]*)\}", html, re.DOTALL)
+
+    assert chat_css and "overflow-y" not in chat_css.group(1)
+    assert "--shell:1280px" in html
+    assert "app-shell sources-open" not in html
+    assert ".app-shell.sources-open" in html
+    assert 'class="onboarding"' in html
+    assert html.count('class="suggestion"') >= 4
+    assert '<textarea id="q"' in html
+    assert "renderStatSummary(wait, data.rows || [], data.title)" in html
+    assert "Documents officiels indexés" in html
+
+
+def test_ui_supports_keyboard_drawer_and_accessibility_states() -> None:
+    html = Path("app/index.html").read_text(encoding="utf-8")
+
+    assert 'aria-controls="sourcesPanel"' in html
+    assert "div.setAttribute('role', 'img')" in html
+    assert "event.key === 'Enter' && !event.shiftKey" in html
+    assert "briefDialog.showModal()" in html
+    assert "@media (max-width:900px)" in html
+    assert "@media (max-width:640px)" in html
+    assert "@media (prefers-reduced-motion:reduce)" in html
+    assert "overflow-x:hidden" in html
+    assert "if (source.url)" in html
