@@ -78,6 +78,40 @@ def test_explicit_food_inflation_keeps_food_category() -> None:
     assert len(rows) == len({row["period"] for row in rows})
 
 
+@pytest.mark.parametrize(
+    ("question", "expected"),
+    [
+        ("inflation en mai 2026", ("exact", "2026-05")),
+        ("inflation en février 2026", ("exact", "2026-02")),
+        ("IHPC de 2026-05", ("exact", "2026-05")),
+        ("inflation en 2025", ("year", "2025")),
+        ("inflation since 2023", ("since", "2023")),
+    ],
+)
+def test_parse_period(question: str, expected: tuple[str, str]) -> None:
+    assert api.parse_period(question) == expected
+
+
+def test_specific_month_returns_one_cited_headline_value() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Quelle est l'inflation en mai 2026 ?"}
+    ).json()
+
+    assert len(payload["rows"]) == 1
+    assert payload["rows"][0]["period"] == "2026-05"
+    assert api.pick_headline_rows(payload["rows"]) == payload["rows"]
+    assert re.search(r"\(.*, p\. \d+\)", payload["answer"])
+
+
+def test_missing_year_does_not_substitute_another_period() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Quelle est l'inflation en 2025 ?"}
+    ).json()
+
+    assert payload["rows"] == []
+    assert payload["chart"] == "none"
+    assert payload["answer"].startswith("Aucune donnée correspondante")
+
 def test_period_deduplication_prefers_highest_confidence() -> None:
     rows = [
         {"period": "2026-05", "confidence": 0.6, "value": 1},

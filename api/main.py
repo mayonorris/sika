@@ -98,10 +98,25 @@ CATEGORY_HINTS = {
     "logement": ("logement",),
     "energie": ("energie", "electricite", "combustible"),
 }
+MONTH_NUMBERS = {
+    "janvier": "01",
+    "fevrier": "02",
+    "mars": "03",
+    "avril": "04",
+    "mai": "05",
+    "juin": "06",
+    "juillet": "07",
+    "aout": "08",
+    "septembre": "09",
+    "octobre": "10",
+    "novembre": "11",
+    "decembre": "12",
+}
 GEOGRAPHY_HINTS = (
     "togo", "uemoa", "benin", "burkina faso", "cote d'ivoire",
     "guinee bissau", "mali", "niger", "senegal",
 )
+
 
 def normalized(text: str) -> str:
     plain = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
@@ -162,6 +177,24 @@ def filter_requested_rows(question: str, rows: list[dict]) -> list[dict]:
         rows = pick_headline_rows(rows)
     return dedupe_by_period(rows)
 
+
+def parse_period(question: str) -> tuple[str, str] | None:
+    clean = normalized(question)
+    iso = re.search(r"\b(20\d{2}-(?:0[1-9]|1[0-2]))\b", clean)
+    if iso:
+        return "exact", iso.group(1)
+    months = "|".join(MONTH_NUMBERS)
+    named = re.search(rf"\b({months})\s+(20\d{{2}})\b", clean)
+    if named:
+        return "exact", f"{named.group(2)}-{MONTH_NUMBERS[named.group(1)]}"
+    since = re.search(r"\b(?:depuis|since)\s+(20\d{2})\b", clean)
+    if since:
+        return "since", since.group(1)
+    year = re.search(r"\ben\s+(20\d{2})\b", clean)
+    if year:
+        return "year", year.group(1)
+    return None
+
 def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
     candidates = fallback_indicators(question)
     if not candidates:
@@ -180,12 +213,20 @@ def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
     )
     real_only = availability.get(indicator, (0, 0))[1] > 0
     source_clause = " AND source_doc NOT LIKE 'FIXTURE%'" if real_only else ""
-    since = re.search(r"(?:depuis|since)\s+(20\d{2})", normalized(question))
+    period_filter = parse_period(question)
     params: list[object] = [indicator, "Togo"]
     period_clause = ""
-    if since:
-        period_clause = " AND period >= ?"
-        params.append(since.group(1))
+    if period_filter:
+        mode, period = period_filter
+        if mode == "exact":
+            period_clause = " AND period = ?"
+            params.append(period)
+        elif mode == "year":
+            period_clause = " AND period LIKE ?"
+            params.append(f"{period}%")
+        else:
+            period_clause = " AND period >= ?"
+            params.append(period)
     rows = con.execute(
         f"""SELECT indicator, indicator_label, geography, period, value, unit,
                    source_doc, source_page, confidence
