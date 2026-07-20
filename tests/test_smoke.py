@@ -158,6 +158,34 @@ def test_brief_falls_back_when_llm_times_out(monkeypatch: pytest.MonkeyPatch) ->
     assert "synthèse automatique sans analyse LLM" in payload["brief"]
 
 
+def test_extraction_confidence_is_internal_only() -> None:
+    ask_payload = client.post(
+        "/ask", json={"question": "Quelle est l'inflation en mai 2026 ?"}
+    ).json()
+    brief_payload = client.post("/brief", json={"topic": "inflation"}).json()
+    forbidden = ("confidence interval", "margin of error", "95% confidence")
+
+    assert ask_payload["rows"]
+    assert all("confidence" not in row for row in ask_payload["rows"])
+    assert all(term not in ask_payload["answer"].lower() for term in forbidden)
+    assert all(term not in brief_payload["brief"].lower() for term in forbidden)
+
+
+def test_all_llm_prompts_forbid_statistical_confidence_language() -> None:
+    warning = "Never describe these figures using statistical language"
+
+    assert all(
+        warning in prompt
+        for prompt in (api.ROUTER_PROMPT, api.ANSWER_PROMPT, api.BRIEF_PROMPT)
+    )
+
+
+def test_spot_check_labels_extraction_confidence_explicitly() -> None:
+    script = Path("pipeline/spot_check.py").read_text(encoding="utf-8")
+
+    assert "confiance d'extraction (LLM)" in script
+    assert "(conf " not in script
+
 def test_sources_lists_only_real_ingested_documents() -> None:
     response = client.get("/sources")
     sources = response.json()

@@ -245,6 +245,12 @@ def citation(row: dict) -> str:
     return f"({row['source_doc']}, p. {row['source_page']})"
 
 
+def public_rows(rows: list[dict]) -> list[dict]:
+    return [
+        {key: value for key, value in row.items() if key != "confidence"}
+        for row in rows
+    ]
+
 def clean_label(label: str, geography: str) -> str:
     """Strip a trailing geography mention already baked into the extracted label
     (e.g. 'Variation des prix - Togo') so it isn't repeated when we append
@@ -306,7 +312,7 @@ def fallback_response(question: str, con: sqlite3.Connection) -> dict:
     chart, title = chart_details(rows)
     return {
         "answer": fallback_answer(question, rows),
-        "rows": rows,
+        "rows": public_rows(rows),
         "chart": chart,
         "title": title,
     }
@@ -320,10 +326,13 @@ Known indicators: {indicators}
 Return strict JSON: {{"sql": "SELECT ...", "chart": "line|bar|none", "title": "..."}}
 Rules: SELECT-only, LIMIT 200, ORDER BY period. Match geography and indicator loosely (LIKE). If the question is not answerable from the schema, return {{"sql": null, "chart": "none", "title": ""}}.
 When several indicator_label variants share the same indicator and period, prefer the overall or aggregate figure (labels containing 'global', 'ensemble', or 'IHPC au <pays>') unless the question names a specific category.
+Never describe these figures using statistical language such as 'confidence interval', 'margin of error', or 'at the 95% confidence level' — you only have point estimates from official publications, not sampling distributions.
 
 Question: {question}"""
 
 ANSWER_PROMPT = """You are Sika, an assistant for official West African statistics. Answer the user's question using ONLY the data rows and passages provided. Cite every figure as (source_doc, p. page). Answer in the user's language (French or English). If data is missing, say so plainly. Be precise and concise.
+
+Never describe these figures using statistical language such as 'confidence interval', 'margin of error', or 'at the 95% confidence level' — you only have point estimates from official publications, not sampling distributions.
 
 Question: {question}
 
@@ -395,7 +404,7 @@ def ask(q: Ask):
                 "role": "user",
                 "content": ANSWER_PROMPT.format(
                     question=q.question,
-                    rows=json.dumps(rows[:80], ensure_ascii=False),
+                    rows=json.dumps(public_rows(rows)[:80], ensure_ascii=False),
                     passages=json.dumps(passages, ensure_ascii=False),
                 ),
             }
@@ -404,7 +413,7 @@ def ask(q: Ask):
     con.close()
     return {
         "answer": answer,
-        "rows": rows,
+        "rows": public_rows(rows),
         "chart": route.get("chart", "none"),
         "title": route.get("title", ""),
     }
@@ -416,6 +425,8 @@ class BriefReq(BaseModel):
 
 
 BRIEF_PROMPT = """You are a senior economist. Using ONLY the data rows below, write a one-page professional economic brief in French on '{topic}' for {geography}: title, 3 short sections (situation, dynamics, outlook/risks), each figure cited as (source, p. page). End with a 3-bullet executive summary. Markdown format.
+
+Never describe these figures using statistical language such as 'confidence interval', 'margin of error', or 'at the 95% confidence level' — you only have point estimates from official publications, not sampling distributions.
 
 Data:
 {rows}"""
@@ -509,7 +520,7 @@ def brief(req: BriefReq):
                     "content": BRIEF_PROMPT.format(
                         topic=req.topic,
                         geography=req.geography,
-                        rows=json.dumps(rows, ensure_ascii=False),
+                        rows=json.dumps(public_rows(rows), ensure_ascii=False),
                     ),
                 }
             ],
