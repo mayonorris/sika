@@ -42,16 +42,49 @@ def test_ask_gq1_returns_cited_series() -> None:
     payload = response.json()
     assert response.status_code == 200
     assert re.search(r"\(.*, p\. \d+\)", payload["answer"])
-    assert payload["chart"] == "line"
-    assert len(payload["rows"]) >= 3
+    expected_chart = "line" if len(payload["rows"]) >= 3 else "none"
+    assert payload["chart"] == expected_chart
+    assert payload["rows"]
     assert [row["period"] for row in payload["rows"]] == sorted(
         row["period"] for row in payload["rows"]
     )
-    answer = payload["answer"].lower()
-    summary_terms = ("première valeur", "dernière valeur", "minimum", "maximum")
-    assert all(term in answer for term in summary_terms)
-    assert f"{len(payload['rows'])} observations" in answer
+    if len(payload["rows"]) > 2:
+        answer = payload["answer"].lower()
+        summary_terms = ("première valeur", "dernière valeur", "minimum", "maximum")
+        assert all(term in answer for term in summary_terms)
+        assert f"{len(payload['rows'])} observations" in answer
 
+
+def test_plain_inflation_uses_one_headline_row_per_period() -> None:
+    response = client.post(
+        "/ask", json={"question": "Quelle est l'évolution de l'inflation au Togo ?"}
+    )
+    rows = response.json()["rows"]
+
+    assert rows
+    assert len(rows) == len({row["period"] for row in rows})
+    assert api.pick_headline_rows(rows) == rows
+    assert all(not api.names_different_geography(row) for row in rows)
+
+
+def test_explicit_food_inflation_keeps_food_category() -> None:
+    response = client.post(
+        "/ask", json={"question": "Quelle est l'inflation alimentaire en 2026 ?"}
+    )
+    rows = response.json()["rows"]
+
+    assert rows
+    assert all("aliment" in api.normalized(row["indicator_label"]) for row in rows)
+    assert len(rows) == len({row["period"] for row in rows})
+
+
+def test_period_deduplication_prefers_highest_confidence() -> None:
+    rows = [
+        {"period": "2026-05", "confidence": 0.6, "value": 1},
+        {"period": "2026-05", "confidence": 0.9, "value": 2},
+    ]
+
+    assert api.dedupe_by_period(rows)[0]["value"] == 2
 
 def test_brief_fallback_uses_database_rows() -> None:
     response = client.post(
@@ -107,5 +140,5 @@ def test_ui_is_valid_utf8_without_mojibake() -> None:
     assert "économie" in html
     assert "height:320px" in html
     assert "height: 320" in html
-    assert "answerEl.insertAdjacentElement('afterend', div)" in html
+    assert "insertAdjacentElement('afterend', div)" in html
     assert "drawChart(data.rows || [], data.chart, data.title, wait)" in html

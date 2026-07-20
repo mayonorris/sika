@@ -84,6 +84,25 @@ INDICATOR_RULES = (
 )
 
 
+HEADLINE_HINTS = (
+    "global",
+    "ensemble",
+    "ihpc au togo",
+    "variation des prix depuis 12 mois",
+    "taux d'inflation",
+)
+CATEGORY_HINTS = {
+    "alimentation": ("alimentation", "alimentaire", "aliment"),
+    "transport": ("transport",),
+    "sante": ("sante",),
+    "logement": ("logement",),
+    "energie": ("energie", "electricite", "combustible"),
+}
+GEOGRAPHY_HINTS = (
+    "togo", "uemoa", "benin", "burkina faso", "cote d'ivoire",
+    "guinee bissau", "mali", "niger", "senegal",
+)
+
 def normalized(text: str) -> str:
     plain = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
     return re.sub(r"\s+", " ", plain.lower()).strip()
@@ -96,6 +115,52 @@ def fallback_indicators(question: str) -> tuple[str, ...]:
             return indicators
     return ()
 
+
+def names_different_geography(row: dict) -> bool:
+    label = normalized(row["indicator_label"])
+    geography = normalized(row["geography"])
+    named = [name for name in GEOGRAPHY_HINTS if name in label]
+    return bool(named) and not any(name in geography for name in named)
+
+
+def pick_headline_rows(rows: list[dict]) -> list[dict]:
+    candidates = [
+        row
+        for row in rows
+        if not names_different_geography(row)
+        and any(hint in normalized(row["indicator_label"]) for hint in HEADLINE_HINTS)
+    ]
+    return candidates or rows
+
+
+def dedupe_by_period(rows: list[dict]) -> list[dict]:
+    best: dict[str, dict] = {}
+    for row in rows:
+        current = best.get(row["period"])
+        if current is None or row.get("confidence", 0) > current.get("confidence", 0):
+            best[row["period"]] = row
+    return [best[period] for period in sorted(best)]
+
+
+def requested_category(question: str) -> tuple[str, ...]:
+    clean = normalized(question)
+    for hints in CATEGORY_HINTS.values():
+        if any(hint in clean for hint in hints):
+            return hints
+    return ()
+
+
+def filter_requested_rows(question: str, rows: list[dict]) -> list[dict]:
+    category = requested_category(question)
+    if category:
+        rows = [
+            row
+            for row in rows
+            if any(hint in normalized(row["indicator_label"]) for hint in category)
+        ]
+    else:
+        rows = pick_headline_rows(rows)
+    return dedupe_by_period(rows)
 
 def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
     candidates = fallback_indicators(question)
@@ -129,7 +194,7 @@ def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
             ORDER BY period LIMIT 200""",
         params,
     ).fetchall()
-    result = [dict(row) for row in rows]
+    result = filter_requested_rows(question, [dict(row) for row in rows])
     if any(term in normalized(question) for term in ("recemment", "recently")):
         return result[-12:]
     return result
@@ -139,10 +204,27 @@ def citation(row: dict) -> str:
     return f"({row['source_doc']}, p. {row['source_page']})"
 
 
+def clean_label(label: str, geography: str) -> str:
+    """Strip a trailing geography mention already baked into the extracted label
+    (e.g. 'Variation des prix - Togo') so it isn't repeated when we append
+    'au {geography}' ourselves."""
+    label = label.strip()
+    for sep in (" - ", " – ", ", ", " ("):
+        suffix = f"{sep}{geography}"
+        if label.endswith(suffix):
+            label = label[: -len(suffix)].rstrip(" (")
+            break
+        if label.endswith(f"{sep}{geography})"):
+            label = label[: -len(f"{sep}{geography})")].rstrip()
+            break
+    return label.strip()
+
+
 def fallback_answer(question: str, rows: list[dict]) -> str:
     if not rows:
         return "Aucune donnée correspondante n'est disponible dans la base actuelle."
     first, latest = rows[0], rows[-1]
+    label = clean_label(first["indicator_label"], first["geography"])
     prefix = "Série disponible"
     if "FIXTURE" in first["source_doc"]:
         prefix = "Donnée synthétique de développement — ne pas utiliser en production"
@@ -150,14 +232,14 @@ def fallback_answer(question: str, rows: list[dict]) -> str:
         prefix = "Donnée disponible la plus proche (services, pas industrie)"
     if len(rows) <= 2:
         return (
-            f"{prefix} : {first['indicator_label']} au {first['geography']}. "
+            f"{prefix} : {label} au {first['geography']}. "
             f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)} ; "
             f"{latest['period']} : {latest['value']:g} {latest['unit']} {citation(latest)}."
         )
     minimum = min(rows, key=lambda row: row["value"])
     maximum = max(rows, key=lambda row: row["value"])
     return (
-        f"{prefix} : {first['indicator_label']} au {first['geography']}. "
+        f"{prefix} : {label} au {first['geography']}. "
         f"Couverture : {len(rows)} observations de {first['period']} à "
         f"{latest['period']} {citation(first)} {citation(latest)}. "
         f"Première valeur : {first['value']:g} {first['unit']} {citation(first)} ; "
@@ -168,11 +250,13 @@ def fallback_answer(question: str, rows: list[dict]) -> str:
 
 
 def chart_details(rows: list[dict]) -> tuple[str, str]:
+    rows = dedupe_by_period(pick_headline_rows(rows))
     series = {(row["indicator"], row["geography"]) for row in rows}
     if len(rows) < 3 or len(series) != 1:
         return "none", ""
     row = rows[0]
-    title = f"{row['indicator_label']} — {row['geography']} ({row['unit']})"
+    label = clean_label(row["indicator_label"], row["geography"])
+    title = f"{label} — {row['geography']} ({row['unit']})"
     return "line", title
 
 
@@ -194,6 +278,7 @@ Known indicators: {indicators}
 
 Return strict JSON: {{"sql": "SELECT ...", "chart": "line|bar|none", "title": "..."}}
 Rules: SELECT-only, LIMIT 200, ORDER BY period. Match geography and indicator loosely (LIKE). If the question is not answerable from the schema, return {{"sql": null, "chart": "none", "title": ""}}.
+When several indicator_label variants share the same indicator and period, prefer the overall or aggregate figure (labels containing 'global', 'ensemble', or 'IHPC au <pays>') unless the question names a specific category.
 
 Question: {question}"""
 
@@ -249,6 +334,7 @@ def ask(q: Ask):
             rows = [dict(row) for row in con.execute(route["sql"]).fetchall()]
         except sqlite3.Error:
             rows = []
+    rows = filter_requested_rows(q.question, rows)
 
     terms = [word for word in q.question.split() if len(word) > 4][:4]
     like = " OR ".join("text LIKE ?" for _ in terms) or "1=0"
