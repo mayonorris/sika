@@ -552,7 +552,18 @@ function formatValue(value, unit) {
   return `${formatted}${unit ? ` ${unit}` : ''}`;
 }
 
-function renderStatSummary(wrap, rows, title) {
+function cleanDisplayLabel(label, geography) {
+  let cleaned = String(label || '').trim();
+  if (!geography) return cleaned;
+  for (const separator of [' - ', ' – ', ', ', ' (']) {
+    const suffix = `${separator}${geography}`;
+    if (cleaned.endsWith(suffix)) return cleaned.slice(0, -suffix.length).replace(/[ (]+$/, '');
+    if (cleaned.endsWith(`${suffix})`)) return cleaned.slice(0, -suffix.length - 1).trim();
+  }
+  return cleaned;
+}
+
+function renderStatSummary(wrap, rows, label) {
   if (!rows.length) { wrap.classList.add('is-empty'); return; }
   wrap.classList.remove('is-empty');
   const ordered = [...rows].sort((a, b) => a.period.localeCompare(b.period));
@@ -566,7 +577,8 @@ function renderStatSummary(wrap, rows, title) {
   const identity = document.createElement('div');
   identity.innerHTML = `<p class="stat-eyebrow"></p><h3 class="stat-title"></h3>`;
   identity.querySelector('.stat-eyebrow').textContent = latest.geography || 'Zone non précisée';
-  identity.querySelector('.stat-title').textContent = title || latest.indicator_label;
+  identity.querySelector('.stat-title').textContent =
+    label || cleanDisplayLabel(latest.indicator_label, latest.geography);
   const primary = document.createElement('div');
   primary.className = 'stat-primary';
   const value = document.createElement('strong');
@@ -608,12 +620,14 @@ function renderStatSummary(wrap, rows, title) {
   wrap.querySelector('.response-content')?.before(card);
 }
 
-function drawChart(rows, kind, title, anchorEl) {
+function drawChart(rows, kind, title, label, anchorEl) {
   if (kind === 'none' || !rows.length) return;
+  const displayLabel = label || cleanDisplayLabel(rows[0].indicator_label, rows[0].geography);
+  const chartTitle = title || displayLabel;
   const div = document.createElement('div');
   div.className = 'chart';
   div.setAttribute('role', 'img');
-  div.setAttribute('aria-label', title || 'Graphique de la série statistique');
+  div.setAttribute('aria-label', chartTitle || 'Graphique de la série statistique');
   if (anchorEl?.parentNode === chat) anchorEl.insertAdjacentElement('afterend', div);
   else chat.appendChild(div);
   const orderedRows = [...rows].sort((a, b) => a.period.localeCompare(b.period));
@@ -628,7 +642,7 @@ function drawChart(rows, kind, title, anchorEl) {
   };
   const layout = {
     autosize:true, height: 320,
-    title:{ text:title, font:{ color:'#eef1f7', size:13.5 } },
+    title:{ text:chartTitle, font:{ color:'#eef1f7', size:13.5 } },
     paper_bgcolor:'#131b2e', plot_bgcolor:'#131b2e', font:{ color:'#a2abc0', size:11.5 },
     xaxis:{ title:'', gridcolor:'rgba(255,255,255,.06)', zeroline:false },
     yaxis:{ title:unit, gridcolor:'rgba(255,255,255,.06)', rangemode:'tozero', zeroline:false },
@@ -729,8 +743,8 @@ async function submitQuestion(question) {
   try {
     const data = await request('/ask', { question });
     fillBotRich(wait, data.answer);
-    renderStatSummary(wait, data.rows || [], data.title);
-    drawChart(data.rows || [], data.chart, data.title, wait);
+    renderStatSummary(wait, data.rows || [], data.label);
+    drawChart(data.rows || [], data.chart, data.title, data.label, wait);
   } catch (error) {
     fillBotError(wait, error.name === 'AbortError'
       ? 'La recherche prend trop de temps. Réessayez dans un instant.'

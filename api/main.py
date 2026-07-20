@@ -148,11 +148,35 @@ def pick_headline_rows(rows: list[dict]) -> list[dict]:
     return candidates or rows
 
 
+def row_tie_key(row: dict) -> tuple[str, str, str, str]:
+    return (
+        normalized(cleaned_row_label(row)),
+        str(row.get("source_doc", "")),
+        str(row.get("source_page", "")),
+        str(row.get("value", "")),
+    )
+
+
 def dedupe_by_period(rows: list[dict]) -> list[dict]:
+    preferred_label = canonical_label(rows)
     best: dict[str, dict] = {}
     for row in rows:
         current = best.get(row["period"])
-        if current is None or row.get("confidence", 0) > current.get("confidence", 0):
+        row_confidence = row.get("confidence", 0)
+        current_confidence = current.get("confidence", 0) if current else -1
+        row_matches = cleaned_row_label(row) == preferred_label
+        current_matches = current is not None and cleaned_row_label(current) == preferred_label
+
+        if (
+            current is None
+            or row_confidence > current_confidence
+            or (row_confidence == current_confidence and row_matches and not current_matches)
+            or (
+                row_confidence == current_confidence
+                and row_matches == current_matches
+                and row_tie_key(row) < row_tie_key(current)
+            )
+        ):
             best[row["period"]] = row
     return [best[period] for period in sorted(best)]
 
@@ -267,11 +291,44 @@ def clean_label(label: str, geography: str) -> str:
     return label.strip()
 
 
+def cleaned_row_label(row: dict) -> str:
+    return clean_label(str(row.get("indicator_label", "")), str(row.get("geography", "")))
+
+
+def canonical_label(rows: list[dict]) -> str:
+    """Choose one stable series label: longest shared label, then frequency, then alphabetic."""
+    labels = [cleaned_row_label(row) for row in rows]
+    labels = [label for label in labels if label]
+    if not labels:
+        return ""
+    unique = sorted(set(labels), key=lambda label: (normalized(label), label))
+    shared = [
+        label
+        for label in unique
+        if all(normalized(label) in normalized(other) for other in unique)
+    ]
+    if shared:
+        return min(shared, key=lambda label: (-len(normalized(label)), normalized(label), label))
+    counts = {label: labels.count(label) for label in unique}
+    top_frequency = max(counts.values())
+    return min(
+        (label for label in unique if counts[label] == top_frequency),
+        key=lambda label: (normalized(label), label),
+    )
+
+
+def label_with_geography(label: str, geography: str) -> str:
+    if geography and normalized(geography) in normalized(label):
+        return label
+    return f"{label} au {geography}"
+
+
 def fallback_answer(question: str, rows: list[dict]) -> str:
     if not rows:
         return "Aucune donnée correspondante n'est disponible dans la base actuelle."
     first, latest = rows[0], rows[-1]
-    label = clean_label(first["indicator_label"], first["geography"])
+    label = canonical_label(rows)
+    display_label = label_with_geography(label, first["geography"])
     prefix = "Série disponible"
     if "FIXTURE" in first["source_doc"]:
         prefix = "Donnée synthétique de développement — ne pas utiliser en production"
@@ -279,19 +336,19 @@ def fallback_answer(question: str, rows: list[dict]) -> str:
         prefix = "Donnée disponible la plus proche (services, pas industrie)"
     if len(rows) == 1:
         return (
-            f"{prefix} : {label} au {first['geography']}. "
+            f"{prefix} : {display_label}. "
             f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)}."
         )
     if len(rows) == 2:
         return (
-            f"{prefix} : {label} au {first['geography']}. "
+            f"{prefix} : {display_label}. "
             f"{first['period']} : {first['value']:g} {first['unit']} {citation(first)} ; "
             f"{latest['period']} : {latest['value']:g} {latest['unit']} {citation(latest)}."
         )
     minimum = min(rows, key=lambda row: row["value"])
     maximum = max(rows, key=lambda row: row["value"])
     return (
-        f"{prefix} : {label} au {first['geography']}. "
+        f"{prefix} : {display_label}. "
         f"Couverture : {len(rows)} observations de {first['period']} à "
         f"{latest['period']} {citation(first)} {citation(latest)}. "
         f"Première valeur : {first['value']:g} {first['unit']} {citation(first)} ; "
@@ -307,19 +364,21 @@ def chart_details(rows: list[dict]) -> tuple[str, str]:
     if len(rows) < 3 or len(series) != 1:
         return "none", ""
     row = rows[0]
-    label = clean_label(row["indicator_label"], row["geography"])
+    label = canonical_label(rows)
     title = f"{label} — {row['geography']} ({row['unit']})"
     return "line", title
 
 
 def fallback_response(question: str, con: sqlite3.Connection) -> dict:
     rows = select_fallback_rows(con, question)
+    label = canonical_label(rows)
     chart, title = chart_details(rows)
     return {
         "answer": fallback_answer(question, rows),
         "rows": public_rows(rows),
         "chart": chart,
         "title": title,
+        "label": label,
     }
 
 
@@ -359,6 +418,7 @@ def ask(q: Ask):
             "rows": [],
             "chart": "none",
             "title": "",
+            "label": "",
         }
     if client is None:
         response = fallback_response(q.question, con)
@@ -390,6 +450,7 @@ def ask(q: Ask):
         except sqlite3.Error:
             rows = []
     rows = filter_requested_rows(q.question, rows)
+    label = canonical_label(rows)
 
     terms = [word for word in q.question.split() if len(word) > 4][:4]
     like = " OR ".join("text LIKE ?" for _ in terms) or "1=0"
@@ -420,7 +481,12 @@ def ask(q: Ask):
         "answer": answer,
         "rows": public_rows(rows),
         "chart": route.get("chart", "none"),
-        "title": route.get("title", ""),
+        "title": (
+            f"{label} — {rows[0]['geography']} ({rows[0]['unit']})"
+            if rows and route.get("chart", "none") != "none"
+            else ""
+        ),
+        "label": label,
     }
 
 

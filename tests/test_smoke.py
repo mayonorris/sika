@@ -55,6 +55,20 @@ def test_ask_gq1_returns_cited_series() -> None:
         assert f"{len(payload['rows'])} observations" in answer
 
 
+def test_ask_uses_one_stable_label_across_payload() -> None:
+    question = "Quelle est l'évolution de l'inflation en 2026 ?"
+    first = client.post("/ask", json={"question": question}).json()
+    second = client.post("/ask", json={"question": question}).json()
+
+    assert first["label"]
+    assert first["label"] == second["label"]
+    assert first["label"] in first["answer"]
+    if api.normalized("Togo") in api.normalized(first["label"]):
+        assert f"{first['label']} au Togo" not in first["answer"]
+    if first["title"]:
+        assert first["title"].startswith(first["label"])
+
+
 def test_plain_inflation_uses_one_headline_row_per_period() -> None:
     response = client.post(
         "/ask", json={"question": "Quelle est l'évolution de l'inflation au Togo ?"}
@@ -119,6 +133,34 @@ def test_period_deduplication_prefers_highest_confidence() -> None:
     ]
 
     assert api.dedupe_by_period(rows)[0]["value"] == 2
+
+
+def test_canonical_label_is_stable_across_input_order() -> None:
+    rows = [
+        {
+            "indicator": "inflation_yoy",
+            "period": "2026-05",
+            "confidence": 0.95,
+            "indicator_label": "Variation des prix depuis 12 mois - Togo",
+            "geography": "Togo",
+        },
+        {
+            "indicator": "inflation_yoy",
+            "period": "2026-06",
+            "confidence": 0.95,
+            "indicator_label": "INDICE GLOBAL - Variation 12 mois",
+            "geography": "Togo",
+        },
+    ]
+
+    expected = api.canonical_label(rows)
+    assert expected == api.canonical_label(list(reversed(rows)))
+
+    tied_period = [{**row, "period": "2026-05"} for row in rows]
+    for candidates in (tied_period, list(reversed(tied_period))):
+        kept = api.dedupe_by_period(candidates)[0]
+        assert api.cleaned_row_label(kept) == expected
+
 
 def test_brief_fallback_uses_database_rows() -> None:
     response = client.post(
@@ -203,7 +245,7 @@ def test_ui_is_valid_utf8_without_mojibake() -> None:
     assert "height:320px" in html
     assert "height: 320" in html
     assert "insertAdjacentElement('afterend', div)" in html
-    assert "drawChart(data.rows || [], data.chart, data.title, wait)" in html
+    assert "drawChart(data.rows || [], data.chart, data.title, data.label, wait)" in html
 
 def test_ui_uses_responsive_statistical_workspace() -> None:
     html = Path("app/index.html").read_text(encoding="utf-8")
@@ -216,7 +258,7 @@ def test_ui_uses_responsive_statistical_workspace() -> None:
     assert 'class="onboarding"' in html
     assert html.count('class="suggestion"') >= 4
     assert '<textarea id="q"' in html
-    assert "renderStatSummary(wait, data.rows || [], data.title)" in html
+    assert "renderStatSummary(wait, data.rows || [], data.label)" in html
     assert "Documents officiels indexés" in html
 
 
