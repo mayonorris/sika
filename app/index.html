@@ -6,54 +6,164 @@
 <title>Sika — Ask West Africa's economy anything</title>
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <style>
-  :root { --bg:#0f172a; --card:#1e293b; --accent:#f59e0b; --text:#e2e8f0; --muted:#94a3b8; }
+  :root {
+    --bg:#0b1120;
+    --surface:#131b2e;
+    --accent:#f2b544;
+    --accent-soft:rgba(242,181,68,.14);
+    --accent-soft-strong:rgba(242,181,68,.24);
+    --text:#eef1f7;
+    --muted:#8b94a8;
+    --divider:rgba(255,255,255,.08);
+    --danger:#e59a9a;
+    --w:780px;
+  }
   * { box-sizing:border-box; margin:0; }
-  body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
-  header { padding:20px 24px; border-bottom:1px solid #334155; display:flex; align-items:baseline; gap:14px; }
-  header h1 { font-size:22px; color:var(--accent); letter-spacing:1px; }
-  header span { color:var(--muted); font-size:14px; }
-  .nav-button { margin-left:auto; padding:8px 14px; background:#334155; color:var(--text); }
-  #chat { flex:1; overflow-y:auto; padding:24px; max-width:900px; width:100%; margin:0 auto; }
-  .msg { margin:12px 0; padding:14px 16px; border-radius:12px; line-height:1.55; white-space:pre-wrap; }
-  .user { background:#334155; margin-left:15%; }
-  .bot { background:var(--card); margin-right:5%; border-left:3px solid var(--accent); }
-  .chart { display:block; position:relative; clear:both; width:95%; height:320px;
-    min-height:320px; margin:12px 5% 20px 0; overflow:hidden;
-    background:var(--card); border-radius:12px; }
+  html, body { height:100%; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; display:flex; flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header { border-bottom:1px solid var(--divider); }
+  .header-inner {
+    max-width:var(--w); width:100%; margin:0 auto;
+    padding:22px 24px 18px; display:flex; align-items:baseline; gap:14px;
+  }
+  header h1 { font-size:19px; color:var(--accent); letter-spacing:2px; font-weight:700; }
+  header .tagline { color:var(--muted); font-size:13.5px; line-height:1.4; }
+  .nav-button {
+    margin-left:auto; padding:8px 16px; background:transparent; color:var(--muted);
+    border:1px solid var(--divider); border-radius:20px; font-size:12.5px;
+    cursor:pointer; transition:color .15s, border-color .15s; white-space:nowrap;
+  }
+  .nav-button:hover { color:var(--text); border-color:var(--muted); }
+
+  #chat {
+    flex:1; overflow-y:auto; padding:28px 24px 8px;
+    max-width:var(--w); width:100%; margin:0 auto;
+    display:flex; flex-direction:column; gap:2px;
+  }
+
+  .msg { line-height:1.6; }
+  .msg.user {
+    align-self:flex-end; max-width:72%; background:var(--accent-soft);
+    color:var(--text); padding:11px 16px; border-radius:18px 18px 4px 18px;
+    font-size:14.5px; margin:10px 0;
+  }
+  .msg.bot {
+    align-self:stretch; max-width:100%; padding:20px 0 6px;
+    border-top:1px solid var(--divider);
+  }
+  .msg.bot:first-child { border-top:none; padding-top:4px; }
+
+  .rt-lede { font-size:15.5px; font-weight:600; color:var(--text); }
+  .rt-h1 { font-size:17px; font-weight:700; color:var(--text); margin:16px 0 8px; }
+  .rt-h2 {
+    font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase;
+    letter-spacing:.07em; margin:18px 0 6px;
+  }
+  .rt-p { font-size:14.75px; line-height:1.65; color:var(--text); margin:7px 0; }
+  .rt-list { margin:6px 0 6px 1.15em; padding:0; }
+  .rt-list li { font-size:14.25px; line-height:1.6; color:var(--text); margin:5px 0; }
+  .rt-error { color:var(--danger); }
+  .muted-loading { color:var(--muted); font-style:italic; font-size:14.5px; }
+
+  .cite {
+    color:var(--accent); font-size:.68em; font-weight:700; vertical-align:super;
+    margin-left:1px; cursor:default; line-height:0;
+  }
+  .rt-sources {
+    margin-top:14px; padding-top:12px; border-top:1px dashed var(--divider);
+    display:flex; flex-wrap:wrap; gap:5px 18px;
+  }
+  .rt-source {
+    font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .rt-source b { color:var(--accent); font-weight:700; }
+  .rt-meta {
+    display:inline-block; margin-top:12px; font-size:11px; color:var(--muted);
+    letter-spacing:.03em; background:var(--surface); padding:4px 10px; border-radius:20px;
+  }
+
+  .chart {
+    align-self:stretch; width:100%; height:320px; min-height:320px;
+    margin:14px 0 24px; background:var(--surface); border-radius:16px;
+    overflow:hidden;
+  }
   .chart .plot-container,.chart .svg-container { width:100% !important; height:100% !important; }
-  form { display:flex; gap:10px; padding:18px 24px; max-width:900px; width:100%; margin:0 auto; }
-  input { flex:1; padding:13px 16px; border-radius:10px; border:1px solid #334155; background:var(--card); color:var(--text); font-size:15px; }
-  button { padding:13px 22px; border:none; border-radius:10px; background:var(--accent); color:#0f172a; font-weight:700; cursor:pointer; font-size:15px; }
-  button:disabled { opacity:.55; cursor:wait; }
-  button.secondary { background:#334155; color:var(--text); }
-  .hint { color:var(--muted); font-size:13px; text-align:center; padding-bottom:14px; }
-  .sources-panel { max-width:900px; width:calc(100% - 48px); margin:16px auto; padding:20px;
-    background:var(--card); border:1px solid #334155; border-radius:12px; }
-  .sources-panel h2 { color:var(--accent); margin-bottom:8px; }
-  .sources-panel > p { color:var(--muted); line-height:1.5; margin-bottom:14px; }
-  .sources-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
-  .source-card { border:1px solid #334155; border-radius:10px; padding:14px; }
-  .source-card h3 { font-size:15px; margin-bottom:8px; }
-  .source-card p,.source-card small { color:var(--muted); display:block; margin-bottom:7px; }
-  .source-card a { color:var(--accent); }
+
+  form {
+    display:flex; gap:10px; padding:16px 24px 20px;
+    max-width:var(--w); width:100%; margin:0 auto;
+  }
+  input {
+    flex:1; padding:13px 18px; border-radius:24px; border:1px solid transparent;
+    background:var(--surface); color:var(--text); font-size:14.5px; outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  input::placeholder { color:var(--muted); }
+  input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  button {
+    padding:13px 24px; border:none; border-radius:24px; background:var(--accent);
+    color:#161005; font-weight:700; cursor:pointer; font-size:14.5px;
+    transition:opacity .15s, transform .1s;
+  }
+  button:hover { opacity:.92; }
+  button:active { transform:scale(.98); }
+  button:disabled { opacity:.5; cursor:wait; }
+  button.secondary {
+    background:transparent; color:var(--muted); border:1px solid var(--divider);
+  }
+  button.secondary:hover { color:var(--text); border-color:var(--muted); }
+
+  .hint { color:var(--muted); font-size:12.5px; text-align:center; padding-bottom:16px; }
+
+  .sources-panel {
+    max-width:var(--w); width:100%; margin:0 auto; padding:24px 24px 32px;
+    border-top:1px solid var(--divider);
+  }
+  .sources-panel h2 { color:var(--text); font-size:16px; font-weight:700; margin-bottom:6px; }
+  .sources-panel > p { color:var(--muted); font-size:13px; line-height:1.55; margin-bottom:18px; }
+  .sources-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+  .source-card {
+    background:var(--surface); border-radius:14px; padding:16px 18px;
+    transition:transform .15s;
+  }
+  .source-card:hover { transform:translateY(-2px); }
+  .source-card h3 { font-size:14px; font-weight:600; color:var(--text); margin-bottom:8px; line-height:1.4; }
+  .source-card p,.source-card small { color:var(--muted); display:block; font-size:12px; margin-bottom:6px; }
+  .source-card a { color:var(--accent); font-size:12.5px; text-decoration:none; }
+  .source-card a:hover { text-decoration:underline; }
+
   @media (max-width:640px) {
-    header { align-items:flex-start; flex-direction:column; padding:16px; }
+    .header-inner { align-items:flex-start; flex-direction:column; padding:16px; gap:8px; }
     .nav-button { margin-left:0; width:100%; }
-    .sources-panel { width:calc(100% - 28px); margin:10px auto; }
-    #chat { padding:14px; }
-    .msg { margin-left:0; margin-right:0; }
-    .chart { width:100%; margin-right:0; }
-    form { flex-wrap:wrap; padding:12px 14px; }
+    .sources-panel { padding:20px 16px 28px; }
+    #chat { padding:20px 16px 8px; }
+    .msg.user { max-width:88%; }
+    form { flex-wrap:wrap; padding:12px 16px 16px; }
     input { flex-basis:100%; }
     button { flex:1; padding:12px 8px; }
   }
 </style>
 </head>
 <body>
-<header><h1>SIKA</h1><span>Les statistiques officielles d'Afrique de l'Ouest, interrogeables en langage naturel</span>
-  <button type="button" class="nav-button" id="sourcesBtn">Sources</button></header>
+<header>
+  <div class="header-inner">
+    <h1>SIKA</h1>
+    <span class="tagline">Les statistiques officielles d'Afrique de l'Ouest, interrogeables en langage naturel</span>
+    <button type="button" class="nav-button" id="sourcesBtn">Sources</button>
+  </div>
+</header>
 <div id="chat">
-  <div class="msg bot">Bonjour. Posez-moi une question sur l'économie togolaise ou de l'UEMOA : inflation, production industrielle, crédit, microfinance... Chaque réponse est sourcée (document officiel, page). Essayez : « Quelle est l'évolution de l'inflation au Togo ? »</div>
+  <div class="msg bot">
+    <p class="rt-p rt-lede">Bonjour. Posez-moi une question sur l'économie togolaise ou de l'UEMOA : inflation, production industrielle, crédit, microfinance...</p>
+    <p class="rt-p">Chaque réponse est sourcée (document officiel, page). Essayez : « Quelle est l'évolution de l'inflation au Togo ? »</p>
+  </div>
 </div>
 <section id="sourcesPanel" class="sources-panel" hidden>
   <h2>Sources officielles</h2>
@@ -75,6 +185,8 @@ const sourcesBtn = document.getElementById('sourcesBtn');
 const sourcesPanel = document.getElementById('sourcesPanel');
 const sourcesList = document.getElementById('sourcesList');
 
+const CITE_RE = /\(([^()]+?),\s*p\.\s*(\d+)\)/g;
+
 function add(cls, text) {
   const d = document.createElement('div');
   d.className = 'msg ' + cls;
@@ -84,14 +196,147 @@ function add(cls, text) {
   return d;
 }
 
-function drawChart(rows, kind, title, answerEl) {
+function addBotPlaceholder(text) {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg bot';
+  const body = document.createElement('p');
+  body.className = 'muted-loading';
+  body.textContent = text;
+  wrap.appendChild(body);
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+  return wrap;
+}
+
+function makeCiteRegistry() {
+  const map = new Map();
+  const list = [];
+  return {
+    get(doc, page) {
+      const key = doc + '#' + page;
+      if (!map.has(key)) { map.set(key, list.length + 1); list.push({ doc, page }); }
+      return map.get(key);
+    },
+    list,
+  };
+}
+
+function inlineCites(text, registry) {
+  const frag = document.createDocumentFragment();
+  let last = 0;
+  let match;
+  CITE_RE.lastIndex = 0;
+  while ((match = CITE_RE.exec(text)) !== null) {
+    if (match.index > last) frag.appendChild(document.createTextNode(text.slice(last, match.index)));
+    const sup = document.createElement('sup');
+    sup.className = 'cite';
+    sup.textContent = registry.get(match[1].trim(), match[2]);
+    frag.appendChild(sup);
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+  return frag;
+}
+
+function inlineRich(text, registry) {
+  const frag = document.createDocumentFragment();
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  for (const part of parts) {
+    if (!part) continue;
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      const strong = document.createElement('strong');
+      strong.appendChild(inlineCites(part.slice(2, -2), registry));
+      frag.appendChild(strong);
+    } else {
+      frag.appendChild(inlineCites(part, registry));
+    }
+  }
+  return frag;
+}
+
+function renderRichBlock(raw, registry) {
+  const frag = document.createDocumentFragment();
+  const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  let list = null;
+  let first = true;
+  for (const line of lines) {
+    if (/^\[[^[\]]+\]$/.test(line)) {
+      const tag = document.createElement('div');
+      tag.className = 'rt-meta';
+      tag.textContent = line.slice(1, -1);
+      frag.appendChild(tag);
+      list = null;
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      const h = document.createElement('div'); h.className = 'rt-h1';
+      h.appendChild(inlineRich(line.slice(2), registry));
+      frag.appendChild(h); list = null; continue;
+    }
+    if (line.startsWith('## ')) {
+      const h = document.createElement('div'); h.className = 'rt-h2';
+      h.appendChild(inlineRich(line.slice(3), registry));
+      frag.appendChild(h); list = null; continue;
+    }
+    if (line.startsWith('- ')) {
+      if (!list) { list = document.createElement('ul'); list.className = 'rt-list'; frag.appendChild(list); }
+      const li = document.createElement('li');
+      li.appendChild(inlineRich(line.slice(2), registry));
+      list.appendChild(li);
+      continue;
+    }
+    const p = document.createElement('p');
+    p.className = first ? 'rt-p rt-lede' : 'rt-p';
+    p.appendChild(inlineRich(line, registry));
+    frag.appendChild(p);
+    list = null;
+    first = false;
+  }
+  return frag;
+}
+
+function citeFooter(registry) {
+  if (!registry.list.length) return null;
+  const footer = document.createElement('div');
+  footer.className = 'rt-sources';
+  registry.list.forEach((c, i) => {
+    const span = document.createElement('span');
+    span.className = 'rt-source';
+    const b = document.createElement('b');
+    b.textContent = (i + 1) + '. ';
+    span.appendChild(b);
+    span.appendChild(document.createTextNode(`${c.doc}, p. ${c.page}`));
+    footer.appendChild(span);
+  });
+  return footer;
+}
+
+function fillBotRich(wrap, rawText) {
+  wrap.innerHTML = '';
+  const registry = makeCiteRegistry();
+  wrap.appendChild(renderRichBlock(rawText, registry));
+  const footer = citeFooter(registry);
+  if (footer) wrap.appendChild(footer);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function fillBotError(wrap, text) {
+  wrap.innerHTML = '';
+  const p = document.createElement('p');
+  p.className = 'rt-p rt-error';
+  p.textContent = text;
+  wrap.appendChild(p);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function drawChart(rows, kind, title, anchorEl) {
   if (kind === 'none' || !rows.length) return;
   const div = document.createElement('div');
   div.className = 'chart';
   div.setAttribute('role', 'img');
   div.setAttribute('aria-label', title || 'Graphique de la série statistique');
-  if (answerEl && answerEl.parentNode === chat) {
-    answerEl.insertAdjacentElement('afterend', div);
+  if (anchorEl && anchorEl.parentNode === chat) {
+    anchorEl.insertAdjacentElement('afterend', div);
   } else {
     chat.appendChild(div);
   }
@@ -102,13 +347,14 @@ function drawChart(rows, kind, title, answerEl) {
   const trace = { x, y, type: kind === 'bar' ? 'bar' : 'scatter',
     mode: kind === 'bar' ? undefined : 'lines+markers', customdata: sources,
     hovertemplate: `%{x}<br>%{y} ${unit}<br>%{customdata}<extra></extra>`,
-    line: { color: '#f59e0b', width: 3 }, marker: { color: '#f59e0b', size: 6 } };
+    line: { color: '#f2b544', width: 2.5, shape: 'spline', smoothing: .3 },
+    marker: { color: '#f2b544', size: 5 } };
   const layout = { autosize: true, height: 320,
-    title: { text: title, font: { color: '#e2e8f0' } },
-    paper_bgcolor: '#1e293b', plot_bgcolor: '#1e293b', font: { color: '#94a3b8' },
-    xaxis: { title: 'Période', gridcolor: '#334155' },
-    yaxis: { title: unit, gridcolor: '#334155', rangemode: 'tozero' },
-    margin: { t: 58, r: 24, b: 54, l: 62 } };
+    title: { text: title, font: { color: '#eef1f7', size: 13.5 } },
+    paper_bgcolor: '#131b2e', plot_bgcolor: '#131b2e', font: { color: '#8b94a8', size: 11.5 },
+    xaxis: { title: '', gridcolor: 'rgba(255,255,255,.06)', zeroline: false },
+    yaxis: { title: unit, gridcolor: 'rgba(255,255,255,.06)', rangemode: 'tozero', zeroline: false },
+    margin: { t: 46, r: 20, b: 40, l: 54 } };
   requestAnimationFrame(() => {
     Plotly.newPlot(div, [trace], layout, { displayModeBar: false, responsive: true })
       .then(() => { Plotly.Plots.resize(div); chat.scrollTop = chat.scrollHeight; });
@@ -168,21 +414,22 @@ form.addEventListener('submit', async e => {
   e.preventDefault();
   const question = q.value.trim();
   if (!question) {
-    add('bot', 'Écrivez une question économique avant de lancer la recherche.');
+    const wrap = addBotPlaceholder('');
+    fillBotError(wrap, 'Écrivez une question économique avant de lancer la recherche.');
     return;
   }
   add('user', question);
   q.value = '';
-  const wait = add('bot', 'Recherche dans les publications officielles...');
+  const wait = addBotPlaceholder('Recherche dans les publications officielles...');
   submitBtn.disabled = true;
   try {
     const data = await request('/ask', { question });
-    wait.textContent = data.answer;
+    fillBotRich(wait, data.answer);
     drawChart(data.rows || [], data.chart, data.title, wait);
   } catch (error) {
-    wait.textContent = error.name === 'AbortError'
+    fillBotError(wait, error.name === 'AbortError'
       ? 'La recherche prend trop de temps. Réessayez dans un instant.'
-      : `Le serveur est momentanément inaccessible. ${error.message || 'Réessayez.'}`;
+      : `Le serveur est momentanément inaccessible. ${error.message || 'Réessayez.'}`);
   } finally {
     submitBtn.disabled = false;
     q.focus();
@@ -193,11 +440,13 @@ document.getElementById('briefBtn').addEventListener('click', async () => {
   const topic = prompt('Sujet du brief (ex. : inflation, microfinance, production industrielle) :', 'inflation');
   if (!topic) return;
   add('user', 'Brief demandé : ' + topic);
-  const wait = add('bot', 'Rédaction du brief économique...');
+  const wait = addBotPlaceholder('Rédaction du brief économique...');
   try {
     const data = await request('/brief', { topic });
-    wait.textContent = data.brief + '\n\n[' + data.n_observations + ' observations mobilisées]';
-  } catch { wait.textContent = 'Erreur de connexion au serveur.'; }
+    fillBotRich(wait, data.brief + `\n\n[${data.n_observations} observations mobilisées]`);
+  } catch (error) {
+    fillBotError(wait, `Le serveur est momentanément inaccessible. ${error.message || 'Réessayez.'}`);
+  }
 });
 </script>
 </body>
