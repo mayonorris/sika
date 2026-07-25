@@ -83,6 +83,9 @@ BCEAO_SERIES = {
         "net_claims_on_central_government", "milliards FCFA"),
     "creances sur l'economie": ("credit_to_economy", "milliards FCFA"),
     "creances sur le secteur prive": ("credit_to_private_sector", "milliards FCFA"),
+    "creances sur les secteurs autres": ("credit_to_economy", "milliards FCFA"),
+    "creances des institutions de depots": ("credit_to_economy", "milliards FCFA"),
+    "secteur prive": ("credit_to_private_sector", "milliards FCFA"),
     "base monetaire": ("monetary_base", "milliards FCFA"),
     "indice harmonise": ("consumer_price_index", "index"),
     "indice global": ("consumer_price_index", "index"),
@@ -91,6 +94,27 @@ BCEAO_SERIES = {
     "variation sur un an": ("inflation_rate_yoy", "%"),
     "variation sur un mois": ("inflation_rate_mom", "%"),
 }
+
+# A row label only maps to a canonical indicator when the CURRENT TABLE SECTION
+# allows it. The bulletin repeats identical labels ("Créances sur le secteur
+# privé") across sections with different institutional scopes (central bank vs
+# whole banking system); mapping without scope conflates them.
+SCOPE_ALLOW = (
+    ("agregats de monnaie", (
+        "circulation fiduciaire", "depots transferables", "m1", "m2",
+        "monnaie au sens large", "masse monetaire",
+        "actifs exterieurs nets", "avoirs exterieurs nets",
+        "creances interieures", "creances nettes sur l",
+    )),
+    ("banque centrale", ("base monetaire",)),
+    ("creances nettes sur l'administration centrale", ("creances nettes sur l",)),
+    # "Secteur privé" is deliberately excluded: the bis/ter pages (Feb/Mar)
+    # shift the row layout and the capture picks a wrong line. Re-enable after
+    # inspecting those layouts (values observed: 1539.5 then 30.7 — absurd).
+    ("creances sur les secteurs autres", (
+        "creances des institutions de depots",
+    )),
+)
 
 QUARTER_WORDS = {
     "premier": "Q1", "deuxieme": "Q2", "troisieme": "Q3", "quatrieme": "Q4",
@@ -325,13 +349,22 @@ def words_observations(page, source_doc: str) -> tuple[list[dict], set[str]]:
     skipped: set[str] = set()
     lines = group_lines(page.extract_words() or [])
     period: str | None = None
+    scope_allowed: tuple[str, ...] | None = None
     columns: list[tuple[float, str]] = []
     bounds: list[float] = []
     for line in lines:
         text = " ".join(word["text"] for word in line)
+        clean_line = normalized(text)
+        scope_hit = False
+        for scope_key, allowed in SCOPE_ALLOW:
+            if scope_key in clean_line and len(clean_line) < 120:
+                scope_allowed = allowed
+                scope_hit = True
+                break
         found_period = title_period(text)
         if found_period:
             period = found_period
+        if found_period or scope_hit:
             continue
         anchors = line_country_columns(line)
         if anchors:
@@ -348,6 +381,15 @@ def words_observations(page, source_doc: str) -> tuple[list[dict], set[str]]:
         if len(value_words) < 4 or not label_words:
             continue
         label = " ".join(w["text"] for w in label_words)
+        clean_label = normalized(label)
+        if scope_allowed is None or not any(
+            clean_label.startswith(prefix) for prefix in scope_allowed
+        ):
+            if match_series(label):
+                skipped.add(f"[hors périmètre] {label[:50]}")
+            else:
+                skipped.add(label[:60])
+            continue
         series = match_series(label)
         if series is None:
             skipped.add(label[:60])
@@ -410,6 +452,8 @@ def process_pdf(pdf_path: Path, con: sqlite3.Connection, dry_run: bool) -> int:
                              ob["unit"], ob["source_doc"], ob["source_page"]),
                         )
                     inserted += 1
+            if not dry_run and observations:
+                con.commit()
     if not dry_run:
         con.commit()
     print(f"{source_doc}: {inserted} observation(s) "

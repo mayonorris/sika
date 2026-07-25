@@ -345,10 +345,17 @@ def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
     geography = parse_geography(question) or "Togo"
     period_filter = parse_period(question)
     result: list[dict] = []
+    best_quality = -1.0
     for indicator in candidates:
         rows = query_indicator_rows(con, indicator, geography, period_filter)
-        result = filter_requested_rows(question, rows)
-        if result:
+        filtered = filter_requested_rows(question, rows)
+        if not filtered:
+            continue
+        quality = sum(row.get("confidence", 0) for row in filtered) / len(filtered)
+        if quality > best_quality + 1e-9:
+            best_quality = quality
+            result = filtered
+        if best_quality >= 0.999:
             break
     if period_filter and period_filter[0] == "last" and result:
         return result[-int(period_filter[1]):]

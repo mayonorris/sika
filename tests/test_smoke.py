@@ -139,13 +139,19 @@ def test_period_range_filters_to_window() -> None:
     assert all("2016" <= row["period"] <= "2020~" for row in payload["rows"])
 
 
-def test_credit_question_falls_through_to_canonical_indicator() -> None:
+def test_credit_question_prefers_deterministic_source() -> None:
     payload = client.post(
         "/ask", json={"question": "Quels sont les crédits à l'économie au Togo ?"}
     ).json()
 
     assert payload["rows"]
+    # The LLM-extracted rows are quarantined; the answer must come from the
+    # deterministic BCEAO bulletin series (values ~1800 milliards, not 4).
     assert all(row["indicator"] == "credit_to_economy" for row in payload["rows"])
+    assert all(
+        row["source_doc"].startswith("bceao_bulletin") for row in payload["rows"]
+    )
+    assert all(row["value"] > 100 for row in payload["rows"])
 
 
 def test_senegal_question_returns_senegal_not_togo() -> None:
