@@ -100,10 +100,85 @@ def test_explicit_food_inflation_keeps_food_category() -> None:
         ("IHPC de 2026-05", ("exact", "2026-05")),
         ("inflation en 2025", ("year", "2025")),
         ("inflation since 2023", ("since", "2023")),
+        ("ipi 2025", ("year", "2025")),
+        ("IPI entre 2016 et 2020", ("range", "2016", "2020")),
+        ("production de 2015 à 2020", ("range", "2015", "2020")),
+        ("évolution 2015-2020", ("range", "2015", "2020")),
+        ("inflation depuis mai 2026", ("since", "2026-05")),
+        ("ipi sur les 6 derniers mois", ("last", "6")),
     ],
 )
-def test_parse_period(question: str, expected: tuple[str, str]) -> None:
+def test_parse_period(question: str, expected: tuple[str, ...]) -> None:
     assert api.parse_period(question) == expected
+
+
+@pytest.mark.parametrize(
+    ("question", "expected"),
+    [
+        ("Quelle est l'inflation au Sénégal ?", "Sénégal"),
+        ("Inflation au Bénin", "Bénin"),
+        ("IPI de la Côte d'Ivoire", "Côte d'Ivoire"),
+        ("croissance au Burkina-Faso", "Burkina Faso"),
+        ("inflation dans l'UEMOA", "UEMOA"),
+        ("production industrielle togolaise", "Togo"),
+        ("quelle est l'inflation ?", None),
+    ],
+)
+def test_parse_geography(question: str, expected: str | None) -> None:
+    assert api.parse_geography(question) == expected
+
+
+def test_period_range_filters_to_window() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Production industrielle entre 2016 et 2020"}
+    ).json()
+
+    assert payload["rows"]
+    assert all("2016" <= row["period"] <= "2020~" for row in payload["rows"])
+
+
+def test_credit_question_falls_through_to_canonical_indicator() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Quels sont les crédits à l'économie au Togo ?"}
+    ).json()
+
+    assert payload["rows"]
+    assert all(row["indicator"] == "credit_to_economy" for row in payload["rows"])
+
+
+def test_senegal_question_returns_senegal_not_togo() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Quelle est l'inflation au Sénégal ?"}
+    ).json()
+
+    assert payload["rows"]
+    assert all(row["geography"] == "Sénégal" for row in payload["rows"])
+
+
+def test_policy_rate_question_is_honestly_empty() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Quel est le taux directeur de la BCEAO ?"}
+    ).json()
+
+    assert payload["rows"] == []
+    assert payload["answer"].startswith("Aucune donnée correspondante")
+
+
+def test_brief_series_groups_are_label_homogeneous() -> None:
+    rows = [
+        {"indicator": "ipi", "geography": "Togo", "unit": "index",
+         "indicator_label": "Indice global (IPI)", "period": "2025-08", "value": 132.2},
+        {"indicator": "ipi", "geography": "Togo", "unit": "index",
+         "indicator_label": "Industries extractives (IPI)", "period": "2025-08", "value": 314.0},
+        {"indicator": "ipi", "geography": "Togo", "unit": "index",
+         "indicator_label": "Indice global (IPI)", "period": "2025-09", "value": 129.3},
+    ]
+    groups = api.brief_series(rows)
+
+    assert all(
+        len({row["indicator_label"] for row in group}) == 1 for group in groups
+    )
+    assert "global" in api.normalized(groups[0][0]["indicator_label"])
 
 
 def test_specific_month_returns_one_cited_headline_value() -> None:
@@ -119,7 +194,7 @@ def test_specific_month_returns_one_cited_headline_value() -> None:
 
 def test_missing_year_does_not_substitute_another_period() -> None:
     payload = client.post(
-        "/ask", json={"question": "Quelle est l'inflation en 2025 ?"}
+        "/ask", json={"question": "Quelle est l'inflation en 2021 ?"}
     ).json()
 
     assert payload["rows"] == []

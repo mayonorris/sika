@@ -380,6 +380,15 @@ function addBotPlaceholder(text) {
   return wrap;
 }
 
+function slowWakeTimer(wrap) {
+  return setTimeout(() => {
+    const loading = wrap.querySelector('.muted-loading');
+    if (loading && loading.lastChild) {
+      loading.lastChild.textContent = 'Le serveur gratuit se réveille, encore quelques secondes…';
+    }
+  }, 15000);
+}
+
 function makeCiteRegistry() {
   const map = new Map();
   const list = [];
@@ -656,7 +665,7 @@ function drawChart(rows, kind, title, label, anchorEl) {
 
 async function request(path, body) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
+  const timeout = setTimeout(() => controller.abort(), 65000);
   try {
     const response = await fetch(path, {
       method:'POST', signal:controller.signal,
@@ -739,6 +748,7 @@ async function submitQuestion(question) {
   add('user', question);
   q.value = ''; resizeQuestion();
   const wait = addBotPlaceholder('Recherche dans les publications officielles…');
+  const slow = slowWakeTimer(wait);
   setAsking(true);
   try {
     const data = await request('/ask', { question });
@@ -750,6 +760,7 @@ async function submitQuestion(question) {
       ? 'La recherche prend trop de temps. Réessayez dans un instant.'
       : `Le serveur est momentanément inaccessible. ${error.message || 'Réessayez.'}`);
   } finally {
+    clearTimeout(slow);
     setAsking(false); q.focus();
   }
 }
@@ -802,6 +813,7 @@ briefForm.addEventListener('submit', async event => {
   briefDialog.close();
   add('user', `Brief demandé : ${topic}`);
   const wait = addBotPlaceholder('Rédaction du brief économique…');
+  const slow = slowWakeTimer(wait);
   briefing = true; briefBtn.disabled = true;
   try {
     const data = await request('/brief', { topic });
@@ -809,6 +821,7 @@ briefForm.addEventListener('submit', async event => {
   } catch (error) {
     fillBotError(wait, `Le serveur est momentanément inaccessible. ${error.message || 'Réessayez.'}`);
   } finally {
+    clearTimeout(slow);
     briefing = false; briefBtn.disabled = false;
   }
 });

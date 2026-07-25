@@ -63,6 +63,36 @@ SOURCE_METADATA = {
         "title": "Indice du chiffre d'affaires dans les services, T1 2026",
         "url": "https://inseed.tg/download/7894/",
     },
+    "inseed_bulletin_mensuel_2025-09.pdf": {
+        "publisher": "INSEED Togo",
+        "title": "Bulletin mensuel des statistiques, septembre 2025",
+        "url": "https://inseed.tg/download/7822/",
+    },
+    "inseed_ihpc_2026-06.pdf": {
+        "publisher": "INSEED Togo",
+        "title": "Indice harmonisé des prix à la consommation, juin 2026",
+        "url": "https://inseed.tg/download/7866/",
+    },
+    "inseed_ihpc_2026-05.pdf": {
+        "publisher": "INSEED Togo",
+        "title": "Indice harmonisé des prix à la consommation, mai 2026",
+        "url": "https://inseed.tg/download/7798/",
+    },
+    "inseed_pib_estimations_2025.pdf": {
+        "publisher": "INSEED Togo",
+        "title": "Premières estimations du PIB, 2025",
+        "url": "https://inseed.tg/download/7746/",
+    },
+    "inseed_comptes_trimestriels_2025-T4.pdf": {
+        "publisher": "INSEED Togo",
+        "title": "Comptes nationaux trimestriels, T4 2025",
+        "url": "https://inseed.tg/download/7750/",
+    },
+    "bceao_politique_monetaire_2023-06.pdf": {
+        "publisher": "BCEAO",
+        "title": "Rapport sur la politique monétaire dans l'UEMOA, juin 2023",
+        "url": "https://www.bceao.int/fr/publications/rapport-sur-la-politique-monetaire-dans-luemoa",
+    },
 }
 
 
@@ -78,9 +108,10 @@ INDICATOR_RULES = (
     ),
     (
         ("microfinance", "depot", "credit"),
-        ("deposits_microfinance", "credit_microfinance"),
+        ("credit_to_economy", "credit_to_private_sector", "deposits_microfinance"),
     ),
     (("taux directeur", "policy rate"), ("policy_rate",)),
+    (("pib", "gdp", "croissance"), ("gdp_growth", "gdp_nominal")),
 )
 
 
@@ -113,8 +144,19 @@ MONTH_NUMBERS = {
     "decembre": "12",
 }
 GEOGRAPHY_HINTS = (
-    "togo", "uemoa", "benin", "burkina faso", "cote d'ivoire",
-    "guinee bissau", "mali", "niger", "senegal",
+    "togo", "uemoa", "benin", "burkina", "ivoire",
+    "bissau", "mali", "niger", "senegal",
+)
+GEOGRAPHY_RULES = (
+    (r"\buemoa\b|\bunion (?:economique et )?monetaire\b", "UEMOA"),
+    (r"\bbenin\b|\bbeninois", "Bénin"),
+    (r"\bburkina\b", "Burkina Faso"),
+    (r"\bivoire\b|\bivoirien", "Côte d'Ivoire"),
+    (r"\bbissau\b|\bguinee\b", "Guinée-Bissau"),
+    (r"\bmali\b|\bmalien", "Mali"),
+    (r"\bniger\b|\bnigerien", "Niger"),
+    (r"\bsenegal\b", "Sénégal"),
+    (r"\btogo\b|\btogolais", "Togo"),
 )
 
 
@@ -202,55 +244,79 @@ def filter_requested_rows(question: str, rows: list[dict]) -> list[dict]:
     return dedupe_by_period(rows)
 
 
-def parse_period(question: str) -> tuple[str, str] | None:
+def parse_geography(question: str) -> str | None:
+    clean = normalized(question)
+    for pattern, canonical in GEOGRAPHY_RULES:
+        if re.search(pattern, clean):
+            return canonical
+    return None
+
+
+def parse_period(question: str) -> tuple[str, ...] | None:
     clean = normalized(question)
     iso = re.search(r"\b(20\d{2}-(?:0[1-9]|1[0-2]))\b", clean)
     if iso:
-        return "exact", iso.group(1)
+        return ("exact", iso.group(1))
     months = "|".join(MONTH_NUMBERS)
+    since_month = re.search(rf"\b(?:depuis|since)\s+({months})\s+(20\d{{2}})\b", clean)
+    if since_month:
+        return ("since", f"{since_month.group(2)}-{MONTH_NUMBERS[since_month.group(1)]}")
     named = re.search(rf"\b({months})\s+(20\d{{2}})\b", clean)
     if named:
-        return "exact", f"{named.group(2)}-{MONTH_NUMBERS[named.group(1)]}"
+        return ("exact", f"{named.group(2)}-{MONTH_NUMBERS[named.group(1)]}")
+    span = re.search(
+        r"\b(?:entre|de|from)\s+(20\d{2})\s+(?:et|a|to)\s+(20\d{2})\b", clean
+    ) or re.search(r"\b(20\d{2})\s*(?:-|a|au)\s*(20\d{2})\b", clean)
+    if span:
+        start, end = sorted((span.group(1), span.group(2)))
+        return ("range", start, end)
     since = re.search(r"\b(?:depuis|since)\s+(20\d{2})\b", clean)
     if since:
-        return "since", since.group(1)
-    year = re.search(r"\ben\s+(20\d{2})\b", clean)
+        return ("since", since.group(1))
+    last = (
+        re.search(r"\b(\d{1,2})\s+derniers?\s+mois\b", clean)
+        or re.search(r"\bderniers?\s+(\d{1,2})\s+mois\b", clean)
+        or re.search(r"\blast\s+(\d{1,2})\s+months\b", clean)
+    )
+    if last:
+        return ("last", last.group(1))
+    year = re.search(r"\b(?:en|in)\s+(20\d{2})\b", clean)
     if year:
-        return "year", year.group(1)
+        return ("year", year.group(1))
+    bare = re.search(r"\b(20\d{2})\b", clean)
+    if bare:
+        return ("year", bare.group(1))
     return None
 
-def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
-    candidates = fallback_indicators(question)
-    if not candidates:
-        return []
-    availability = {
-        row["indicator"]: (row["n"], row["real_n"])
-        for row in con.execute(
-            """SELECT indicator, COUNT(*) AS n,
-                      SUM(CASE WHEN source_doc NOT LIKE 'FIXTURE%' THEN 1 ELSE 0 END) AS real_n
-               FROM observations WHERE confidence >= 0.5 GROUP BY indicator"""
-        )
-    }
-    indicator = next(
-        (item for item in candidates if availability.get(item, (0, 0))[0] >= 3),
-        candidates[0],
-    )
-    real_only = availability.get(indicator, (0, 0))[1] > 0
-    source_clause = " AND source_doc NOT LIKE 'FIXTURE%'" if real_only else ""
-    period_filter = parse_period(question)
-    params: list[object] = [indicator, "Togo"]
+
+def query_indicator_rows(
+    con: sqlite3.Connection,
+    indicator: str,
+    geography: str,
+    period_filter: tuple[str, ...] | None,
+) -> list[dict]:
+    real = con.execute(
+        """SELECT COUNT(*) FROM observations
+           WHERE indicator = ? AND source_doc NOT LIKE 'FIXTURE%'""",
+        (indicator,),
+    ).fetchone()[0]
+    source_clause = " AND source_doc NOT LIKE 'FIXTURE%'" if real else ""
+    params: list[object] = [indicator, geography]
     period_clause = ""
     if period_filter:
-        mode, period = period_filter
+        mode = period_filter[0]
         if mode == "exact":
             period_clause = " AND period = ?"
-            params.append(period)
+            params.append(period_filter[1])
         elif mode == "year":
             period_clause = " AND period LIKE ?"
-            params.append(f"{period}%")
-        else:
+            params.append(f"{period_filter[1]}%")
+        elif mode == "since":
             period_clause = " AND period >= ?"
-            params.append(period)
+            params.append(period_filter[1])
+        elif mode == "range":
+            period_clause = " AND period >= ? AND period <= ?"
+            params.extend([period_filter[1], period_filter[2] + "~"])
     rows = con.execute(
         f"""SELECT indicator, indicator_label, geography, period, value, unit,
                    source_doc, source_page, confidence
@@ -259,7 +325,23 @@ def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
             ORDER BY period LIMIT 200""",
         params,
     ).fetchall()
-    result = filter_requested_rows(question, [dict(row) for row in rows])
+    return [dict(row) for row in rows]
+
+
+def select_fallback_rows(con: sqlite3.Connection, question: str) -> list[dict]:
+    candidates = fallback_indicators(question)
+    if not candidates:
+        return []
+    geography = parse_geography(question) or "Togo"
+    period_filter = parse_period(question)
+    result: list[dict] = []
+    for indicator in candidates:
+        rows = query_indicator_rows(con, indicator, geography, period_filter)
+        result = filter_requested_rows(question, rows)
+        if result:
+            break
+    if period_filter and period_filter[0] == "last" and result:
+        return result[-int(period_filter[1]):]
     if any(term in normalized(question) for term in ("recemment", "recently")):
         return result[-12:]
     return result
@@ -503,25 +585,49 @@ Data:
 {rows}"""
 
 
-def select_brief_rows(con: sqlite3.Connection, req: BriefReq) -> list[dict]:
+def select_brief_rows(
+    con: sqlite3.Connection, topic: str, geography: str
+) -> list[dict]:
+    indicators = fallback_indicators(topic)
+    if indicators:
+        marks = ",".join("?" for _ in indicators)
+        return [
+            dict(row)
+            for row in con.execute(
+                f"""SELECT * FROM observations WHERE geography = ?
+                    AND confidence >= 0.5 AND indicator IN ({marks})
+                    ORDER BY period LIMIT 150""",
+                (geography, *indicators),
+            ).fetchall()
+        ]
     return [
         dict(row)
         for row in con.execute(
-            """SELECT * FROM observations WHERE geography LIKE ?
+            """SELECT * FROM observations WHERE geography = ?
                AND confidence >= 0.5
                AND (indicator_label LIKE ? OR indicator LIKE ?)
                ORDER BY period LIMIT 150""",
-            (f"%{req.geography}%", f"%{req.topic}%", f"%{req.topic}%"),
+            (geography, f"%{topic}%", f"%{topic}%"),
         ).fetchall()
     ]
 
 
 def brief_series(rows: list[dict]) -> list[list[dict]]:
-    grouped: dict[tuple[str, str, str], list[dict]] = {}
+    grouped: dict[tuple[str, str, str, str], list[dict]] = {}
     for row in rows:
-        key = (row["indicator"], row["geography"], row["unit"])
+        key = (
+            row["indicator"],
+            row["geography"],
+            row["unit"],
+            cleaned_row_label(row),
+        )
         grouped.setdefault(key, []).append(row)
-    return sorted(grouped.values(), key=len, reverse=True)
+
+    def is_headline(group: list[dict]) -> bool:
+        label = normalized(group[0]["indicator_label"])
+        return any(hint in label for hint in HEADLINE_HINTS)
+
+    return sorted(grouped.values(), key=lambda g: (not is_headline(g), -len(g)))
 
 
 def series_key_figure(rows: list[dict]) -> str:
@@ -538,8 +644,8 @@ def series_key_figure(rows: list[dict]) -> str:
     )
 
 
-def deterministic_brief(req: BriefReq, rows: list[dict]) -> str:
-    title = f"# Note économique — {req.topic.strip().capitalize()} — {req.geography}"
+def deterministic_brief(req: BriefReq, rows: list[dict], geography: str) -> str:
+    title = f"# Note économique — {req.topic.strip().capitalize()} — {geography}"
     label = "**synthèse automatique sans analyse LLM**"
     if not rows:
         return (
@@ -573,13 +679,17 @@ def deterministic_brief(req: BriefReq, rows: list[dict]) -> str:
 
 @app.post("/brief")
 def brief(req: BriefReq):
+    geography = parse_geography(req.topic) or req.geography
     try:
         con = db()
-        rows = select_brief_rows(con, req)
+        rows = select_brief_rows(con, req.topic, geography)
         con.close()
     except sqlite3.Error:
         rows = []
-    fallback = {"brief": deterministic_brief(req, rows), "n_observations": len(rows)}
+    fallback = {
+        "brief": deterministic_brief(req, rows, geography),
+        "n_observations": len(rows),
+    }
     if client is None or not rows:
         return fallback
     try:
@@ -590,7 +700,7 @@ def brief(req: BriefReq):
                     "role": "user",
                     "content": BRIEF_PROMPT.format(
                         topic=req.topic,
-                        geography=req.geography,
+                        geography=geography,
                         rows=json.dumps(public_rows(rows), ensure_ascii=False),
                     ),
                 }

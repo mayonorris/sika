@@ -1,70 +1,111 @@
-# Demo video script — Sika (target: 2:50, hard cap 3:00)
+# Demo video script — Sika
 
-Language: English (judges). Voice: calm, confident, no rush. Record screen at 1920x1080,
-hide bookmarks bar, close other tabs, dark UI full screen. Tool: OBS Studio (free) or
-Xbox Game Bar (Win+G). Record voice separately if easier, then assemble in Clipchamp
-(free, built into Windows 11). Upload to YouTube as UNLISTED, test link in a private window.
+**Target: 2:45. Hard cap: 3:00.** Language: English. Voiceover is REQUIRED and must
+explicitly cover three things the judges check for: what you built, **how you used
+Codex**, and **how you used GPT-5.6**. Shots 5 and 6 exist specifically to satisfy that.
 
-Before recording: seed DB is purged of fixtures; API key with FRESH quota (reserve key);
-run through all shots once WITHOUT recording to warm caches and confirm quota.
+**Demo URL:** https://sika-7gud.onrender.com
+**Codex session ID:** 019f7414-fa13-7ab0-a63c-7f22a2c289cb
+
+Tools: OBS Studio (free) or Xbox Game Bar (Win+G) to record. Clipchamp (built into
+Windows 11) to assemble. Record voice separately if that's easier.
+
+---
+
+## Before you press record
+
+- [ ] Open the demo URL and ask one question to **wake the free instance** (cold start is 50s+)
+- [ ] Disable the Grammarly extension — its icon floats over the "Demander" button
+- [ ] Close other tabs, hide the bookmarks bar, full-screen the browser at 1920x1080
+- [ ] Have the questions in a notepad to paste, so you never fumble typing on camera
+- [ ] Mic test 10 seconds, no fan noise, phone silenced
+- [ ] Open a second window with: AGENTS.md, the docs/ folder, a Codex session, and `git log --oneline`
+
+**Where to record:** use the deployed URL, not localhost. It proves the thing is live, and
+the no-API answers are fully cited and correct — no risk of an API quota failure mid-take.
+If you'd rather show LLM-composed prose, run locally with the key active, but do a full dry
+run first and keep at least 8 requests in reserve for retakes.
 
 ---
 
 ## Shot list
 
-### 1. The problem (0:00 - 0:20) — screen: an INSEED PDF bulletin, scrolling tables
-> "This is how West Africa's official economic data lives today: rigorous, public,
-> and buried in PDF bulletins. I know, because I helped produce them. I'm Mayo Kadanga,
-> a statistician-economist from Togo, and I spent two years inside the national
-> statistics office watching researchers and journalists hunt for numbers page by page."
+### 1. The problem (0:00–0:18)
+*Screen: an INSEED PDF bulletin, scrolling through dense tables.*
 
-### 2. The reveal (0:20 - 0:35) — screen: Sika home, clean, example chips visible
-> "So during Build Week I built Sika: ask West Africa's economy anything,
-> and get the official answer, cited to the exact page."
+> "This is how West Africa's official economic data lives today. Rigorous, public, and
+> buried in PDF bulletins. I know, because I helped produce them. I'm Mayo Kadanga, a
+> statistician-economist from Togo, and I spent two years inside the national statistics
+> office watching researchers and journalists hunt for numbers page by page."
 
-### 3. Core demo, French (0:35 - 1:05) — type GQ1: "Quelle est l'évolution de l'inflation au Togo ?"
-Let the answer render fully; hover the chart to show per-point source tooltips.
-> "Ask in French: inflation in Togo. Sika answers with the official figures from the
-> June 2026 INSEED release, every number cited, and draws the series on the fly.
-> Hover any point: document and page."
+### 2. What I built (0:18–0:32)
+*Screen: Sika home, clean, suggestion chips visible.*
 
-### 4. Core demo, English (1:05 - 1:25) — type GQ2: "What is the latest industrial production index for Togo?"
-> "Ask in English, it answers in English. Eleven years of industrial production history,
-> extracted from official workbooks with zero transcription error."
+> "So I built Sika. Ask West Africa's economy anything, and get the official answer, cited
+> to the exact document and page. One thousand and fifty-one observations, from nine
+> official publications, extracted and made queryable."
 
-### 5. The trust feature (1:25 - 1:45) — type GQ7: "Quel sera le PIB du Togo en 2030 ?"
-> "And here is the feature I'm proudest of: Sika refuses to invent. No forecast in the
-> official data means no forecast in the answer. A number without a source is worthless."
+### 3. Core demo (0:32–1:05)
+*Click the "Inflation au Togo" chip. Let it render fully. Hover a chart point to show the tooltip.*
 
-### 6. Brief + sources (1:45 - 2:05) — click "Générer un brief" (inflation), then Sources panel
-> "One click turns the data into a professional economic brief, every figure sourced.
-> And the Sources panel shows exactly which official publications power every answer."
+> "Ask in French. Sika answers with the official figures — inflation at 0.1 percent in June
+> 2026, down from 0.4 in May. Every number carries its source. Hover any point on the chart:
+> document, and page. Nothing here was typed by hand, and nothing was invented."
 
-### 7. Built with Codex (2:05 - 2:35) — screen: split between AGENTS.md/docs in editor and a Codex session; then git log
-> "Sika was built in four days with Codex and GPT-5.6. I wrote the specs: a PRD, a data
-> specification, an agent contract in AGENTS.md. Codex shipped the tickets: the extraction
-> pipeline, the API hardening, the tests, the resilience against free-tier rate limits.
-> The commit history is the receipt."
+### 4. The trust feature (1:05–1:28)
+*Type: "Quelle est l'inflation en 2025 ?" — the honest refusal.*
 
-### 8. Impact + close (2:35 - 2:55) — screen: back to Sika, slow zoom on tagline
-> "Eight countries, one central bank, one hundred and forty million people share these
-> statistics. Sika makes them usable at digital speed, for researchers, journalists,
-> fintechs and students. From evidence to decisions. Thank you."
+> "And here's the feature I'm proudest of. 2025 isn't in the corpus yet. So Sika says so.
+> It doesn't reach for the nearest number and hope you won't check. A figure without a
+> source is worthless, and that rule is enforced in the database schema itself — source
+> document and page are NOT NULL on every single observation. An uncited number cannot
+> physically exist in Sika."
+
+### 5. How I used Codex (1:28–2:05)
+*Screen: split — AGENTS.md and the docs/ folder on one side, a Codex session on the other.
+Then `git log --oneline` scrolling through 26 commits.*
+
+> "Here's how I used Codex. I didn't prompt it ad hoc. I wrote the specifications first: a
+> product requirements doc, five user personas, a data specification, and AGENTS.md — an
+> agent contract that Codex reads at the start of every session. It sets hard rules: never
+> invent a number, SELECT-only SQL, no new frameworks mid-build, small imperative commits.
+> Then I wrote eighteen tickets, each with its own definition of done, and Codex shipped
+> against them. Twenty-six commits. The extraction pipeline, the API, the tests, the
+> deployment — that's the receipt, and it's all in the repo."
+
+### 6. How I used GPT-5.6 (2:05–2:32)
+*Screen: the Codex model selector showing 5.6, then the inflation answer again.*
+
+> "And here's how I used GPT-5.6 specifically. Two ways. First, it's the model running
+> inside Codex that wrote this code. Second, it does the hard reading — parsing French
+> statistical tables out of PDFs, normalizing formats like 'one space two three four comma
+> five' into real numbers, and mapping inconsistent labels onto canonical indicators.
+> It also caught a bug I'd have shipped: the inflation indicator was silently mixing the
+> national headline index with seventy-four sub-category rows. GPT-5.6 diagnosed it, and
+> the fix corrected a figure that was wrong on screen."
+
+### 7. Impact and close (2:32–2:45)
+*Screen: back to Sika, slow scroll over the Sources panel.*
+
+> "Eight countries, one central bank, a hundred and forty million people share these
+> statistics. Sika makes them usable at the speed people actually work. From evidence to
+> decisions. Thank you."
 
 ---
 
-## Recording checklist
+## After recording
 
-- [ ] Fixtures purged, `validate.py` clean, golden questions pass live
-- [ ] Fresh/reserve API key in .env (quota intact), one warm-up question done
-- [ ] Browser zoom 110%, French keyboard ready, questions in a notepad to paste
-- [ ] Mic test 10 s, no fan noise, phone silenced
-- [ ] Record shots separately; a failed take costs one question of quota, keep retakes for shots 3, 4, 6
-- [ ] Assemble, export 1080p, watch once fully
-- [ ] Upload YouTube UNLISTED, open link in private window, then paste into Devpost
+- [ ] Watch the whole thing once, with audio, start to finish
+- [ ] Confirm the voiceover says the words "Codex" and "GPT-5.6" clearly and separately
+- [ ] Export 1080p
+- [ ] Upload to YouTube as **Unlisted** (public also fine — private is NOT)
+- [ ] Wait for processing to finish, then open the link in an incognito window
+- [ ] Paste into Devpost, then confirm the project shows **Submitted**, not draft
 
-## Fallback plan
+## If you're short on time or energy
 
-If API quota dies mid-recording: record shots 3-6 with the no-API fallback mode
-(cited rows + charts still work) and say "powered by cached extractions" instead of
-hiding it; honesty on constraints is part of this project's story.
+Shots 1, 3, 5 and 6 are the ones that matter — problem, demo, Codex, GPT-5.6. Shots 2, 4
+and 7 can be trimmed to a sentence each. A 2-minute video that clearly answers the three
+required questions beats a polished 3-minute one that doesn't.
+
+Record each shot separately. A fumbled take costs you one shot, not the whole video.
