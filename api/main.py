@@ -119,7 +119,7 @@ HEADLINE_HINTS = (
     "global",
     "ensemble",
     "ihpc au togo",
-    "variation des prix depuis 12 mois",
+    "depuis 12 mois",
     "taux d'inflation",
 )
 CATEGORY_HINTS = {
@@ -261,6 +261,16 @@ def parse_period(question: str) -> tuple[str, ...] | None:
     since_month = re.search(rf"\b(?:depuis|since)\s+({months})\s+(20\d{{2}})\b", clean)
     if since_month:
         return ("since", f"{since_month.group(2)}-{MONTH_NUMBERS[since_month.group(1)]}")
+    month_span = re.search(
+        rf"\b(?:entre|de|from)\s+({months})\s+(20\d{{2}})\s+(?:et|a|to)\s+({months})\s+(20\d{{2}})\b",
+        clean,
+    )
+    if month_span:
+        bounds = sorted((
+            f"{month_span.group(2)}-{MONTH_NUMBERS[month_span.group(1)]}",
+            f"{month_span.group(4)}-{MONTH_NUMBERS[month_span.group(3)]}",
+        ))
+        return ("range", bounds[0], bounds[1])
     named = re.search(rf"\b({months})\s+(20\d{{2}})\b", clean)
     if named:
         return ("exact", f"{named.group(2)}-{MONTH_NUMBERS[named.group(1)]}")

@@ -106,6 +106,8 @@ def test_explicit_food_inflation_keeps_food_category() -> None:
         ("évolution 2015-2020", ("range", "2015", "2020")),
         ("inflation depuis mai 2026", ("since", "2026-05")),
         ("ipi sur les 6 derniers mois", ("last", "6")),
+        ("ipi Togo entre mars 2025 et juin 2026", ("range", "2025-03", "2026-06")),
+        ("prix de janvier 2024 à mars 2025", ("range", "2024-01", "2025-03")),
     ],
 )
 def test_parse_period(question: str, expected: tuple[str, ...]) -> None:
@@ -151,8 +153,9 @@ def test_senegal_question_returns_senegal_not_togo() -> None:
         "/ask", json={"question": "Quelle est l'inflation au Sénégal ?"}
     ).json()
 
-    assert payload["rows"]
+    assert len(payload["rows"]) >= 2
     assert all(row["geography"] == "Sénégal" for row in payload["rows"])
+    assert {row["period"] for row in payload["rows"]} >= {"2026-04", "2026-05"}
 
 
 def test_policy_rate_question_is_honestly_empty() -> None:
