@@ -174,6 +174,35 @@ def test_ica_acronym_routes_to_turnover_and_boundaries_hold() -> None:
     assert api.fallback_indicators("un indicateur quelconque") == ()
 
 
+def test_bceao_parser_primitives() -> None:
+    import pipeline.extract_bceao as bceao
+
+    assert bceao.title_period("Tableau 2.1.1 – Agrégats de monnaie à fin janvier 2026") == "2026-01"
+    assert bceao.title_period("Tableau 3 – PIB au premier trimestre 2026") == "2026-Q1"
+    assert bceao.title_period("Sommaire général") is None
+    assert bceao.parse_value("1 005,5") == 1005.5
+    assert bceao.parse_value("(69,1)") == -69.1
+    assert bceao.parse_value("-") is None
+    assert bceao.match_country("Côte") == "Côte d'Ivoire"
+    assert bceao.match_country("Guinée-Bissau") == "Guinée-Bissau"
+    assert bceao.match_country("Circulation fiduciaire") is None
+    assert bceao.match_series("Créances sur l'économie") == (
+        "credit_to_economy", "milliards FCFA",
+    )
+
+
+def test_bceao_bulletin_rows_are_queryable() -> None:
+    payload = client.post(
+        "/ask", json={"question": "Quels sont les crédits à l'économie au Sénégal ?"}
+    ).json()
+
+    assert payload["rows"]
+    assert all(row["geography"] == "Sénégal" for row in payload["rows"])
+    assert any(
+        row["source_doc"].startswith("bceao_bulletin") for row in payload["rows"]
+    )
+
+
 def test_brief_series_groups_are_label_homogeneous() -> None:
     rows = [
         {"indicator": "ipi", "geography": "Togo", "unit": "index",

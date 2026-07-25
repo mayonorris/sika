@@ -34,6 +34,8 @@ COUNTRIES = {
     "burkina": "Burkina Faso",
     "cote d'ivoire": "Côte d'Ivoire",
     "cote divoire": "Côte d'Ivoire",
+    "cote": "Côte d'Ivoire",
+    "guinee": "Guinée-Bissau",
     "guinee-bissau": "Guinée-Bissau",
     "guinee bissau": "Guinée-Bissau",
     "mali": "Mali",
@@ -58,6 +60,8 @@ BCEAO_SERIES = {
     "concours a l'economie": ("credit_to_economy", "milliards FCFA"),
     "masse monetaire": ("broad_money", "milliards FCFA"),
     "avoirs exterieurs nets": ("net_foreign_assets", "milliards FCFA"),
+    "actifs exterieurs nets": ("net_foreign_assets", "milliards FCFA"),
+    "monnaie au sens large": ("broad_money", "milliards FCFA"),
     "taux directeur": ("policy_rate", "%"),
     "taux minimum de soumission": ("policy_rate", "%"),
     "taux du guichet de pret marginal": ("marginal_lending_rate", "%"),
@@ -67,6 +71,31 @@ BCEAO_SERIES = {
     "solde courant": ("current_account_balance_to_gdp", "% du PIB"),
     "encours de la dette": ("public_debt", "milliards FCFA"),
     "taux d'endettement": ("public_debt_to_gdp", "% du PIB"),
+    # Bulletin mensuel de statistiques (annexes pays en colonnes)
+    "circulation fiduciaire": ("currency_in_circulation", "milliards FCFA"),
+    "depots transferables": ("transferable_deposits", "milliards FCFA"),
+    "m1": ("money_supply_m1", "milliards FCFA"),
+    "m2": ("broad_money", "milliards FCFA"),
+    "creances interieures": ("domestic_claims", "milliards FCFA"),
+    "creances nettes sur l'administration centrale": (
+        "net_claims_on_central_government", "milliards FCFA"),
+    "creances nettes sur les apu": (
+        "net_claims_on_central_government", "milliards FCFA"),
+    "creances sur l'economie": ("credit_to_economy", "milliards FCFA"),
+    "creances sur le secteur prive": ("credit_to_private_sector", "milliards FCFA"),
+    "base monetaire": ("monetary_base", "milliards FCFA"),
+    "indice harmonise": ("consumer_price_index", "index"),
+    "indice global": ("consumer_price_index", "index"),
+    "variation annuelle": ("inflation_rate_yoy", "%"),
+    "variation mensuelle": ("inflation_rate_mom", "%"),
+    "variation sur un an": ("inflation_rate_yoy", "%"),
+    "variation sur un mois": ("inflation_rate_mom", "%"),
+}
+
+QUARTER_WORDS = {
+    "premier": "Q1", "deuxieme": "Q2", "troisieme": "Q3", "quatrieme": "Q4",
+    "1er": "Q1", "2e": "Q2", "2eme": "Q2", "3e": "Q3", "3eme": "Q3",
+    "4e": "Q4", "4eme": "Q4",
 }
 
 MONTHS = {
@@ -249,18 +278,114 @@ def table_observations(
     return observations, skipped
 
 
+def title_period(line_text: str) -> str | None:
+    """Period from a table title: 'à fin janvier 2026', 'au premier trimestre
+    2026', or a bare 'janvier 2026'."""
+    clean = normalized(line_text)
+    if "tableau" not in clean and "fin" not in clean:
+        return None
+    months = "|".join(sorted(MONTHS, key=len, reverse=True))
+    fin = re.search(rf"fin\s+({months})[a-z]*\s+(20\d{{2}})", clean)
+    if fin:
+        return f"{fin.group(2)}-{MONTHS[fin.group(1)]}"
+    quarter = re.search(
+        rf"({'|'.join(QUARTER_WORDS)})\s+trimestre\s+(20\d{{2}})", clean
+    )
+    if quarter:
+        return f"{quarter.group(2)}-{QUARTER_WORDS[quarter.group(1)]}"
+    bare = re.search(rf"\b({months})[a-z]*\s+(20\d{{2}})\b", clean)
+    if bare:
+        return f"{bare.group(2)}-{MONTHS[bare.group(1)]}"
+    return None
+
+
+def group_lines(words: list[dict]) -> list[list[dict]]:
+    lines: dict[int, list[dict]] = {}
+    for word in words:
+        lines.setdefault(round(word["top"] / 3), []).append(word)
+    ordered = [sorted(ws, key=lambda w: w["x0"]) for _, ws in sorted(lines.items())]
+    return ordered
+
+
+def line_country_columns(line: list[dict]) -> list[tuple[float, str]]:
+    """Column anchors (x0, country) when a line names >=4 UEMOA members."""
+    columns: list[tuple[float, str]] = []
+    for word in line:
+        country = match_country(word["text"])
+        if country and all(existing != country for _, existing in columns):
+            columns.append((word["x0"], country))
+    return columns if len(columns) >= 4 else []
+
+
+def words_observations(page, source_doc: str) -> tuple[list[dict], set[str]]:
+    """Bulletin layout: series down the side, countries across the top,
+    the period carried by the table title. Rebuilt from word positions
+    because BCEAO tables have no vertical rules in the body."""
+    observations: list[dict] = []
+    skipped: set[str] = set()
+    lines = group_lines(page.extract_words() or [])
+    period: str | None = None
+    columns: list[tuple[float, str]] = []
+    bounds: list[float] = []
+    for line in lines:
+        text = " ".join(word["text"] for word in line)
+        found_period = title_period(text)
+        if found_period:
+            period = found_period
+            continue
+        anchors = line_country_columns(line)
+        if anchors:
+            columns = anchors
+            xs = [x for x, _ in columns]
+            bounds = [xs[0] - 25] + [
+                (xs[i] + xs[i + 1]) / 2 for i in range(len(xs) - 1)
+            ] + [xs[-1] + 60]
+            continue
+        if not columns or period is None:
+            continue
+        label_words = [w for w in line if w["x1"] < bounds[0]]
+        value_words = [w for w in line if w["x1"] >= bounds[0]]
+        if len(value_words) < 4 or not label_words:
+            continue
+        label = " ".join(w["text"] for w in label_words)
+        series = match_series(label)
+        if series is None:
+            skipped.add(label[:60])
+            continue
+        indicator, unit = series
+        per_column: dict[int, list[str]] = {}
+        for word in value_words:
+            center = (word["x0"] + word["x1"]) / 2
+            for idx in range(len(columns)):
+                if bounds[idx] <= center < bounds[idx + 1]:
+                    per_column.setdefault(idx, []).append(word["text"])
+                    break
+        for idx, fragments in per_column.items():
+            value = parse_value(" ".join(fragments))
+            if value is None:
+                continue
+            observations.append({
+                "indicator": indicator,
+                "indicator_label": label,
+                "geography": columns[idx][1],
+                "period": period,
+                "value": value,
+                "unit": unit,
+                "source_doc": source_doc,
+                "source_page": page.page_number,
+            })
+    return observations, skipped
+
+
 def process_pdf(pdf_path: Path, con: sqlite3.Connection, dry_run: bool) -> int:
     source_doc = pdf_path.name
     inserted = 0
     all_skipped: set[str] = set()
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
-            for table in page.extract_tables() or []:
-                observations, skipped = table_observations(
-                    table, page.page_number, source_doc
-                )
-                all_skipped |= skipped
-                for ob in observations:
+            observations, skipped = words_observations(page, source_doc)
+            all_skipped |= skipped
+            for ob in observations:
                     exists = con.execute(
                         """SELECT 1 FROM observations
                            WHERE indicator=? AND geography=? AND period=?
