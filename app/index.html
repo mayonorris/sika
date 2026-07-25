@@ -649,13 +649,16 @@ function drawChart(rows, kind, title, label, anchorEl) {
     hovertemplate: `%{x}<br>%{y} ${unit}<br>%{customdata}<extra></extra>`,
     line: { color: '#f2b544', width: 2.5 }, marker: { color: '#f2b544', size: 6 },
   };
+  const quarterly = orderedRows.some(row => /Q/i.test(row.period));
   const layout = {
     autosize:true, height: 320,
     title:{ text:chartTitle, font:{ color:'#eef1f7', size:13.5 } },
     paper_bgcolor:'#131b2e', plot_bgcolor:'#131b2e', font:{ color:'#a2abc0', size:11.5 },
-    xaxis:{ title:'', gridcolor:'rgba(255,255,255,.06)', zeroline:false },
+    xaxis:{ title:'', gridcolor:'rgba(255,255,255,.06)', zeroline:false,
+      type:'category', tickangle:-45, automargin:true,
+      nticks: Math.min(orderedRows.length, quarterly ? 16 : 24) },
     yaxis:{ title:unit, gridcolor:'rgba(255,255,255,.06)', rangemode:'tozero', zeroline:false },
-    margin:{ t:48, r:20, b:42, l:56 },
+    margin:{ t:48, r:20, b:64, l:56 },
   };
   requestAnimationFrame(() => {
     Plotly.newPlot(div, [trace], layout, { displayModeBar:false, responsive:true })

@@ -99,8 +99,8 @@ SOURCE_METADATA = {
 INDICATOR_RULES = (
     (("inflation", "ihpc", "prix"), ("inflation_rate_yoy",)),
     (
-        ("chiffre d'affaires", "chiffre affaires", "turnover"),
-        ("turnover_index_industry", "turnover_index_services"),
+        ("chiffre d'affaires", "chiffre affaires", "turnover", "ica"),
+        ("turnover_index_services", "turnover_index_industry"),
     ),
     (
         ("production industrielle", "industrial production", "ipi"),
@@ -168,7 +168,7 @@ def normalized(text: str) -> str:
 def fallback_indicators(question: str) -> tuple[str, ...]:
     clean = normalized(question)
     for terms, indicators in INDICATOR_RULES:
-        if any(term in clean for term in terms):
+        if any(re.search(rf"\b{re.escape(term)}", clean) for term in terms):
             return indicators
     return ()
 

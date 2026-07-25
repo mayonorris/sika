@@ -167,6 +167,13 @@ def test_policy_rate_question_is_honestly_empty() -> None:
     assert payload["answer"].startswith("Aucune donnée correspondante")
 
 
+def test_ica_acronym_routes_to_turnover_and_boundaries_hold() -> None:
+    assert api.fallback_indicators("Quelle est l'évolution de l'ICA ?") == (
+        "turnover_index_services", "turnover_index_industry",
+    )
+    assert api.fallback_indicators("un indicateur quelconque") == ()
+
+
 def test_brief_series_groups_are_label_homogeneous() -> None:
     rows = [
         {"indicator": "ipi", "geography": "Togo", "unit": "index",
