@@ -1,5 +1,8 @@
 # Backlog — 4 days to submission
 
+> Historical Build Week backlog retained as the MVP regression record. New work is
+> tracked in `docs/BACKLOG_SAAS.md`.
+
 Deadline: July 21, 5:00 pm PT (= July 22, 00:00 Lomé). Work top to bottom; a day's tickets are done before starting the next day's. Every ticket ends with a commit. "DoD" = definition of done (plus the global one in AGENTS.md).
 
 ## Day 1 (Fri Jul 18) — the pipeline proves itself

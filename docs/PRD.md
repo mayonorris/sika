@@ -1,5 +1,10 @@
 # PRD — Sika
 
+> Historical MVP brief for the OpenAI Build Week prototype. The trust promise and
+> golden journeys remain product invariants. Current platform decisions live in
+> `docs/ARCHITECTURE_SAAS.md` and implementation order lives in
+> `docs/BACKLOG_SAAS.md`.
+
 ## One-liner
 
 Ask West Africa's economy anything: official statistics, locked in PDFs, become a citable database you can query in plain French or English, with sourced answers, instant charts, and one-click economic briefs.
