@@ -6,15 +6,15 @@ Read this file before any work session. It defines the project context, conventi
 
 Sika makes official West African economic statistics (INSEED Togo, BCEAO, WAEMU) queryable in natural language. Pipeline: official publications -> structured observations with full provenance -> FastAPI backend -> research workspace with cited answers, charts, briefs, exports, and monitoring. The product started as an OpenAI Build Week 2026 prototype and is now moving toward a multi-tenant SaaS platform. Solo builder: Mayo Kadanga, Economic Statistician Engineer (ISE), Lomé.
 
-Read next: `docs/ARCHITECTURE_SAAS.md` (target architecture and migration rules), `docs/BACKLOG_SAAS.md` (current tickets), `docs/DATA_SPEC.md` (data rules), and `docs/PRD.md` (historical MVP product brief).
+Read next: `docs/ARCHITECTURE_SAAS.md` (target architecture and migration rules), `docs/BACKLOG_SAAS.md` (current tickets), `docs/DATA_SPEC_V2.md` (Trust Core schema), `docs/DATA_SPEC.md` (legacy data rules), and `docs/PRD.md` (historical MVP product brief).
 
 Source-of-truth order when documents disagree:
 
 1. This file for working rules and safety boundaries.
 2. `docs/ARCHITECTURE_SAAS.md` for the accepted target and migration boundaries.
 3. `docs/BACKLOG_SAAS.md` for the active ticket and its definition of done.
-4. `docs/DATA_SPEC.md` for the legacy observation contract until S0.2 replaces it
-   with a versioned schema specification.
+4. `docs/DATA_SPEC_V2.md` for the canonical schema; `docs/DATA_SPEC.md` remains the
+   contract for legacy extraction and endpoints until their migration is complete.
 5. `docs/PRD.md` and `docs/BACKLOG.md` as historical MVP context and regression
    requirements.
 
@@ -29,11 +29,16 @@ pipeline/extract_bceao.py   Deterministic BCEAO bulletin ingestion
 pipeline/validate.py        DATA_SPEC validation report and hard-failure exit code
 pipeline/quarantine.py      Demotes rows that must not be served
 pipeline/spot_check.py      Manual provenance sampling helper
+sika/database.py           Trust Core engine with SQLite foreign keys/transactional DDL
+migrations/                Alembic schema versions, independent of the MVP database
+alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
 data/fixtures/              Synthetic development fixtures
 data/processed/sika.db      Seeded legacy SQLite database; committed for the demo
 docs/ARCHITECTURE_SAAS.md   Accepted SaaS target and migration sequence
 docs/BACKLOG_SAAS.md        Active post-hackathon implementation backlog
+docs/DATA_SPEC_V2.md        Versioned canonical schema and migration commands
+docs/adr/                  Accepted architecture decisions
 docs/BACKLOG.md             Historical golden questions and MVP backlog
 tests/                      Extraction, validation, API, data, and UI smoke tests
 ```
@@ -47,6 +52,11 @@ python -m venv .venv
 cmd /C "set OPENAI_API_KEY=test&& .venv\Scripts\python.exe -m pytest -q"
 .\.venv\Scripts\python.exe pipeline\validate.py
 .\.venv\Scripts\python.exe pipeline\spot_check.py
+
+# Trust Core only: explicit separate database; does not load .env or use SIKA_DB.
+$env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
+.\.venv\Scripts\python.exe -m alembic upgrade head
+.\.venv\Scripts\python.exe -m pytest tests/test_schema_migrations.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -100,6 +110,10 @@ or extraction test.
 - Database: use foreign keys, explicit transactions, parameterized queries, and indexes
   justified by query paths. Version every target-schema change with forward and rollback
   behavior; production startup must not create or mutate schema ad hoc.
+  Use the engine in `sika/database.py` for Trust Core SQLite connections. Never migrate
+  or stamp the committed MVP database. S0.2 is a parallel schema, not a publication gate;
+  S0.4 must enforce that gate before public reads. PostgreSQL SQL compilation is tested,
+  but a live PostgreSQL migration/rollback is required before deployment on that engine.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.

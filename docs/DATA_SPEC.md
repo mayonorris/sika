@@ -1,5 +1,9 @@
 # Data specification — Sika
 
+> Legacy MVP contract. The versioned canonical schema introduced in S0.2 is specified
+> in [DATA_SPEC_V2.md](DATA_SPEC_V2.md). Existing extraction and public endpoints still
+> use this legacy contract until their migration tickets are complete.
+
 The database is the product. This spec defines what a valid observation is, how raw PDF content becomes one, and how we verify it. Any change to these rules must be reflected in `pipeline/extract.py` and noted here.
 
 ## Tables

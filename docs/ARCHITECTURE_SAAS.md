@@ -176,7 +176,9 @@ parity. It must not gain new product capabilities.
 
 Each decision below gets an ADR before implementation:
 
-1. PostgreSQL hosting and migration tooling.
+1. PostgreSQL hosting and driver. Migration tooling is decided in
+   [ADR 0001](adr/0001-use-alembic-migrations.md); the S0.2 schema is documented in
+   [DATA_SPEC_V2.md](DATA_SPEC_V2.md).
 2. Authentication/session provider versus first-party implementation.
 3. Background job and scheduler implementation.
 4. Object storage provider and document access policy.

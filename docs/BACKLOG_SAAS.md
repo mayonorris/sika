@@ -20,7 +20,7 @@ MVP docs point readers to the active roadmap; no runtime behavior changes.
 
 ### S0.2 Specify the canonical statistical schema
 
-Status: queued
+Status: complete
 
 - Write the first schema migration and rollback.
 - Add concepts, dimensions, series, sources, releases, observations, quality runs, and
@@ -30,6 +30,16 @@ Status: queued
 
 DoD: a temporary database can migrate up and down; schema tests prove uniqueness,
 foreign keys, and immutable release provenance.
+
+Delivered: Alembic revision `0001_trust_core`, the isolated Trust Core engine,
+`docs/DATA_SPEC_V2.md`, and ADR 0001. Legacy row mapping and provenance storage are
+ready for S0.3; no real corpus was migrated in S0.2.
+
+Validation: 108 tests pass, including 51 dedicated schema tests covering populated
+upgrade/downgrade/upgrade, identity constraints, foreign keys, immutable release
+provenance, append-only reviews, SQLite REPLACE guards, and legacy field round-trips.
+PostgreSQL upgrade/downgrade SQL generation is checked; a live PostgreSQL migration
+test remains required before deployment on that engine.
 
 ### S0.3 Migrate the inflation domain
 
