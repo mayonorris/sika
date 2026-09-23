@@ -1,9 +1,11 @@
 # Trust Core data specification, version 2
 
-Status: implemented by migration `0001_trust_core` (S0.2). The MVP continues to use
-the legacy [DATA_SPEC.md](DATA_SPEC.md) and `data/processed/sika.db`. No real data is
-imported and no public endpoint reads Trust Core in this ticket. S0.3 migrates the
-inflation corpus; S0.4 enforces validation and review; S0.5 connects safe queries.
+Status: implemented by migrations `0001_trust_core` (S0.2) and
+`0002_inflation_audit` (S0.3). The MVP continues to use the legacy
+[DATA_SPEC.md](DATA_SPEC.md) and `data/processed/sika.db`. The inflation snapshot is
+migrated locally into a separate draft-only database; no public endpoint reads it.
+See [S0.3 reconciliation](S0_3_INFLATION_MIGRATION.md). S0.4 enforces validation and
+review; S0.5 connects safe queries.
 
 Decision: [ADR 0001](adr/0001-use-alembic-migrations.md). Migrations own the schema;
 application startup does not create tables. This specification supersedes the legacy
@@ -68,6 +70,9 @@ stores their UTC representation without an offset and is used for local tests on
 | passages | Release FK, page/sheet index and contextual text; unique (release_id, source_page). Optional paired legacy_database/legacy_id with unique mapping. Never a numeric authority. |
 | quality_runs | Release FK, validator version, running/passed/failed state, UTC start/end, nonnegative failure/warning counts, structured findings report. Passed requires zero hard failures and completion time. |
 | review_decisions | Exactly one target (release or observation), reviewer reference, decision, nonempty reason and audit timestamp. Append-only, including before identity accounts are introduced. |
+| inflation_migration_runs | One legacy snapshot SHA-256, mapping version, source checksum manifest and UTC migration timestamp. |
+| inflation_migration_rows | Composite key (run_id, legacy_id), complete original row, original document/page, explicit mapped/merged/quarantined disposition and reason. Target observation FK is required for mapped/merged and forbidden for quarantine. |
+| inflation_migration_passages | Equivalent exhaustive audit for every passage in the selected documents; preserves originals even when conflicting texts cannot become a canonical passage. |
 
 ## Observations and provenance
 
@@ -92,8 +97,19 @@ stores their UTC representation without an offset and is used for local tests on
   Re-ingestion idempotency uses the stable `release_key`.
 - Identity changes and corrections must preserve original rows. S0.3 records the source
   database snapshot identity in `legacy_database` (including its checksum), the old
-  observation ID, and every original field in `original_row`. This ticket provides
-  the mapping storage only; it does not perform or claim corpus reconciliation.
+  observation ID, and every original field in `original_row`. S0.3 accounts for all
+  333 inflation-family rows, including 76 unresolved rows in the audit table without
+  invented canonical identities. The 15 explained identical-value merges retain
+  every original citation through the legacy links. No numeric value is converted.
+
+S0.3 is an initial snapshot migration, not a continuing ingestion job. It requires an
+empty versioned target or an exact replay of the same snapshot, source manifest and
+mapping version. Changed inputs require a new target. A transaction covers catalog,
+release, observation, passage and audit writes; reconciliation failures roll it back.
+Content-addressed source copies are retained locally outside the DB transaction and
+are checksummed on replay. Publication dates remain NULL when not verified; retrieval
+timestamps describe this local archive capture, not the original download.
+See [ADR 0002](adr/0002-reconcile-inflation-snapshots.md).
 
 ## Publication boundary
 
@@ -132,6 +148,8 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m alembic upgrade head
 .\.venv\Scripts\python.exe -m alembic current
 .\.venv\Scripts\python.exe -m pytest tests/test_schema_migrations.py -q
+.\.venv\Scripts\python.exe -m sika.migrate_inflation --target data/processed/sika_v2.db --report docs/reports/S0_3_inflation_reconciliation.json
+.\.venv\Scripts\python.exe -m pytest tests/test_migrate_inflation.py -q
 ```
 
 `sika_v2.db` is ignored by Git and is not the MVP database. The environment refuses an

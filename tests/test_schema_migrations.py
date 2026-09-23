@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TABLES = {
     "concepts", "geographies", "units", "dimensions", "series", "sources", "releases",
     "observations", "legacy_observation_links", "passages", "quality_runs", "review_decisions",
+    "inflation_migration_runs", "inflation_migration_rows", "inflation_migration_passages",
 }
 DIMENSIONS = dict(category="all_items", sector="all_sectors", aggregation_level="total",
                   price_basis="not_applicable", seasonal_adjustment="unadjusted", source_variant="none")

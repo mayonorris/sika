@@ -43,7 +43,7 @@ test remains required before deployment on that engine.
 
 ### S0.3 Migrate the inflation domain
 
-Status: queued
+Status: complete
 
 - Map IHPC/inflation rows to canonical concepts, dimensions, series, and releases.
 - Preserve source document and page for every row.
@@ -52,6 +52,22 @@ Status: queued
 
 DoD: all served inflation values reconcile exactly; no unexplained row is silently
 dropped or merged.
+
+Delivered: revision `0002_inflation_audit`, checksum-bound deterministic mappings,
+transactional snapshot importer, exhaustive row/passage audit, and
+[reconciliation evidence](S0_3_INFLATION_MIGRATION.md). The real legacy snapshot has
+333 inflation-family rows: 242 canonical observations across 149 series, 15 explained
+same-value duplicates, and 76 explicitly quarantined originals. All 55 passages are
+preserved. No legacy row is lost, no value is changed and no observation is published.
+
+Validation: 137 tests pass without live provider calls. Populated downgrade/rebuild,
+interruption/retry, different publication vintages, corrupt provenance and source
+checksums are covered. Replaying the real import produces identical report bytes;
+the legacy DB hash is unchanged. Canonical migration checks have zero hard failures
+and one small-source warning. The old validator still reports its pre-existing
+136 hard findings and 8 warnings on the unchanged full legacy corpus; this baseline
+is documented, not silently repaired. Reconciliation is not source certification or
+publication approval: S0.4 must resolve review, licensing and revision-state decisions.
 
 ### S0.4 Enforce the publication quality gate
 

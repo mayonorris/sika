@@ -30,6 +30,8 @@ pipeline/validate.py        DATA_SPEC validation report and hard-failure exit co
 pipeline/quarantine.py      Demotes rows that must not be served
 pipeline/spot_check.py      Manual provenance sampling helper
 sika/database.py           Trust Core engine with SQLite foreign keys/transactional DDL
+sika/inflation_mapping.py  Reviewed, checksum-bound inflation identity rules
+sika/migrate_inflation.py  Transactional legacy snapshot import and reconciliation
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -38,6 +40,7 @@ data/processed/sika.db      Seeded legacy SQLite database; committed for the dem
 docs/ARCHITECTURE_SAAS.md   Accepted SaaS target and migration sequence
 docs/BACKLOG_SAAS.md        Active post-hackathon implementation backlog
 docs/DATA_SPEC_V2.md        Versioned canonical schema and migration commands
+docs/S0_3_INFLATION_MIGRATION.md  Inflation migration results, limits, and replay guide
 docs/adr/                  Accepted architecture decisions
 docs/BACKLOG.md             Historical golden questions and MVP backlog
 tests/                      Extraction, validation, API, data, and UI smoke tests
@@ -57,6 +60,10 @@ cmd /C "set OPENAI_API_KEY=test&& .venv\Scripts\python.exe -m pytest -q"
 $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m alembic upgrade head
 .\.venv\Scripts\python.exe -m pytest tests/test_schema_migrations.py -q
+
+# S0.3: first import requires an empty, versioned target. An exact replay is safe.
+.\.venv\Scripts\python.exe -m sika.migrate_inflation --target data/processed/sika_v2.db --report docs/reports/S0_3_inflation_reconciliation.json
+.\.venv\Scripts\python.exe -m pytest tests/test_migrate_inflation.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -114,6 +121,13 @@ or extraction test.
   or stamp the committed MVP database. S0.2 is a parallel schema, not a publication gate;
   S0.4 must enforce that gate before public reads. PostgreSQL SQL compilation is tested,
   but a live PostgreSQL migration/rollback is required before deployment on that engine.
+  S0.3 imports into a separate empty SQLite target and preserves all unresolved rows
+  in migration audit tables. Do not update a source checksum or mapping rule merely
+  to make a row pass. Review the original publication, version the mapping, and use
+  a new target for changed snapshots. Keep the archived source bytes with the database.
+  Reconciliation PASS proves preservation, not publication approval or full source
+  certification. The legacy validator still reports pre-existing corpus failures;
+  do not silently alter the MVP database or treat those failures as resolved by S0.3.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.
