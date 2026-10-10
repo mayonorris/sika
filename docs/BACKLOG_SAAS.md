@@ -71,7 +71,7 @@ publication approval: S0.4 must resolve review, licensing and revision-state dec
 
 ### S0.4 Enforce the publication quality gate
 
-Status: queued
+Status: in progress (S0.4.1 complete)
 
 - Separate staging observations from published observations.
 - Run hard validation after every ingestion job.
@@ -81,6 +81,22 @@ Status: queued
 
 DoD: invalid fixtures cannot become public; the migrated inflation corpus has zero hard
 failures and an auditable approval.
+
+Delivered S0.4.1: an explicit-target V2 validator records atomic per-release
+`quality_runs`, binds findings to the checked snapshot hash, verifies archived PDFs
+and physical pages, and reconciles every migrated original against the exact read-only
+legacy snapshot. See [quality-gate evidence](S0_4_QUALITY_GATE.md). It neither changes
+lifecycle states nor creates reviewer approvals.
+
+Validation: 179 tests pass without live provider calls, including 42 quality checks
+covering corrupt periods/values/identities/citations, source changes, missing migration
+audit, exact replay, and transaction rollback. The real 242-observation V2 corpus has
+zero technical hard failures and 16 explicit review warnings; all observations remain
+draft and the legacy DB hash is unchanged.
+
+Next: S0.4.2 must protect finalized evidence and enforce snapshot-bound review and
+publication transitions. S0.4.3 must certify source values, resolve source rights and
+revision marks, and triage quarantines. S0.4 is not complete until its full DoD passes.
 
 ### S0.5 Add the safe inflation query compiler
 

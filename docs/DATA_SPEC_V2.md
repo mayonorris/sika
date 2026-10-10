@@ -124,6 +124,34 @@ schema directly to public endpoints before that gate. Private sources and user-o
 resources require organization boundaries in a later ticket; these tables are for the
 shared official statistical catalog.
 
+S0.4.1 implements `sika.quality` and `python -m sika.validate`. It appends one completed
+`quality_runs` record per selected release, atomically across the invocation. A run
+records validator/schema versions, a logical snapshot SHA-256, findings, counts and
+`publication_authorized: false`. It never updates release/observation lifecycle states
+or creates reviewer decisions. PASS means zero technical failures; reuse rights,
+unknown dates/revision marks and explained migration quarantines remain visible
+warnings for the subsequent review gate.
+
+The snapshot hashes all relevant canonical catalogs, releases, observations, passages,
+legacy links, migration audit and observed artifact hashes/page counts. It excludes
+quality history and review decisions so repeated checks retain the same fingerprint.
+Every run still has its own ID and UTC execution times. SQLite reserves the writer
+before taking the snapshot; source bytes and the legacy DB hash are rechecked before
+results are recorded. A failed insertion rolls back the entire batch of quality runs.
+
+For the migrated corpus, the exact legacy snapshot is required to verify exhaustive
+ID coverage; merely validating remaining audit rows cannot reveal deleted quarantine.
+The checker reads it in read-only mode and rejects a mismatching checksum. It checks
+value/period/citation fidelity and rechecks the versioned identity registry. This
+remains distinct from manually certifying the printed source values.
+
+The current CLI supports the reviewed inflation PDF pilot on an existing local
+SQLite target. Unregistered concepts/categories, unknown methodology, irregular
+period mappings and non-PDF/remote storage are hard failures pending a reviewed
+extension. General period helpers support annual/quarterly/monthly/daily calendars;
+the source profiles additionally enforce the pilot's monthly/quarterly frequencies.
+See [S0.4.1 evidence and limits](S0_4_QUALITY_GATE.md).
+
 ## Indexes and migration checks
 
 Unique indexes serve catalog keys, complete identities, vintage uniqueness and legacy
@@ -150,6 +178,8 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m pytest tests/test_schema_migrations.py -q
 .\.venv\Scripts\python.exe -m sika.migrate_inflation --target data/processed/sika_v2.db --report docs/reports/S0_3_inflation_reconciliation.json
 .\.venv\Scripts\python.exe -m pytest tests/test_migrate_inflation.py -q
+.\.venv\Scripts\python.exe -m sika.validate --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/S0_4_1_inflation_quality.json
+.\.venv\Scripts\python.exe -m pytest tests/test_quality.py -q
 ```
 
 `sika_v2.db` is ignored by Git and is not the MVP database. The environment refuses an

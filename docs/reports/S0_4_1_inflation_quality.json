@@ -1,0 +1,197 @@
+{
+  "validator_version": "trust-core-inflation-1.0",
+  "schema_version": "0002_inflation_audit",
+  "snapshot_sha256": "a1c29b79a02607df023e9029c4e29027969ab2bfccdb6139c61e345694f8dbad",
+  "publication_authorized": false,
+  "releases": [
+    {
+      "validator_version": "trust-core-inflation-1.0",
+      "schema_version": "0002_inflation_audit",
+      "snapshot_sha256": "a1c29b79a02607df023e9029c4e29027969ab2bfccdb6139c61e345694f8dbad",
+      "release_id": 1,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "observation_count": 2,
+      "status": "passed",
+      "hard_failure_count": 0,
+      "warning_count": 5,
+      "publication_authorized": false,
+      "findings": [
+        {
+          "severity": "WARN",
+          "code": "legacy_quarantine",
+          "message": "31 legacy originals await domain review",
+          "release_id": 1,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "publication_date_unknown",
+          "message": "Official publication date has not been verified",
+          "release_id": 1,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "reuse_review_required",
+          "message": "Source reuse status: unknown",
+          "release_id": 1,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "revision_review_required",
+          "message": "Revision marks unverified for 2 observations",
+          "release_id": 1,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "small_release",
+          "message": "Only 2 canonical observations",
+          "release_id": 1,
+          "observation_id": null,
+          "legacy_id": null
+        }
+      ],
+      "quality_run_id": 5
+    },
+    {
+      "validator_version": "trust-core-inflation-1.0",
+      "schema_version": "0002_inflation_audit",
+      "snapshot_sha256": "a1c29b79a02607df023e9029c4e29027969ab2bfccdb6139c61e345694f8dbad",
+      "release_id": 2,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "observation_count": 7,
+      "status": "passed",
+      "hard_failure_count": 0,
+      "warning_count": 4,
+      "publication_authorized": false,
+      "findings": [
+        {
+          "severity": "WARN",
+          "code": "legacy_quarantine",
+          "message": "19 legacy originals await domain review",
+          "release_id": 2,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "publication_date_unknown",
+          "message": "Official publication date has not been verified",
+          "release_id": 2,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "reuse_review_required",
+          "message": "Source reuse status: unknown",
+          "release_id": 2,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "revision_review_required",
+          "message": "Revision marks unverified for 7 observations",
+          "release_id": 2,
+          "observation_id": null,
+          "legacy_id": null
+        }
+      ],
+      "quality_run_id": 6
+    },
+    {
+      "validator_version": "trust-core-inflation-1.0",
+      "schema_version": "0002_inflation_audit",
+      "snapshot_sha256": "a1c29b79a02607df023e9029c4e29027969ab2bfccdb6139c61e345694f8dbad",
+      "release_id": 3,
+      "source_doc": "inseed_ihpc_2026-05.pdf",
+      "observation_count": 118,
+      "status": "passed",
+      "hard_failure_count": 0,
+      "warning_count": 3,
+      "publication_authorized": false,
+      "findings": [
+        {
+          "severity": "WARN",
+          "code": "publication_date_unknown",
+          "message": "Official publication date has not been verified",
+          "release_id": 3,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "reuse_review_required",
+          "message": "Source reuse status: unknown",
+          "release_id": 3,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "revision_review_required",
+          "message": "Revision marks unverified for 118 observations",
+          "release_id": 3,
+          "observation_id": null,
+          "legacy_id": null
+        }
+      ],
+      "quality_run_id": 7
+    },
+    {
+      "validator_version": "trust-core-inflation-1.0",
+      "schema_version": "0002_inflation_audit",
+      "snapshot_sha256": "a1c29b79a02607df023e9029c4e29027969ab2bfccdb6139c61e345694f8dbad",
+      "release_id": 4,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "observation_count": 115,
+      "status": "passed",
+      "hard_failure_count": 0,
+      "warning_count": 4,
+      "publication_authorized": false,
+      "findings": [
+        {
+          "severity": "WARN",
+          "code": "legacy_quarantine",
+          "message": "26 legacy originals await domain review",
+          "release_id": 4,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "publication_date_unknown",
+          "message": "Official publication date has not been verified",
+          "release_id": 4,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "reuse_review_required",
+          "message": "Source reuse status: unknown",
+          "release_id": 4,
+          "observation_id": null,
+          "legacy_id": null
+        },
+        {
+          "severity": "WARN",
+          "code": "revision_review_required",
+          "message": "Revision marks unverified for 115 observations",
+          "release_id": 4,
+          "observation_id": null,
+          "legacy_id": null
+        }
+      ],
+      "quality_run_id": 8
+    }
+  ],
+  "status": "passed"
+}
