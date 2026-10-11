@@ -1,7 +1,7 @@
 # Trust Core data specification, version 2
 
 Status: implemented by migrations `0001_trust_core` (S0.2) and
-`0002_inflation_audit` (S0.3). The MVP continues to use the legacy
+`0002_inflation_audit` (S0.3), extended by `0003_publication_gate` (S0.4.2). The MVP continues to use the legacy
 [DATA_SPEC.md](DATA_SPEC.md) and `data/processed/sika.db`. The inflation snapshot is
 migrated locally into a separate draft-only database; no public endpoint reads it.
 See [S0.3 reconciliation](S0_3_INFLATION_MIGRATION.md). S0.4 enforces validation and
@@ -70,6 +70,7 @@ stores their UTC representation without an offset and is used for local tests on
 | passages | Release FK, page/sheet index and contextual text; unique (release_id, source_page). Optional paired legacy_database/legacy_id with unique mapping. Never a numeric authority. |
 | quality_runs | Release FK, validator version, running/passed/failed state, UTC start/end, nonnegative failure/warning counts, structured findings report. Passed requires zero hard failures and completion time. |
 | review_decisions | Exactly one target (release or observation), reviewer reference, decision, nonempty reason and audit timestamp. Append-only, including before identity accounts are introduced. |
+| publication_events | Immutable release/quality-run/review-decision links, approve/publish action, before/after snapshot SHA-256, structured source-review evidence, UTC timestamp. A review decision is linked at most once. |
 | inflation_migration_runs | One legacy snapshot SHA-256, mapping version, source checksum manifest and UTC migration timestamp. |
 | inflation_migration_rows | Composite key (run_id, legacy_id), complete original row, original document/page, explicit mapped/merged/quarantined disposition and reason. Target observation FK is required for mapped/merged and forbidden for quarantine. |
 | inflation_migration_passages | Equivalent exhaustive audit for every passage in the selected documents; preserves originals even when conflicting texts cannot become a canonical passage. |
@@ -152,6 +153,32 @@ extension. General period helpers support annual/quarterly/monthly/daily calenda
 the source profiles additionally enforce the pilot's monthly/quarterly frequencies.
 See [S0.4.1 evidence and limits](S0_4_QUALITY_GATE.md).
 
+S0.4.2 adds the [review/publication service](S0_4_QUALITY_GATE.md#s042-local-operator-review-and-publication)
+and [ADR 0003](adr/0003-bind-publication-to-reviewed-snapshots.md). Completed quality
+evidence is immutable and authoritative completion is service-only. Ordinary SQL cannot
+insert protected states or perform protected lifecycle transitions; reviewed/published
+facts and their passage cohort cannot be edited in place. Each transition stores a
+protected event that coherently links the release, completed PASS and review decision.
+Unbound pre-S0.4.2 review audit cannot authorize a transition.
+New review IDs must increase strictly so a lower caller-supplied ID cannot hide a later
+decision. INSERT/UPDATE replacement collisions cannot delete protected observations
+or passages, including collisions on their legacy provenance key.
+
+Approval checks the latest QA against the exact full snapshot. Publication rechecks
+the release-local content proof and requires the same QA plus the unsuperseded approval.
+Local proof includes every fact, original, referenced catalog/source policy, passage and
+artifact; it excludes only the intentional lifecycle state transition. Changed review
+inputs require new validation/review; old final reports are preserved, never rewritten.
+Verified source date/revision/reuse metadata and operator-supplied source evidence are
+mandatory. Reviewer identity is resolved from the OS and allowlisted externally; there
+is no anonymous web review endpoint or SaaS account implementation in this increment.
+
+Protected public reads validate the retained proof and published-only cohort, failing
+closed on stale content, newest failed QA, revoked publisher or a later review decision.
+The legacy MVP is unchanged. PostgreSQL sensitive writes fail closed pending a tested
+production adapter. Migration refuses old unsupported protected states and downgrade
+refuses when publication events exist rather than erasing review history.
+
 ## Indexes and migration checks
 
 Unique indexes serve catalog keys, complete identities, vintage uniqueness and legacy
@@ -178,8 +205,11 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m pytest tests/test_schema_migrations.py -q
 .\.venv\Scripts\python.exe -m sika.migrate_inflation --target data/processed/sika_v2.db --report docs/reports/S0_3_inflation_reconciliation.json
 .\.venv\Scripts\python.exe -m pytest tests/test_migrate_inflation.py -q
-.\.venv\Scripts\python.exe -m sika.validate --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/S0_4_1_inflation_quality.json
+.\.venv\Scripts\python.exe -m sika.validate --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/S0_4_2_inflation_quality.json
 .\.venv\Scripts\python.exe -m pytest tests/test_quality.py -q
+.\.venv\Scripts\python.exe -m sika.review identity
+.\.venv\Scripts\python.exe -m pytest tests/test_publication.py -q
+.\.venv\Scripts\python.exe -m pytest tests/test_gate_adversarial.py tests/test_review_cli.py -q
 ```
 
 `sika_v2.db` is ignored by Git and is not the MVP database. The environment refuses an

@@ -10,13 +10,14 @@ import pytest
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 
-from sika.database import create_database_engine
+from sika.database import _allow_writes, create_database_engine
 
 ROOT = Path(__file__).resolve().parents[1]
 TABLES = {
     "concepts", "geographies", "units", "dimensions", "series", "sources", "releases",
     "observations", "legacy_observation_links", "passages", "quality_runs", "review_decisions",
     "inflation_migration_runs", "inflation_migration_rows", "inflation_migration_passages",
+    "publication_events",
 }
 DIMENSIONS = dict(category="all_items", sector="all_sectors", aggregation_level="total",
                   price_basis="not_applicable", seasonal_adjustment="unadjusted", source_variant="none")
@@ -276,11 +277,13 @@ def test_quality_run_cannot_pass_with_hard_failures(database):
     seed(database)
     engine, tables, _ = database
     with pytest.raises(IntegrityError), engine.begin() as con:
-        insert(con, tables, "quality_runs", release_id=1, validator_version="test-1",
-               status="passed", started_at=NOW, completed_at=NOW, hard_failure_count=1, report={})
+        with _allow_writes(con, ("quality_runs", "insert", -1)):
+            insert(con, tables, "quality_runs", release_id=1, validator_version="test-1",
+                   status="passed", started_at=NOW, completed_at=NOW, hard_failure_count=1, report={})
     with engine.begin() as con:
-        insert(con, tables, "quality_runs", release_id=1, validator_version="test-1",
-               status="passed", started_at=NOW, completed_at=NOW, report={"checks": []})
+        with _allow_writes(con, ("quality_runs", "insert", -1)):
+            insert(con, tables, "quality_runs", release_id=1, validator_version="test-1",
+                   status="passed", started_at=NOW, completed_at=NOW, report={"checks": []})
 
 
 def test_migration_refuses_legacy_database_without_modifying_it(tmp_path):
@@ -328,3 +331,35 @@ def test_postgresql_migration_sql_renders_without_a_server():
     rollback = config.output_buffer.getvalue()
     assert "DROP TABLE releases" in rollback
     assert "DROP FUNCTION guard_releases_identity()" in rollback
+
+
+def test_publication_upgrade_refuses_preexisting_untrusted_states(database):
+    engine, _tables, config = database
+    command.downgrade(config, "0002_inflation_audit")
+    metadata = sa.MetaData()
+    metadata.reflect(engine)
+    seed((engine, metadata.tables, config))
+    with engine.begin() as con:
+        con.exec_driver_sql("UPDATE observations SET status='published'")
+    with pytest.raises((RuntimeError, sa.exc.DBAPIError)):
+        command.upgrade(config, "head")
+    assert "publication_events" not in sa.inspect(engine).get_table_names()
+    with engine.connect() as con:
+        assert con.execute(sa.text("SELECT version_num FROM alembic_version")).scalar_one() == "0002_inflation_audit"
+        assert con.execute(sa.text("SELECT status FROM observations")).scalar_one() == "published"
+
+
+def test_publication_upgrade_preserves_old_quality_evidence(database):
+    engine, _tables, config = database
+    command.downgrade(config, "0002_inflation_audit")
+    metadata = sa.MetaData()
+    metadata.reflect(engine)
+    seed((engine, metadata.tables, config))
+    with engine.begin() as con:
+        insert(con, metadata.tables, "quality_runs", release_id=1, validator_version="old-version",
+               status="passed", started_at=NOW, completed_at=NOW, report={"historical": True})
+    command.upgrade(config, "head")
+    with engine.connect() as con:
+        assert con.execute(sa.text("SELECT validator_version FROM quality_runs")).scalar_one() == "old-version"
+    with pytest.raises(sa.exc.DBAPIError), engine.begin() as con:
+        con.exec_driver_sql("DELETE FROM quality_runs")

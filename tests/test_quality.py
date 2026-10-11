@@ -141,9 +141,17 @@ def test_invalid_period_is_persisted_without_publishing(store):
 
 
 def test_orphan_fk_cannot_disappear_through_a_join(store):
-    target, _, _, _ = store
-    with sqlite3.connect(target) as con:
+    target, engine, _, _ = store
+    # Deliberately corrupt a disposable draft via the Trust Core adapter. Turning
+    # foreign keys off must happen before BEGIN; publication capabilities stay off.
+    con = engine.raw_connection()
+    try:
+        con.execute("PRAGMA foreign_keys=OFF")
         con.execute("UPDATE observations SET series_id=999")
+        con.commit()
+    finally:
+        con.execute("PRAGMA foreign_keys=ON")
+        con.close()
     result = quality.run_quality_checks(target)
     assert result["status"] == "failed"
     assert result["releases"][0]["observation_count"] == 1

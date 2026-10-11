@@ -71,7 +71,7 @@ publication approval: S0.4 must resolve review, licensing and revision-state dec
 
 ### S0.4 Enforce the publication quality gate
 
-Status: in progress (S0.4.1 complete)
+Status: in progress (S0.4.1 and S0.4.2 complete; S0.4.3 pending)
 
 - Separate staging observations from published observations.
 - Run hard validation after every ingestion job.
@@ -94,9 +94,25 @@ audit, exact replay, and transaction rollback. The real 242-observation V2 corpu
 zero technical hard failures and 16 explicit review warnings; all observations remain
 draft and the legacy DB hash is unchanged.
 
-Next: S0.4.2 must protect finalized evidence and enforce snapshot-bound review and
-publication transitions. S0.4.3 must certify source values, resolve source rights and
-revision marks, and triage quarantines. S0.4 is not complete until its full DoD passes.
+Delivered S0.4.2: revision `0003_publication_gate`, immutable finalized QA and
+append-only publication proof, default-deny local OS-operator authorization,
+snapshot-bound approval/publication, atomic cohort transitions and protected
+published-only reads. SQL cannot manufacture authoritative evidence, assign
+protected states, conceal later reviews through retrograde IDs or replace protected
+observations/passages through unique-key collisions. See
+[ADR 0003](adr/0003-bind-publication-to-reviewed-snapshots.md).
+
+Validation: 256 tests pass without live provider calls, including 70 publication and
+adversarial checks, five administrative CLI tests and populated migration/rollback
+coverage. The real separate V2 database was backed up, upgraded and revalidated with
+zero hard failures and 16 warnings; [current evidence](reports/S0_4_2_inflation_quality.json)
+retains all 242 observations as draft, with no approval or publication event. All old
+QA records and original data are preserved, exact S0.3 replay still matches, and the
+MVP hash is unchanged. This local SQLite gate is not SaaS authentication or certified
+PostgreSQL production support.
+
+Next: S0.4.3 must certify source values, resolve source rights and revision marks,
+and triage quarantines. S0.4 is not complete until its full DoD passes.
 
 ### S0.5 Add the safe inflation query compiler
 

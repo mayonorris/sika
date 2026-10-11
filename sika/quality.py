@@ -18,12 +18,12 @@ from urllib.request import url2pathname
 import pdfplumber
 import sqlalchemy as sa
 
-from sika.database import create_database_engine
+from sika.database import _allow_writes, create_database_engine
 from sika.inflation_mapping import CATEGORIES, CONCEPT_LABELS, GEOGRAPHIES, MAPPING_VERSION, PROFILES, map_row
 from sika.migrate_inflation import checksum, read_snapshot
 
-VALIDATOR_VERSION = "trust-core-inflation-1.0"
-SCHEMA_VERSION = "0002_inflation_audit"
+VALIDATOR_VERSION = "trust-core-inflation-1.1"
+SCHEMA_VERSION = "0003_publication_gate"
 DIMENSIONS = ("category", "sector", "aggregation_level", "price_basis", "seasonal_adjustment", "source_variant")
 SNAPSHOT_TABLES = ("concepts", "geographies", "units", "dimensions", "series", "sources", "releases",
                    "observations", "passages", "legacy_observation_links", "inflation_migration_runs",
@@ -398,7 +398,8 @@ def run_quality_checks(target: Path, *, legacy: Path | None = None, source_root:
 
 
 def _store_run(con: sa.Connection, table: sa.Table, report: dict, started: datetime) -> int:
-    return con.execute(table.insert().values(release_id=report["release_id"], validator_version=VALIDATOR_VERSION,
-        status=report["status"], started_at=started, completed_at=datetime.now(timezone.utc),
-        hard_failure_count=report["hard_failure_count"], warning_count=report["warning_count"],
-        report=report)).inserted_primary_key[0]
+    with _allow_writes(con, ("quality_runs", "insert", -1)):
+        return con.execute(table.insert().values(release_id=report["release_id"], validator_version=VALIDATOR_VERSION,
+            status=report["status"], started_at=started, completed_at=datetime.now(timezone.utc),
+            hard_failure_count=report["hard_failure_count"], warning_count=report["warning_count"],
+            report=report)).inserted_primary_key[0]

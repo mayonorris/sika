@@ -1,7 +1,22 @@
 """Database connections for Trust Core (independent of the legacy MVP store)."""
 
+from contextlib import contextmanager
+from collections.abc import Iterator
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine, URL, make_url
+from sqlalchemy.engine import Connection
+
+
+@contextmanager
+def _allow_writes(connection: Connection, *permissions: tuple[str, str, int]) -> Iterator[None]:
+    """Private service capability, not a SQL-settable flag or user-supplied claim."""
+    previous = connection.info.get("sika_write_permissions", frozenset())
+    connection.info["sika_write_permissions"] = frozenset(permissions)
+    try:
+        yield
+    finally:
+        connection.info["sika_write_permissions"] = previous
 
 
 def create_database_engine(url: str | URL) -> Engine:
@@ -11,7 +26,7 @@ def create_database_engine(url: str | URL) -> Engine:
     engine = create_engine(url)
     if engine.dialect.name == "sqlite":
         @event.listens_for(engine, "connect")
-        def configure_sqlite(connection, _record) -> None:
+        def configure_sqlite(connection, record) -> None:
             # Disable sqlite3's legacy transaction control. SQLAlchemy owns BEGIN,
             # including for DDL, so a failed migration does not leave partial tables.
             connection.isolation_level = None
@@ -21,6 +36,13 @@ def create_database_engine(url: str | URL) -> Engine:
             # delete guards for that operation when recursive triggers are enabled.
             cursor.execute("PRAGMA recursive_triggers=ON")
             cursor.close()
+            record.info["sika_write_permissions"] = frozenset()
+            connection.create_function("sika_write_allowed", 3, lambda table, operation, row_id:
+                int((table, operation, row_id) in record.info.get("sika_write_permissions", ())))
+
+        @event.listens_for(engine, "checkin")
+        def reset_permissions(_connection, record) -> None:
+            record.info["sika_write_permissions"] = frozenset()
 
         @event.listens_for(engine, "begin")
         def begin_sqlite(connection) -> None:

@@ -34,6 +34,8 @@ sika/inflation_mapping.py  Reviewed, checksum-bound inflation identity rules
 sika/migrate_inflation.py  Transactional legacy snapshot import and reconciliation
 sika/quality.py           V2 technical checks and atomic quality-run evidence
 sika/validate.py          Explicit-target quality CLI; never publishes observations
+sika/publication.py       Snapshot-bound local review, publication and protected reads
+sika/review.py            Administrative CLI; resolved OS principal, no reviewer argument
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -67,9 +69,14 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m sika.migrate_inflation --target data/processed/sika_v2.db --report docs/reports/S0_3_inflation_reconciliation.json
 .\.venv\Scripts\python.exe -m pytest tests/test_migrate_inflation.py -q
 
-# S0.4.1: records technical evidence; the remaining review gate owns publication.
-.\.venv\Scripts\python.exe -m sika.validate --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/S0_4_1_inflation_quality.json
+# Technical QA: records evidence; PASS alone never authorizes publication.
+.\.venv\Scripts\python.exe -m sika.validate --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/S0_4_2_inflation_quality.json
 .\.venv\Scripts\python.exe -m pytest tests/test_quality.py -q
+
+# S0.4.2: identity only. Review requires verified sources and an external allowlist.
+.\.venv\Scripts\python.exe -m sika.review identity
+.\.venv\Scripts\python.exe -m pytest tests/test_publication.py -q
+.\.venv\Scripts\python.exe -m pytest tests/test_gate_adversarial.py tests/test_review_cli.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -137,8 +144,18 @@ or extraction test.
   Quality validation requires an explicit target and the exact read-only legacy
   snapshot for migrated records. Keep source files inside the selected local archive.
   A quality-run PASS proves technical checks on its snapshot, not publication rights,
-  source-value certification or reviewer approval. S0.4.2 must protect finalized
-  evidence, reject stale snapshots and enforce the review/publication transition.
+  source-value certification or reviewer approval. S0.4.2 protects finalized evidence
+  and enforces snapshot-bound review/publication via the local administrative service.
+  Do not assign protected states directly or manufacture source-review JSON. Resolve
+  the OS principal and require the explicit SIKA_REVIEWER_IDS process allowlist; no
+  reviewer string may come from a request. This is not SaaS authentication. File/DB
+  owners remain privileged. Old unbound review rows grant no publication authority.
+  New review IDs must increase strictly. Guard all protected unique-key replacement
+  collisions, including UPDATE OR REPLACE and passage legacy provenance keys.
+  PostgreSQL authoritative writes stay blocked pending a tested service-role adapter.
+  Downgrade refuses when publication audit exists; never delete events to bypass it.
+  S0.4.3 must certify source values/rights/revisions and triage quarantine. No real
+  observation becomes public merely because synthetic publication tests pass.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.

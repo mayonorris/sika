@@ -11,6 +11,7 @@ import pytest
 import sqlalchemy as sa
 
 from sika import migrate_inflation as migration
+from sika.database import create_database_engine
 from sika.inflation_mapping import PROFILES, map_row
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,8 +89,12 @@ def test_exact_replay_is_idempotent_and_independently_reconciles(fixture):
     assert first == second
     assert table_count(target, "inflation_migration_runs") == 1
     assert table_count(target, "legacy_observation_links") == 3
-    with sqlite3.connect(target) as con:
-        con.execute("UPDATE observations SET value=77 WHERE id=1")
+    engine = create_database_engine(sa.URL.create("sqlite", database=str(target)))
+    try:
+        with engine.begin() as con:
+            con.exec_driver_sql("UPDATE observations SET value=77 WHERE id=1")
+    finally:
+        engine.dispose()
     with pytest.raises(ValueError, match="Reconciliation failed"):
         migration.migrate(legacy, target, raw)
 

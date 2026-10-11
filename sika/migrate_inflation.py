@@ -20,7 +20,7 @@ import sqlalchemy as sa
 from sika.database import create_database_engine
 from sika.inflation_mapping import CONCEPT_LABELS, MAPPING_VERSION, PROFILES, Mapping, in_scope, map_row, period_frequency
 
-SCHEMA_VERSION = "0002_inflation_audit"
+SCHEMA_VERSION = "0003_publication_gate"
 
 
 def checksum(path: Path) -> str:
@@ -311,7 +311,7 @@ def migrate(legacy: Path, target: Path, raw: Path) -> dict:
     try:
         with engine.begin() as con:
             if con.execute(sa.text("SELECT version_num FROM alembic_version")).scalar_one() != SCHEMA_VERSION:
-                raise ValueError("Upgrade the Trust Core schema to the S0.3 revision first")
+                raise ValueError("Upgrade the Trust Core schema to the current revision first")
             tables = sa.MetaData()
             tables.reflect(con)
             tables = tables.tables
