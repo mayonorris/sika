@@ -36,6 +36,9 @@ sika/quality.py           V2 technical checks and atomic quality-run evidence
 sika/validate.py          Explicit-target quality CLI; never publishes observations
 sika/publication.py       Snapshot-bound local review, publication and protected reads
 sika/review.py            Administrative CLI; resolved OS principal, no reviewer argument
+sika/source_review.py     Read-only source/quarantine work packet; never approval evidence
+sika/source_facts.py      Checksum-bound selected source anchors, not a complete parser
+sika/source_tables.py     Deterministic IHPC table evidence; no data/approval writes
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -77,6 +80,11 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m sika.review identity
 .\.venv\Scripts\python.exe -m pytest tests/test_publication.py -q
 .\.venv\Scripts\python.exe -m pytest tests/test_gate_adversarial.py tests/test_review_cli.py -q
+
+# S0.4.3: read-only review aid. Exit 0 is packet generation, NOT certification.
+.\.venv\Scripts\python.exe -m sika.source_review --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/local/S0_4_3_source_review.json
+.\.venv\Scripts\python.exe -m sika.source_review --target data/processed/sika_v2.db --legacy data/processed/sika.db --summary-only --report docs/reports/S0_4_3_source_review.json
+.\.venv\Scripts\python.exe -m pytest tests/test_source_review.py tests/test_source_tables.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -156,6 +164,13 @@ or extraction test.
   Downgrade refuses when publication audit exists; never delete events to bypass it.
   S0.4.3 must certify source values/rights/revisions and triage quarantine. No real
   observation becomes public merely because synthetic publication tests pass.
+  Source-review packets and selected anchor matches are not operator approval
+  evidence. Keep incomplete certification explicit; never generate verified-ID
+  evidence or license/date/revision metadata merely to unlock publication. Public
+  access alone does not establish reuse permission, but unknown is not prohibited.
+  Keep full source-review packets local under ignored docs/reports/local/. Only
+  redacted counts/ID/hash summaries may be committed; draft V2 row exports must
+  not become an alternate public dataset through the repository.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.
