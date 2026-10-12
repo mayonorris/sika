@@ -71,7 +71,8 @@ publication approval: S0.4 must resolve review, licensing and revision-state dec
 
 ### S0.4 Enforce the publication quality gate
 
-Status: in progress (S0.4.1 and S0.4.2 complete; S0.4.3 pending)
+Status: in progress (S0.4.1/S0.4.2 complete; S0.4.3 source concordance complete,
+publication certification blocked on external evidence and operator review)
 
 - Separate staging observations from published observations.
 - Run hard validation after every ingestion job.
@@ -111,8 +112,27 @@ QA records and original data are preserved, exact S0.3 replay still matches, and
 MVP hash is unchanged. This local SQLite gate is not SaaS authentication or certified
 PostgreSQL production support.
 
-Next: S0.4.3 must certify source values, resolve source rights and revision marks,
-and triage quarantines. S0.4 is not complete until its full DoD passes.
+Delivered S0.4.3 technical review: a read-only source review packet bound to the same
+full QA snapshot, complete canonical/legacy/quarantine ID provenance, 45 independent
+checksum-bound anchors and a deterministic IHPC table parser (944 source cells).
+All 242 canonical observations match their exact source scope/value. The 76 original
+quarantines have an individual documentary triage recommendation. See
+[source-certification evidence and limits](S0_4_3_SOURCE_CERTIFICATION.md) and
+[quarantine registry](S0_4_3_QUARANTINE_REVIEW.md). No data, QA history, source rights,
+revision marks, release dates or lifecycle states are altered by this tool.
+Full row packets stay local and ignored; only a redacted ID/count/hash summary is
+committed to the public repository. No draft V2 dataset is published by this brick.
+
+Remaining S0.4.3: establish applicable reuse terms and date/revision evidence, and
+obtain genuine authorized cohort review. Full numeric concordance and individual
+quarantine triage are finished. Publisher clarification drafts are ready but unsent.
+Public sources are not assumed commercially licensed or prohibited. All 242 rows
+remain draft; S0.4 is not complete until its full publication DoD passes.
+
+Validation of the S0.4.3 implementation: 351 tests pass without live provider calls,
+including 68 source-review and 27 table-parser tests; the complete real cohort has
+zero source discrepancies and an unchanged QA snapshot. Both DB file hashes and
+all existing QA/state counts remain unchanged.
 
 ### S0.5 Add the safe inflation query compiler
 

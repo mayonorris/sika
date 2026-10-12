@@ -179,6 +179,15 @@ The legacy MVP is unchanged. PostgreSQL sensitive writes fail closed pending a t
 production adapter. Migration refuses old unsupported protected states and downgrade
 refuses when publication events exist rather than erasing review history.
 
+S0.4.3 adds a read-only `sika.source_review` work packet, not a schema migration or
+publication decision. It retains full canonical identities and original ID/hash
+coverage, compares checksum-bound source anchors and directly parsed IHPC cells,
+reports technical failures
+and exposes separate source/date/revision/quarantine blockers. `NEEDS_REVIEW` and
+`publication_authorized: false` remain mandatory, even with all selected anchors
+matched. It inserts no quality run and supplies no generated operator approval JSON.
+See [source certification and remaining work](S0_4_3_SOURCE_CERTIFICATION.md).
+
 ## Indexes and migration checks
 
 Unique indexes serve catalog keys, complete identities, vintage uniqueness and legacy

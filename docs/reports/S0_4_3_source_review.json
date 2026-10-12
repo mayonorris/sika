@@ -1,0 +1,2429 @@
+{
+  "review_version": "inflation-source-review-1.1",
+  "schema_version": "0003_publication_gate",
+  "validator_version": "trust-core-inflation-1.1",
+  "source_table_parser_version": "ihpc-source-tables-1.0",
+  "snapshot_sha256": "2062834c0df68553b48c4c7ce1e6ce6aa50cfbf61bc1af624b03aa036f7f2abe",
+  "source_facts_sha256": "58012796449c8faf40bd163f517ea93b8bebd3d19937415f74d9de8ad5458055",
+  "source_cells_sha256": "9eeb366ced64e672e7984b132fa25ebd9193f10c10eff06e737216bf28d541c8",
+  "legacy_snapshot_sha256": "sha256:47663a2967c4193a272aa24fc053ab8f272c2f4ba555006accb2a86d0f5073ab",
+  "publication_authorized": false,
+  "certification_status": "pending",
+  "status": "needs_review",
+  "hard_failure_count": 0,
+  "observation_count": 242,
+  "spot_check_count": 45,
+  "matched_observation_count": 242,
+  "pending_observation_count": 0,
+  "source_comparison_status": "complete",
+  "quarantine_count": 76,
+  "source_table_cell_count": 944,
+  "review_packet_sha256": "2e924f61ed712ddf0b75190a191079d025a7730ce03aadaa34295721facf325f",
+  "summary_data_redacted": true,
+  "releases": [
+    {
+      "release_id": 1,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_url": "https://www.bceao.int/sites/default/files/2023-07/Rapport%20sur%20la%20politique%20mone%CC%81taire%20-%20Juin%202023.pdf",
+      "source_status": "draft",
+      "content_sha256": "ae86c55b3364fd2ee9c29112e258a0386e4fbfefa4bfdeab9979e7be62cbc1fd",
+      "published_on": null,
+      "reuse_status": "unknown",
+      "observation_count": 2,
+      "publication_blockers": [
+        "source_values_review_pending",
+        "source_rights_unverified",
+        "publication_date_unverified",
+        "revision_marks_unverified",
+        "quarantine_review_pending"
+      ],
+      "source_checks": [
+        {
+          "observation_id": 116,
+          "source_page": 13,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 117,
+          "source_page": 13,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        }
+      ]
+    },
+    {
+      "release_id": 2,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_url": "https://inseed.tg/download/7822/",
+      "source_status": "draft",
+      "content_sha256": "21ab8c005358b5b2090e1804403749fa8c3230d0132dd9d12446062d5451de64",
+      "published_on": null,
+      "reuse_status": "unknown",
+      "observation_count": 7,
+      "publication_blockers": [
+        "source_values_review_pending",
+        "source_rights_unverified",
+        "publication_date_unverified",
+        "revision_marks_unverified",
+        "quarantine_review_pending"
+      ],
+      "source_checks": [
+        {
+          "observation_id": 236,
+          "source_page": 8,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 237,
+          "source_page": 8,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 238,
+          "source_page": 8,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 239,
+          "source_page": 8,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 240,
+          "source_page": 8,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 241,
+          "source_page": 9,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        },
+        {
+          "observation_id": 242,
+          "source_page": 9,
+          "source_check": "matched",
+          "method": "selected_anchor"
+        }
+      ]
+    },
+    {
+      "release_id": 3,
+      "source_doc": "inseed_ihpc_2026-05.pdf",
+      "source_url": "https://inseed.tg/download/7798/",
+      "source_status": "draft",
+      "content_sha256": "954080aafa7b065fc9be801a8d6651da79bfe3f47edb024e5529f91d03fb0e93",
+      "published_on": null,
+      "reuse_status": "unknown",
+      "observation_count": 118,
+      "publication_blockers": [
+        "source_values_review_pending",
+        "source_rights_unverified",
+        "publication_date_unverified",
+        "revision_marks_unverified"
+      ],
+      "source_checks": [
+        {
+          "observation_id": 118,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 119,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 120,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 121,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 122,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 123,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 124,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 125,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 126,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 127,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 128,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 129,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 130,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 131,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 132,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 133,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 134,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 135,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 136,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 137,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 138,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 139,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 140,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 141,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 142,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 143,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 144,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 145,
+          "source_page": 4,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 146,
+          "source_page": 4,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 147,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 148,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 149,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 150,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 151,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 152,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 153,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 154,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 155,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 156,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 157,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 158,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 159,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 160,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 161,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 162,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 163,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 164,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 165,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 166,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 167,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 168,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 169,
+          "source_page": 6,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 170,
+          "source_page": 6,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 171,
+          "source_page": 6,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 172,
+          "source_page": 6,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 173,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 174,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 175,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 176,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 177,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 178,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 179,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 180,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 181,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 182,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 183,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 184,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 185,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 186,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 187,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 188,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 189,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 190,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 191,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 192,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 193,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 194,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 195,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 196,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 197,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 198,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 199,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 200,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 201,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 202,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 203,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 204,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 205,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 206,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 207,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 208,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 209,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 210,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 211,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 212,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 213,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 214,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 215,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 216,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 217,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 218,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 219,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 220,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 221,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 222,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 223,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 224,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 225,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 226,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 227,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 228,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 229,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 230,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 231,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 232,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 233,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 234,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 235,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        }
+      ]
+    },
+    {
+      "release_id": 4,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_url": "https://inseed.tg/download/7866/",
+      "source_status": "draft",
+      "content_sha256": "792b218f6159ecd43d5fa9fbea7d79552fa5f458841d79d4e7be0e55ed8dfb30",
+      "published_on": null,
+      "reuse_status": "unknown",
+      "observation_count": 115,
+      "publication_blockers": [
+        "source_values_review_pending",
+        "source_rights_unverified",
+        "publication_date_unverified",
+        "revision_marks_unverified",
+        "quarantine_review_pending"
+      ],
+      "source_checks": [
+        {
+          "observation_id": 1,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 2,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 3,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 4,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 5,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 6,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 7,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 8,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 9,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 10,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 11,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 12,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 13,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 14,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 15,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 16,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 17,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 18,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "inspected_narrative"
+        },
+        {
+          "observation_id": 19,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 20,
+          "source_page": 1,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 21,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 22,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 23,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 24,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 25,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 26,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 27,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 28,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 29,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 30,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 31,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 32,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 33,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 34,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 35,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 36,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 37,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 38,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 39,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 40,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 41,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 42,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 43,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 44,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 45,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 46,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 47,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 48,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 49,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 50,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 51,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 52,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 53,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 54,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 55,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 56,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 57,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 58,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 59,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 60,
+          "source_page": 2,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 61,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 62,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 63,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 64,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 65,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 66,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 67,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 68,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 69,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 70,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 71,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 72,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 73,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 74,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 75,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 76,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 77,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 78,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 79,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 80,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 81,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 82,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 83,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 84,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 85,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 86,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 87,
+          "source_page": 5,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 88,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 89,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 90,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 91,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 92,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 93,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 94,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 95,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 96,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 97,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 98,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 99,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 100,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 101,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 102,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 103,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 104,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 105,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 106,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 107,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 108,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 109,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 110,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 111,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 112,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 113,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 114,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        },
+        {
+          "observation_id": 115,
+          "source_page": 7,
+          "source_check": "matched",
+          "method": "deterministic_table"
+        }
+      ]
+    }
+  ],
+  "quarantine": [
+    {
+      "run_id": 1,
+      "legacy_id": 265,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "2945ea97e148d769505ed46456ae8459692ad2a9c150880d2465632497e0d151",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 270,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "dc64422f87de9ef83c6e5785ce0f77454f1ddf6974eb73c97e122102643df19d",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 275,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "3bbc9b567bff922ff61e6a541ecae62aed1250d216a84d6bd91689c5f06b0cb0",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 280,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "3921a002e46b3167687d9cbb1b845308ee540b22005ebede20b8a89a0126ae55",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 285,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "e7c4b5aaffec7f001d31c6fdd17e4799f412d73bad3000984cdc70b448af83bd",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 290,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "1108e31540299dd66e52c519d4b62a3397e51c2c7e37f69d6d01801c851b8698",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 295,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "6c4399a4c2605c3bae42d77cbfb27730eb9fe4f620689e728c372f9574b5cab4",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 300,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "b4f4ac78b5240c9beb2d52a974e73bf78b5bcd3422d42dbcf84196e9da9ba5a1",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 305,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "25feb3492af7c5ad787ce446e32bbbaf5c261ef421b69274f248c4109377ce94",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 310,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "c32219f54b60904776c3534e17fe2839392000703f3b506ffe54d74be3626cf1",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 315,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "5e6ced2835b5e3558e61d819488ea23c306c2e0661aebf0fc08a3934d58a124a",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 320,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 2,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "6f2e7cea15992a6c819f51d7e0471aa4793852e5ae766168bd85e510f94f20b9",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 376,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "8746a0224150331a65e0206b492b5c25a2ccd01397f5b523f7c5b0f6b8feb1ed",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 379,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "f561378843f3f1c477c005f42a21d48afd8869d7bd76b3723ad5cfa3f562ac4c",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 382,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "4da33356a99ac902846ce7950d6e582951c7d9328e1c4ccabfa53b686e69660c",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 385,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "0f0d04ac43a948ae867dfd5b545da57691133e1872cf20f8b567be51c9b3c5aa",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 388,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "054493f42875a4213a3de70ac972caacea0be379813f5856732a262089e4a62f",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 391,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "ca69d84486f765eccc408bc85ce71d86718d970c7da63da95e45ddca7bd1cacf",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 394,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "b00d489fb1e5b7e5c2bf28195373175e3f2589716263ae17c45354f3636dd67b",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 397,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "af708894b7e3fb690bfa1feb68d6935b8e2cc222d340b43f9344b3073a14d310",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 400,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "cd7ad10386aeaaf1d46fff6c0ba599d30a0847541e1d314f67244d785f24ff08",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 403,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "3a3bf0cd4987923ee4f1d3ae6b39f2e83ba2d4577a560b450b7a48a38dc5a8d1",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 406,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "902c79080255aa47c16209d56dd91bf4f0a0b80a2601f210d81a5e430f0e706a",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 409,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "4935b4225b077a38aadd6abb7ba918a1d1723bffc2e281f9c2d32a55713c0800",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 412,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "ce82f18bd8bf5e54ebe33b03733ab1861938a613cd5e2453c5761ff0ed3988d5",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 415,
+      "source_doc": "inseed_ihpc_2026-06.pdf",
+      "source_page": 7,
+      "disposition": "quarantined",
+      "reason": "weight_scale_not_reviewed",
+      "original_row_sha256": "472c62607f1858713d839aa78e0c253b2f25abb785540678b267d751d959ca34",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 436,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "75802e06c6a3748c1df5f40d3f01aa6663d9c27d9627328e2afe9d9c45b70e45",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 437,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "10fb27e40f339a12ff15faff9c091b02c0b6ae10cdb3fba34a4941648ea1451d",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 438,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "20aff5f99d4751503f428707684b1e6d92fcf11ec5910a358c5cc10ae36218b3",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 439,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "decd031758543e232d580730df28bd5e7adbc05472ebff9f4df6f5217ad43fdf",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 440,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "93a82ceac3afa09ce9c4f1dccd3b04451bb819a74ae57e41998207e77866e053",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 441,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "de10deb31ecfc99fef3273d07c3e87c7fc851ac8bc736f2e8b63707d9415d8eb",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 442,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "f4180c517b5eb9b697fa9ddc7224b4e25406dad09f832b9d005f3f4b71d6dfcb",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 443,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "fcbea87920375a32a3fc3b4b32cadc435855f7af74504a54a1723bc0086ff3d9",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 444,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "57e8a92f62d3156c20fd8a42a1bfbe1c4f3d289802df99db57aa41b61d039e21",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 445,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "cb9a6c310e2bdaa9f38f01436981ff500e09cd568332af65ddbcdcc4950c7293",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 446,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "7ffea621d3c998de803f844e98eb8d9bec8a4b7e0a0026c6b79e341ba81baa23",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 447,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "8a2487dc6dc80a06a5c6927e8a80aab3a3dce367caf3e9c26f056796f1f446b0",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 513,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 15,
+      "disposition": "quarantined",
+      "reason": "annual_aggregation_not_reviewed",
+      "original_row_sha256": "598f35b1d837f6bd4318072aa2d100bb151d54bf9bb76c9789a0823d109646ec",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 514,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 15,
+      "disposition": "quarantined",
+      "reason": "forecast_not_observation",
+      "original_row_sha256": "739cbceb379c8ecab5ed79f6cab9bc2d88853ef321bb174e0e8eb6a9803f67ce",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 515,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 15,
+      "disposition": "quarantined",
+      "reason": "forecast_not_observation",
+      "original_row_sha256": "0ee6ff8313f974fcff81d7a6b72440d912488f7c7370b25ba589008874171145",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 528,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "af94beffe92bb5f2bcf71da0c08f75f37ad268e37ed33a97cb1aa1c3c07ccb00",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 529,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "cb08a1942d6d40f6c2631db135514a9935535ed8c4fb36fb2e67236766e820d4",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 530,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "825c90e2a43e27ccecc6d7fefe7914a4a40868d54eeb6bd237676d40c1a1f2c6",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 531,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "5a79ed7702139887f5429c3968d59d7733fffe8e8d205141c0ada2d2acff5a29",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 532,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "aeba2eb7f314c45bc63c168a8153cc44c3a8a33d1764054713723b14f9954d85",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 533,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "c9140cd1b49169e282a2b381865b3047c5001abeb68282e88aa1417d905b5e20",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 534,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "8f5cf3b4e53d7a4276c3eebf92fba7a2811db95106a3048bd37e3d90725e84a5",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 535,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "92072e160feec2175136625cbfbdb1ae17423c10e0ad08b1acf57e002133eacb",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 536,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "931f041b3abbbcb884889ef0afc02aafa6c1065e9b7145c208865d06b6fd0ad3",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 537,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "587c74391abd00c46abd98787faefe0b6fa83672aef282e84fc1eb5195e0aa98",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 538,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "73664bbb412f5c8e9055289020ce3d233fab90bbb62d5fd69bdf4fa9165b0d27",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 539,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "b0ae2c80f0327aa5c8d590b5a69b2ac1027d6cd9706f12b144a56dc6b46426d2",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 542,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "849fb909eaa45711bf126fceba14474fa87a758516076601ea46bf34196f0712",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 543,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "069971568c6dedc756c77772be7aaa57eae99458f1e8823415362a4af243d389",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 544,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "3ba29e48478c3e93d431990370823d705353548eabe43028d0d74ffa2cdde280",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 545,
+      "source_doc": "bceao_politique_monetaire_2023-06.pdf",
+      "source_page": 16,
+      "disposition": "quarantined",
+      "reason": "geography_methodology_not_reviewed",
+      "original_row_sha256": "d89884d09a13cf82a7f0b1c243dd7dcf2bbc4b0e5dc8fcb9691ccef4322cd33b",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 908,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 8,
+      "disposition": "quarantined",
+      "reason": "inflation_window_ambiguous",
+      "original_row_sha256": "0166e26cbeaccbc8fb78a0b30831708561e897a28c26f2e87030d5abcd0b7e2f",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 909,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 8,
+      "disposition": "quarantined",
+      "reason": "inflation_window_ambiguous",
+      "original_row_sha256": "24021aba89cc44c0cce87c6b604dc229b3311d7634e90aadb09506ad8c2455a9",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 910,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 8,
+      "disposition": "quarantined",
+      "reason": "inflation_window_ambiguous",
+      "original_row_sha256": "75b3472bbb3b8b674bfb5ee5959818c368666343623d0495588d1c10ae0157ea",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 911,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 8,
+      "disposition": "quarantined",
+      "reason": "inflation_window_ambiguous",
+      "original_row_sha256": "8424e3387e44c4ac75b52d4eb02f503b3d34db226db88d838ddeb3fa4909ec24",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 912,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 8,
+      "disposition": "quarantined",
+      "reason": "inflation_window_ambiguous",
+      "original_row_sha256": "1f55a6c0e315fee73b05ec18ddf6cf9464629418f333fb6ce9f52ba3437a9f40",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 913,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 8,
+      "disposition": "quarantined",
+      "reason": "inflation_window_ambiguous",
+      "original_row_sha256": "e397bdb9cd0a980f3c5db22f1a2d8eeff630e4de1d85d44760f7eff563bab505",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 923,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "547536db5addba6d6b21e32a71cfcdcc70c21907b7c358351f70e9b518091766",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 926,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "02ce8e5ca039ab9116ae2ee19ecbbb3c545e22c83b41d31fa0866be3130ebb54",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 929,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "544b445f0649f7edee2eeec1128566dfc4b5c382331ab006f2fe3697e7d367fb",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 932,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 13,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "c2f447b81b01f373f1439876754c58b04addc1a0395d0cd7ccddaf0eb32c7259",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 935,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 14,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "ba3a32a8a9a776607bb5e0d592f335f77f719d9e4af6857d12291b2b245c07aa",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 938,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 14,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "278e95c7da7d55d687c0b01ca554939fbe7741ae2ef56a853606916aef35cde2",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 941,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 14,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "ef008bb94f34f79d0897fff564b07bcc44d7db652a3d5f49f9e6a81848914280",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 944,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 14,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "e70512d696718a87278bfbdf419ee01af9294eeed33cead6a9c4667517d8bf3b",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 947,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 14,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "3ecbdfdd85f0337d0af22ff338393a5003ca62d1048d188048f91f23e5fc1ffa",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 950,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 14,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "a788cff6acb6b5c6913fa01b032f4a28292b7e0c6b99ecea0b9642b801c7f6cb",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 953,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 15,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "d92a397fc88d37f7899746f3d0a77f9da35b426929f175c702e78d3479df4cea",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 956,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 15,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "83685b42eba2fd699e92bea48646732125b21545ec7b361a1cbba01654450a44",
+      "review_status": "pending"
+    },
+    {
+      "run_id": 1,
+      "legacy_id": 959,
+      "source_doc": "inseed_bulletin_mensuel_2025-09.pdf",
+      "source_page": 15,
+      "disposition": "quarantined",
+      "reason": "retail_price_change_not_cpi",
+      "original_row_sha256": "a9582be604986f3a372a5686564ee2e70771bf08a0d4ecd68b7526276e3551f8",
+      "review_status": "pending"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "WARN",
+      "code": "legacy_quarantine",
+      "release_id": 1,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "publication_date_unknown",
+      "release_id": 1,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "reuse_review_required",
+      "release_id": 1,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "revision_review_required",
+      "release_id": 1,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "small_release",
+      "release_id": 1,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "legacy_quarantine",
+      "release_id": 2,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "publication_date_unknown",
+      "release_id": 2,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "reuse_review_required",
+      "release_id": 2,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "revision_review_required",
+      "release_id": 2,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "publication_date_unknown",
+      "release_id": 3,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "reuse_review_required",
+      "release_id": 3,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "revision_review_required",
+      "release_id": 3,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "legacy_quarantine",
+      "release_id": 4,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "publication_date_unknown",
+      "release_id": 4,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "reuse_review_required",
+      "release_id": 4,
+      "observation_id": null,
+      "legacy_id": null
+    },
+    {
+      "severity": "WARN",
+      "code": "revision_review_required",
+      "release_id": 4,
+      "observation_id": null,
+      "legacy_id": null
+    }
+  ],
+  "summary_sha256": "2e5e78664e7501e8633b7e042631fee073ac7e8ac78817014986afd6da724d82"
+}

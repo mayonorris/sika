@@ -191,9 +191,21 @@ S0.4.2 is an independently verified local gate, not certification of the source 
 and not a switch of the MVP endpoints onto V2. PostgreSQL SQL rendering is covered,
 but live PostgreSQL operation and a least-privilege adapter are not certified.
 
-### Remaining S0.4.3 certification
+### S0.4.3: Source concordance complete, publication certification pending
 
-S0.4.3 must record source-page spot checks, resolve revision marks and source rights
-from evidence, triage quarantine individually, and approve only justified series.
+The [source work packet](S0_4_3_SOURCE_CERTIFICATION.md) records complete exact
+source concordance for all 242 canonical records (zero discrepancies), their original
+links, and all 76 quarantine originals. The separate
+[quarantine registry](S0_4_3_QUARANTINE_REVIEW.md) proposes per-ID triage. The
+read-only `sika.source_review` tool grants no approval, inserts no QA/review history
+and never mutates metadata or states. All 242 records remain draft.
+
+It uses 45 checksum-bound independent anchors plus 944 directly parsed IHPC source
+cells, without moving narrative citations to different pages or modifying a value.
+S0.4.3 must still resolve revision marks and applicable source rights/date evidence,
+and obtain authenticated approval of justified cohorts. No
+commercial permission is currently verified; unknown rights are not a prohibition.
+The complete suite now passes 351 tests without provider calls; no QA history or
+operator authorization was created by source inspection. Both DB hashes are unchanged.
 The future S0.5 public query service must read only approved/published observations.
 S0.4 stays in progress until its full publication definition of done is verified.
