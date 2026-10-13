@@ -136,7 +136,7 @@ all existing QA/state counts remain unchanged.
 
 ### S0.5 Add the safe inflation query compiler
 
-Status: queued
+Status: in progress (S0.5.1 complete; public execution/API integration not delivered)
 
 - Define a typed query-intent contract.
 - Resolve aliases to canonical series identifiers.
@@ -146,6 +146,29 @@ Status: queued
 
 DoD: inflation golden questions pass without executing model-authored SQL; malicious or
 oversized intents are rejected predictably.
+
+S0.5.1 is a maintainer-approved dependency exception: prepare the typed contract,
+canonical resolver and bounded fixed SQL on synthetic fixtures while S0.4.3 remains
+open for rights/date/revision evidence and genuine operator approval. No real V2 rows
+become public and the legacy API/UI/databases remain unchanged. See
+[the contract and remaining execution boundary](S0_5_QUERY_COMPILER.md) and
+[ADR 0004](adr/0004-prepare-bounded-inflation-queries.md).
+
+Delivered S0.5.1: strict versioned intent, bounded reviewed-shape catalog, deterministic
+complete-identity/alias resolution, fixed parameterized SQL and immutable non-executing
+plans. Canonical codes/names cannot be shadowed by another series' aliases. Periods
+are bounded to 240 inclusive points; row limits to 500 plus one internal sentinel.
+All vintages and citation fields are preserved. No API/UI/schema or provider change.
+
+Validation: 461 tests pass without live provider calls, including 110 dedicated query
+tests on synthetic metadata/in-memory rows. Strict types, forged instances, ambiguity,
+identity collisions, injection, calendars, boundaries, provenance and sentinel behavior
+are covered. Both real database hashes are unchanged; no publication state is altered.
+One pre-existing Starlette/httpx deprecation warning remains.
+
+Remaining S0.5: proof-bound execution/result service, execution/resource limits,
+truncation/citation response handling, natural-language intent integration and golden
+question parity. Real public answers remain gated on S0.4.3; S1 is not unlocked.
 
 ### S0.6 Add operational visibility
 

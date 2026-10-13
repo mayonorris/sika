@@ -39,6 +39,7 @@ sika/review.py            Administrative CLI; resolved OS principal, no reviewer
 sika/source_review.py     Read-only source/quarantine work packet; never approval evidence
 sika/source_facts.py      Checksum-bound selected source anchors, not a complete parser
 sika/source_tables.py     Deterministic IHPC table evidence; no data/approval writes
+sika/query.py             Pure typed intent/resolver/compiler; no execution authority
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -48,6 +49,7 @@ docs/ARCHITECTURE_SAAS.md   Accepted SaaS target and migration sequence
 docs/BACKLOG_SAAS.md        Active post-hackathon implementation backlog
 docs/DATA_SPEC_V2.md        Versioned canonical schema and migration commands
 docs/S0_3_INFLATION_MIGRATION.md  Inflation migration results, limits, and replay guide
+docs/S0_5_QUERY_COMPILER.md  Query preparation contract, limits, and publication boundary
 docs/adr/                  Accepted architecture decisions
 docs/BACKLOG.md             Historical golden questions and MVP backlog
 tests/                      Extraction, validation, API, data, and UI smoke tests
@@ -85,6 +87,9 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 .\.venv\Scripts\python.exe -m sika.source_review --target data/processed/sika_v2.db --legacy data/processed/sika.db --report docs/reports/local/S0_4_3_source_review.json
 .\.venv\Scripts\python.exe -m sika.source_review --target data/processed/sika_v2.db --legacy data/processed/sika.db --summary-only --report docs/reports/S0_4_3_source_review.json
 .\.venv\Scripts\python.exe -m pytest tests/test_source_review.py tests/test_source_tables.py -q
+
+# S0.5.1: pure query preparation on synthetic fixtures; no public execution.
+.\.venv\Scripts\python.exe -m pytest tests/test_query.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -171,6 +176,13 @@ or extraction test.
   Keep full source-review packets local under ignored docs/reports/local/. Only
   redacted counts/ID/hash summaries may be committed; draft V2 row exports must
   not become an alternate public dataset through the repository.
+  S0.5.1 is an approved preparation-only sequencing exception while S0.4.3 stays
+  open. Keep its typed compiler non-executing and test it only on synthetic fixtures.
+  Its authorized_observations relation is a future adapter contract, not a new view
+  or a status-filter shortcut. Future execution must obtain fresh published_rows()
+  snapshot-bound proof, preserve citations/vintages, enforce execution limits and
+  strip the limit+1 sentinel with explicit truncation. Compilation grants no access.
+  Do not wire this preparatory module into the MVP API/UI or claim S0.5 is complete.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.
