@@ -19,8 +19,10 @@ def _allow_writes(connection: Connection, *permissions: tuple[str, str, int]) ->
         connection.info["sika_write_permissions"] = previous
 
 
-def create_database_engine(url: str | URL) -> Engine:
+def create_database_engine(url: str | URL, *, sqlite_begin: str = "deferred") -> Engine:
     """Enable SQLite foreign keys and real transactional DDL on every connection."""
+    if type(sqlite_begin) is not str or sqlite_begin not in {"deferred", "immediate"}:
+        raise ValueError("Unsupported SQLite transaction mode")
     if make_url(url).get_backend_name() not in {"sqlite", "postgresql"}:
         raise ValueError("Trust Core supports only SQLite and PostgreSQL")
     engine = create_engine(url)
@@ -46,5 +48,5 @@ def create_database_engine(url: str | URL) -> Engine:
 
         @event.listens_for(engine, "begin")
         def begin_sqlite(connection) -> None:
-            connection.exec_driver_sql("BEGIN")
+            connection.exec_driver_sql("BEGIN IMMEDIATE" if sqlite_begin == "immediate" else "BEGIN")
     return engine
