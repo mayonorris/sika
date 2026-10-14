@@ -123,8 +123,9 @@ sentinel behavior and provenance/vintages in an in-memory fixture. Its structure
 equivalent of golden question 1 is not proof that a new natural-language endpoint is
 delivered. Existing MVP golden-question regressions remain on the unchanged API.
 
-S0.5.2 should implement a default-deny, proof-bound execution and result service on
-synthetic publication fixtures first: catalog loading, fresh per-release proof,
-execution/resource limits, citation serialization, truncation handling and invalidated
-proof tests. API integration and real inflation answers remain gated on the open
-S0.4.3 evidence and on end-to-end golden-question parity. S1 is still gated on S0 exit.
+S0.5.2 implements the separate proof-bound execution/result service on synthetic
+publication fixtures: held-snapshot catalog loading, fresh per-release proof,
+execution/resource limits, cited decimal serialization and explicit truncation. See
+[the execution contract and limitations](S0_5_2_QUERY_EXECUTION.md). The compiler itself
+remains non-executing. API integration and real inflation answers remain gated on the
+open S0.4.3 evidence and end-to-end golden-question parity. S1 is still gated on S0 exit.

@@ -136,7 +136,7 @@ all existing QA/state counts remain unchanged.
 
 ### S0.5 Add the safe inflation query compiler
 
-Status: in progress (S0.5.1 complete; public execution/API integration not delivered)
+Status: in progress (S0.5.1/S0.5.2 complete; API integration not delivered)
 
 - Define a typed query-intent contract.
 - Resolve aliases to canonical series identifiers.
@@ -166,9 +166,31 @@ identity collisions, injection, calendars, boundaries, provenance and sentinel b
 are covered. Both real database hashes are unchanged; no publication state is altered.
 One pre-existing Starlette/httpx deprecation warning remains.
 
-Remaining S0.5: proof-bound execution/result service, execution/resource limits,
-truncation/citation response handling, natural-language intent integration and golden
-question parity. Real public answers remain gated on S0.4.3; S1 is not unlocked.
+Delivered S0.5.2 implementation: a local proof-bound execution/result service on
+synthetic publication fixtures. One writer-reserved, query-only SQLite context holds
+catalog, retained publication proof and citations through isolated in-memory SQL and
+result construction. All contributing published cohorts are checked, including those
+outside the requested period; any invalid contributor refuses the entire result.
+Target and read-only legacy snapshot work is bounded before materialization. Values
+remain decimal strings on the wire, vintages/citations are preserved, the limit+1
+sentinel is removed and truncation is explicit. Expected refusals have sanitized
+French envelopes without rows or unproved ambiguity candidates. No real DB, API/UI,
+schema, source policy, approval or publication state is changed. See
+[execution contract and limits](S0_5_2_QUERY_EXECUTION.md) and
+[ADR 0005](adr/0005-execute-queries-from-protected-snapshots.md).
+
+Validation (2026-10-14): 654 tests pass without live provider calls, including 112
+protected-read tests and 81 execution/result tests added by S0.5.2. Genuine synthetic
+QA/review/publication flows verify cited decimal results, empty/truncated states,
+vintage ordering, stale/revoked/failed/partial proof, final-check races, malicious
+intent, lowerable resource limits, lock/SQL deadlines and cleanup. Both real DB hashes
+are unchanged and the diff checks pass. One pre-existing Starlette/httpx deprecation
+warning remains. No real observation is approved or published by these tests.
+
+Remaining S0.5: natural-language intent/API integration and end-to-end golden-question
+parity; HTTP/transport limits and vintage-aware rendering. Local SQLite source-parser
+deadlines are cooperative, not hard worker isolation or production load certification.
+Real public answers remain gated on S0.4.3; S1 is not unlocked.
 
 ### S0.6 Add operational visibility
 

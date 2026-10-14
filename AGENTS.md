@@ -40,6 +40,7 @@ sika/source_review.py     Read-only source/quarantine work packet; never approva
 sika/source_facts.py      Checksum-bound selected source anchors, not a complete parser
 sika/source_tables.py     Deterministic IHPC table evidence; no data/approval writes
 sika/query.py             Pure typed intent/resolver/compiler; no execution authority
+sika/query_execution.py   Local protected execution/results; synthetic integration only
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -50,6 +51,7 @@ docs/BACKLOG_SAAS.md        Active post-hackathon implementation backlog
 docs/DATA_SPEC_V2.md        Versioned canonical schema and migration commands
 docs/S0_3_INFLATION_MIGRATION.md  Inflation migration results, limits, and replay guide
 docs/S0_5_QUERY_COMPILER.md  Query preparation contract, limits, and publication boundary
+docs/S0_5_2_QUERY_EXECUTION.md  Proof-bound execution, citations, and resource limitations
 docs/adr/                  Accepted architecture decisions
 docs/BACKLOG.md             Historical golden questions and MVP backlog
 tests/                      Extraction, validation, API, data, and UI smoke tests
@@ -90,6 +92,9 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 
 # S0.5.1: pure query preparation on synthetic fixtures; no public execution.
 .\.venv\Scripts\python.exe -m pytest tests/test_query.py -q
+
+# S0.5.2: protected execution on synthetic publication fixtures, not MVP routes.
+.\.venv\Scripts\python.exe -m pytest tests/test_publication_read.py tests/test_query_execution.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -183,6 +188,16 @@ or extraction test.
   snapshot-bound proof, preserve citations/vintages, enforce execution limits and
   strip the limit+1 sentinel with explicit truncation. Compilation grants no access.
   Do not wire this preparatory module into the MVP API/UI or claim S0.5 is complete.
+  S0.5.2 continues this synthetic-only exception with a local proof-bound execution
+  service. One BEGIN IMMEDIATE/query-only snapshot holds catalog and every contributing
+  release proof through ephemeral SQL and citation serialization; never execute a
+  caller-provided plan or read raw observations after proof. Any invalid contributor
+  refuses the entire result. Final artifact/legacy/allowlist checks precede return.
+  Keep the in-memory relation separate from the target, preserve vintages/decimal
+  values/citations, strip the sentinel and disclose truncation. SQL/lock/size budgets
+  are enforced; PDF/OS deadline checks are cooperative, not hard parser isolation.
+  The local service is not HTTP/tenant/PostgreSQL certification. Real publication and
+  API migration still require S0.4.3 evidence/review and golden-question parity.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.
