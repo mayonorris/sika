@@ -13,6 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from openai import APIError, APITimeoutError, OpenAI
 from pydantic import BaseModel, Field
 
+from api.query import build_query_router
+
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
 BASE_URL = os.getenv("OPENAI_BASE_URL", "").strip()
@@ -775,4 +777,6 @@ def sources():
     except sqlite3.Error:
         return []
 
+# The protected query pilot is disabled without trusted fixture-only injection.
+app.include_router(build_query_router())
 app.mount("/", StaticFiles(directory="app", html=True), name="app")

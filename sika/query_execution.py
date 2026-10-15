@@ -1,4 +1,4 @@
-"""Local proof-bound query service; not connected to the MVP API or real corpus.
+"""Proof-bound query service; enabled only in isolated synthetic fixture APIs.
 
 Accept intent only, compile internally, and execute on an ephemeral relation made
 exclusively from fresh protected publication reads. No model, raw SQL or cached
