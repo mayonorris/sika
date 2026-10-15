@@ -210,6 +210,25 @@ handling, alias/configuration refusal, final response limits, sanitized errors a
 timeout/cancellation slot retention. Both real DB SHA-256 hashes are unchanged.
 One existing Starlette/httpx deprecation warning remains; no real row is approved.
 
+Delivered manual-test environment: `python -m dev.fixture_sandbox --port 8001`
+creates a fresh, ignored synthetic database and serves a dedicated local page,
+without importing/enabling the MVP app. It contains 511 invented observations and
+11 series, a frozen 2026-10-15 clock, explicit FR/EN examples, ambiguity/truncation
+and empty/refusal states, separate revision vintages and local synthetic PDF links.
+All printed fixture values/pages are checked before unchanged QA/approve/publish
+services run. Only the dedicated fixture process simulates a synthetic reviewer;
+no real operator is enrolled or real source policy/evidence modified. Loopback
+Host/Origin checks and hashed allowlisted assets prevent directory/data exposure.
+The PDF assets are byte-preserved through Git binary attributes. Source PDFs and
+the bilingual UI were inspected visually; normal real-data routes remain unchanged.
+
+Manual-sandbox verification (2026-10-15): all 37 new sandbox tests pass. The complete
+run recorded 951 passes and exposed one existing test's artificial 30 ms timeout
+being reused for its recovery request. Only that test was corrected to restore the
+normal wait budget after the intentional timeout; both cancellation/timeout cases
+then pass on focused rerun. No production deadline or publication guard was changed.
+Both real DB hashes and all three committed synthetic PDF byte hashes are unchanged.
+
 Remaining S0.5: complete end-to-end golden-question/domain parity, vintage-aware
 rendering and a reviewed real-data activation/migration path. Local SQLite source-parser
 deadlines are cooperative, not hard worker isolation or production load certification.

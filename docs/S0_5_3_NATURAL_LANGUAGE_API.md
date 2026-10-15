@@ -136,7 +136,74 @@ authentication, tenant, distributed-rate-limit or PostgreSQL certification.
 
 ## Verification
 
+### Local interactive fixture sandbox
+
+Run from the repository root with the existing virtual environment:
+
 ```powershell
+.\.venv\Scripts\python.exe -m dev.fixture_sandbox --port 8001
+```
+
+Open `http://127.0.0.1:8001/`. This is a separate application, not the legacy UI on
+port 8000. The page submits questions to the real protected `/v1/query` route and
+shows normalized intent, assumptions, cited rows and explicit failure states.
+PDF links open only the allowlisted local synthetic sources. No chart is emitted.
+
+Every launch creates a new unique database/archive below the ignored
+`data/processed/fixture_sandbox/` directory. The launcher cannot select or reuse an
+existing database, enroll a reviewer, read `.env`, import `api.main` or create a
+provider client. It binds only loopback, rejects foreign Host/Origin headers and
+does not expose its database directory through a static mount. The normal app's
+new query route remains disabled. The files are retained locally for inspection;
+the next launch builds a fresh environment rather than editing a previous run.
+
+All **511 invented observations** are clearly labeled synthetic: five monthly
+concepts for Togo and Benin (January 2023–October 2026), an additional Togo CPI base
+2014 series, and five revised Togo year-on-year observations. Geography labels are
+used to test interpretation, not to claim actual economic figures. The clock is
+frozen at **2026-10-15** for reproducible `since` questions, and there are 11 series.
+Other grammar-supported countries need not have fixture data.
+
+Examples to try:
+
+- `Quelle est l'évolution de l'inflation au Togo depuis 2023 ?`
+- `How has inflation in Togo evolved since 2023?`
+- `Monthly inflation in Benin in June 2026`
+- `IHPC base 2023 au Togo de janvier 2026 à juin 2026`
+- `IHPC au Togo en 2026` — ambiguous: no base is guessed.
+- `Inflation du Togo en 2030` — valid series, empty period range.
+- Select a row limit of 2 — explicit truncation, not an apparently complete series.
+- `Inflation en 2026` — clarification, since the country is missing.
+- `Forecast inflation in Togo for 2030` — unsupported, no provider fallback.
+
+The test process simulates only a clearly synthetic reviewer/allowlist, never an
+OS operator enrollment. It adds uniquely named synthetic source profiles without
+altering official profiles. Every printed row/value/page/revision is verified
+against the committed synthetic PDFs before real QA/approval/publication service
+calls; no gate or protected state is patched. The simulated context remains alive
+while serving so each request must still pass fresh proof checks. It is restored
+on shutdown. None of this is real source certification or reuse permission.
+
+The three tiny PDF fixtures contain only invented data and are committed under
+`dev/fixtures/`. The running sandbox needs no new dependency. If fixture values
+change, regenerate their sources using `python -m dev.generate_fixture_sources`
+with a development runtime containing ReportLab; then recheck all printed rows,
+pages and visual layout. Do not change official source profiles to make tests pass.
+
+Manual-environment verification on 2026-10-15: all 37 dedicated sandbox tests pass,
+including fresh source/reviewer revocation, physical fixture counts, scoped identity
+restoration and read-only source/DB invariance. French and English questions were
+also exercised in the browser, and the generated source pages were rendered and
+inspected. Both real DB hashes remain unchanged. The complete regression run had
+951 passes and one recovery assertion still using an artificial 30 ms test timer.
+Restoring the normal budget for that recovery step makes both timeout/cancellation
+cases pass on focused rerun; no service deadline or guard was loosened. This records
+the full run plus targeted recheck, not a second complete post-correction suite run.
+
+### Automated regression
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/test_fixture_sandbox.py -q
 .\.venv\Scripts\python.exe -m pytest tests/test_interpretation.py tests/test_query_api.py -q
 cmd /C "set OPENAI_API_KEY=test&& .venv\Scripts\python.exe -m pytest -q"
 ```

@@ -24,6 +24,9 @@ Source-of-truth order when documents disagree:
 api/main.py                 FastAPI routes, deterministic fallback, and legacy LLM router
 api/query.py                Default-disabled, fixture-confined protected query API
 app/index.html              Current single-file French-first UI with Plotly
+app/fixture_sandbox.html    Isolated synthetic-only S0.5.3 manual test page
+dev/fixture_sandbox.py      Loopback fixture launcher; never imports the MVP app
+dev/fixtures/               Explicitly synthetic PDFs; no official source data
 pipeline/extract.py         PDF -> observations + passages (LLM-assisted)
 pipeline/extract_xlsx.py    Deterministic Excel ingestion
 pipeline/extract_bceao.py   Deterministic BCEAO bulletin ingestion
@@ -101,6 +104,10 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 
 # S0.5.3: deterministic FR/EN interpretation and isolated fixture HTTP integration.
 .\.venv\Scripts\python.exe -m pytest tests/test_interpretation.py tests/test_query_api.py -q
+
+# Isolated manual S0.5.3 sandbox; new synthetic DB each launch, never real targets.
+.\.venv\Scripts\python.exe -m dev.fixture_sandbox --port 8001
+.\.venv\Scripts\python.exe -m pytest tests/test_fixture_sandbox.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -216,6 +223,17 @@ or extraction test.
   parser deadlines are not hard isolation. No legacy route/UI migration, real
   publication, tenant authentication or full S0.5/S1 completion follows from this
   fixture integration. Expand grammar only with reviewed semantics and tests.
+  The dev.fixture_sandbox launcher is a disposable local test application, not an
+  activation switch. It creates a new unique ignored root and verifies every invented
+  row against visibly synthetic PDFs before genuine QA/approve/publish services run.
+  Only that dedicated fixture process may simulate a synthetic test reviewer and its
+  process-local allowlist, as unit fixtures do; never resolve/auto-enroll a real OS
+  reviewer or patch publication/validation guards. Add only uniquely named synthetic
+  profiles, restore the scoped test context at shutdown, and accept no existing DB,
+  reviewer or host argument. Bind loopback only; serve individual allowlisted assets,
+  never the fixture directory. No .env/provider/MVP import or real evidence/state
+  change is permitted. Keep the visible synthetic warning and the frozen fixture
+  clock explicit; these tests establish no real publication or commercial rights.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.

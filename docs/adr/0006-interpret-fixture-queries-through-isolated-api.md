@@ -192,3 +192,21 @@ admission policy must be measured and designed separately.
 7. Add further reviewed grammar/golden questions and vintage-aware rendering in later
    increments. Do not retire the legacy path or mark S0/S1 gates complete based only
    on fixture integration.
+
+## Local manual-test launcher addendum — 2026-10-15
+
+The maintainer explicitly requested an interactive fixture environment. Provide a
+separate `dev.fixture_sandbox` process on loopback, with a dedicated self-contained
+HTML page, a new owned fixture root per launch and no existing-target/reviewer/host
+configuration. Do not import or enable the MVP app. Reject foreign Host/Origin
+headers and serve only individual hash-checked synthetic source files, not the DB
+directory. No provider, new runtime dependency or real publication change is needed.
+
+The dedicated process may simulate an explicitly synthetic test reviewer/allowlist,
+as isolated test fixtures do, without resolving or enrolling a real OS reviewer.
+Only uniquely named invented document profiles are added, and all scoped simulation
+is restored at shutdown. Verify every invented value/page/revision against its
+visibly synthetic PDF before calling the unchanged QA/approve/publish services.
+Fresh protected reads remain mandatory. This is test infrastructure, never a real
+administrative enrollment/approval path. The frozen fixture clock, invented values,
+separate publication vintages and remaining production gates stay visible.
