@@ -422,6 +422,7 @@ def test_cancelled_or_timed_out_request_does_not_release_active_worker_slot(
             finished.set()
 
     monkeypatch.setattr(query_api, "execute_query", controlled)
+    normal_wait_budget = query_api.HTTP_TIMEOUT_SECONDS
     if stop == "timeout":
         monkeypatch.setattr(query_api, "HTTP_TIMEOUT_SECONDS", 0.03)
     app = app_for(settings(fixture[0]))
@@ -446,6 +447,9 @@ def test_cancelled_or_timed_out_request_does_not_release_active_worker_slot(
                 assert await asyncio.to_thread(finished.wait, 2)
                 if not pending.done():
                     await pending
+            # Only the blocked request should use the artificial 30 ms timeout.
+            # Recovery must test released capacity, not host scheduler speed.
+            monkeypatch.setattr(query_api, "HTTP_TIMEOUT_SECONDS", normal_wait_budget)
             for _ in range(30):
                 response = await client.post("/v1/query", json=request())
                 if response.status_code != 429:
