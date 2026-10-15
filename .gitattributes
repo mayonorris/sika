@@ -1,0 +1,2 @@
+# Preserve generated synthetic PDF bytes and their checksum-bound provenance.
+dev/fixtures/*.pdf binary

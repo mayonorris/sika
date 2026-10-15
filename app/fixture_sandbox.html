@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Sika · Laboratoire S0.5.3</title>
+  <style>
+    :root{color-scheme:dark;--bg:#101827;--panel:#192438;--soft:#233149;--ink:#edf2fb;--muted:#b1bed3;--line:#3b4c66;--amber:#ffc35d;--green:#8be0c0;--red:#ffb6b9;--radius:18px}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button,input,select,textarea,summary{outline-offset:4px}:focus-visible{outline:3px solid var(--amber)}button{cursor:pointer}button:disabled{cursor:wait;opacity:.65}a{color:var(--amber)}[hidden]{display:none!important}.shell{width:min(1120px,100% - 40px);margin:auto}.top{padding:25px 0;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:28px;font-weight:800;letter-spacing:.03em;color:var(--amber)}.brand small{font-size:13px;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-left:16px}.badge{font-size:12px;letter-spacing:.1em;padding:5px 10px;border:1px solid var(--line);border-radius:30px;text-transform:uppercase}.warning{border:1px solid #9b722e;background:#342c1d;border-radius:12px;padding:14px 18px;color:#ffe4b4}.warning strong{display:block;font-size:14px;letter-spacing:.04em}.warning p{margin:5px 0 0;font-size:14px}.hero{padding:36px 0 23px;max-width:780px}.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:700}h1{font-size:clamp(28px,4vw,43px);line-height:1.18;letter-spacing:-.035em;margin:12px 0 16px}p{margin:0 0 12px}.muted{color:var(--muted)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:25px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px;align-items:start}.field-label{display:block;font-size:14px;font-weight:650;margin-bottom:7px}textarea,input,select{color:var(--ink);background:#111c2d;border:1px solid #667792;border-radius:9px;padding:11px 12px;width:100%}textarea{resize:vertical;min-height:116px}textarea::placeholder,input::placeholder{color:#96a5bd}.help{font-size:13px;color:var(--muted);margin:6px 0 0}.row{display:flex;gap:14px;align-items:end;margin-top:18px}.row>div{flex:1;min-width:0}.primary{border:1px solid var(--amber);background:var(--amber);color:#20180b;font-weight:750;padding:11px 20px;border-radius:9px;white-space:nowrap}.secondary{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 12px;border-radius:9px}.advanced{border-top:1px solid var(--line);margin-top:22px;padding-top:14px}.advanced summary{font-size:14px;color:var(--muted);cursor:pointer}.advanced .row{align-items:start}.side h2{font-size:16px;margin:0 0 12px}.examples{display:grid;gap:8px}.example{display:block;width:100%;text-align:left;background:#142033;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px 12px;font-size:13px;line-height:1.45}.example:hover{border-color:var(--amber)}.example small{display:block;color:var(--muted);font-size:12px;margin-top:3px}.result{margin:24px 0 45px;min-width:0}.state{border:1px dashed #52647e;border-radius:14px;padding:27px;color:var(--muted)}.state h2{margin:0 0 6px;font-size:19px;color:var(--ink)}.state.error{border-color:#a16c71;background:#2b222d}.state.pending{border-color:var(--amber)}.state.empty{border-color:#5f91af}.state p:last-child{margin-bottom:0}.state code,.trace{font-size:12px;overflow-wrap:anywhere}.result-head{display:flex;justify-content:space-between;gap:15px;align-items:start;margin-bottom:16px}.result-head h2{font-size:23px;line-height:1.3;margin:5px 0 0}.result-badge{font-size:12px;border-radius:7px;background:#203d38;color:var(--green);padding:5px 9px;white-space:nowrap}.result-badge.partial{background:#49391d;color:var(--amber)}.answer{white-space:pre-wrap;overflow-wrap:anywhere;font-size:17px;margin-bottom:20px}.notice{background:#2f301f;color:#ffe3ab;border-left:3px solid var(--amber);border-radius:4px;padding:10px 12px;margin-bottom:16px;font-size:14px}.metadata{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:0;padding:17px 0;border-block:1px solid var(--line)}.metadata div{min-width:0}.metadata dt{font-size:12px;color:var(--muted)}.metadata dd{font-size:14px;margin:2px 0 0;overflow-wrap:anywhere}.assumptions{margin-top:18px}.assumptions h3,.table-heading{font-size:15px;margin:0 0 8px}.assumptions ul{padding-left:20px;margin:0;color:var(--muted);font-size:14px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}th{font-weight:650;color:var(--muted);white-space:nowrap;background:#132035}tbody tr:last-child td{border-bottom:0}td.numeric{font-variant-numeric:tabular-nums;white-space:nowrap}td.citation{min-width:235px;overflow-wrap:anywhere}td small{display:block;color:var(--muted);font-size:12px}caption{text-align:left;padding:13px;color:var(--muted);background:#132035;font-size:12px}.table-heading{margin-top:24px}.debug{margin-top:22px;font-size:13px;color:var(--muted)}.debug summary{cursor:pointer}pre{font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;background:#101b2c;padding:15px;border-radius:9px;overflow:auto;max-height:420px}.trace{margin-top:18px;color:var(--muted)}footer{border-top:1px solid var(--line);padding:18px 0 30px;color:var(--muted);font-size:12px}.spinner{display:inline-block;width:13px;height:13px;border:2px solid #826c43;border-top-color:var(--amber);border-radius:50%;margin-right:8px;vertical-align:-1px;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.spinner{animation:none}}@media(max-width:850px){.workspace{grid-template-columns:1fr}.side{padding:20px}.examples{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.shell{width:calc(100% - 24px)}.top{padding:18px 0}.brand small{display:block;margin-left:0;font-size:11px}.badge{font-size:10px}.hero{padding-top:26px}.panel{padding:18px}.row{flex-wrap:wrap}.row>div{flex-basis:calc(50% - 7px)}.row>.primary{width:100%}.metadata{grid-template-columns:repeat(2,minmax(0,1fr))}.result-head{flex-direction:column}.examples{grid-template-columns:1fr}.advanced .row>div{flex-basis:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="top"><div class="brand">SIKA <small>LABORATOIRE DE REQUÊTES</small></div><span class="badge">S0.5.3 · Local</span></header>
+    <aside class="warning" role="note" aria-label="Avertissement données synthétiques">
+      <strong>DONNÉES SYNTHÉTIQUES — AUCUN CHIFFRE OFFICIEL · SYNTHETIC DATA — NOT OFFICIAL</strong>
+      <p>Environnement isolé de test. Les valeurs et les documents sont fictifs ; ils ne décrivent aucune situation économique réelle. Les bases réelles ne sont pas utilisées.</p>
+      <p>Horloge de test figée au 15 octobre 2026 · 511 observations inventées · 11 séries mensuelles · Togo et Bénin, janvier 2023 à octobre 2026.</p>
+    </aside>
+    <main>
+      <section class="hero" aria-labelledby="page-title"><div class="eyebrow">Comprendre · Vérifier · Tester</div><h1 id="page-title">Une question. Une intention explicite.<br>Des lignes toujours sourcées.</h1><p class="muted">Testez le nouveau parcours en français ou en anglais. L’interprétation est déterministe, sans LLM : pays, concept et période doivent être explicites.</p></section>
+      <div class="workspace">
+        <section class="panel" aria-label="Poser une question">
+          <form id="query-form">
+            <label class="field-label" for="question">Votre question / Your question</label>
+            <textarea id="question" name="question" required minlength="3" maxlength="1000" placeholder="Quelle est l’évolution de l’inflation au Togo depuis 2023 ?" aria-describedby="question-help"></textarea>
+            <p class="help" id="question-help">Inflation uniquement. Précisez le pays et la période ; pour un IHPC, précisez aussi la base.</p>
+            <div class="row"><div><label class="field-label" for="language">Langue de la question</label><select id="language" name="language" aria-describedby="language-help"><option value="auto">Détection automatique</option><option value="fr">Français</option><option value="en">English</option></select></div><div><label class="field-label" for="limit">Maximum de lignes</label><input id="limit" name="limit" type="number" min="1" max="500" step="1" value="100" required></div><button class="primary" id="submit-query" type="submit">Interroger les fixtures</button></div>
+            <p class="help" id="language-help">La langue choisit la grammaire d’interprétation ; elle ne traduit pas une formulation non prise en charge.</p>
+            <details class="advanced"><summary>Filtres de désambiguïsation (facultatifs)</summary><div class="row"><div><label class="field-label" for="price-basis">Base de l’indice IHPC</label><select id="price-basis" name="price_basis"><option value="">Non spécifiée</option><option value="index_2014">Base 2014</option><option value="index_2023">Base 2023</option></select></div><div><label class="field-label" for="source-variant">Variante de source</label><input id="source-variant" name="source_variant" maxlength="128" spellcheck="false" autocomplete="off" placeholder="Code exact, si nécessaire" aria-describedby="variant-help"></div></div><p class="help" id="variant-help">Aucune variante n’est devinée. Ces filtres ne donnent aucun droit de publication.</p></details>
+          </form>
+        </section>
+        <aside class="panel side" aria-labelledby="examples-heading"><h2 id="examples-heading">Un point de départ</h2><div class="examples" id="examples"></div><p class="help" style="margin-top:13px">Un exemple remplit le formulaire. Lancez ensuite la requête.</p></aside>
+      </div>
+      <section class="result" id="result" aria-label="Résultat de la requête" aria-busy="false"><div class="state" id="initial-state"><h2>Le laboratoire est prêt</h2><p>Choisissez un exemple ou posez une question. Vous verrez l’intention normalisée, les hypothèses et chaque observation avec sa provenance.</p><p class="help">Pas de graphique : les différentes versions de publication restent distinctes.</p></div></section>
+      <div id="announcer" role="status" aria-live="polite" aria-atomic="true" class="help"></div>
+    </main>
+    <footer>Fixtures locales uniquement · POST /v1/query · Aucun fournisseur LLM · Aucun enregistrement des questions dans ce navigateur</footer>
+  </div>
+  <script>
+    "use strict";
+    const form = document.getElementById("query-form");
+    const result = document.getElementById("result");
+    const announcer = document.getElementById("announcer");
+    const question = document.getElementById("question");
+    const examples = [
+      {label:"Évolution · Français", hint:"Inflation depuis 2023", question:"Quelle est l'évolution de l'inflation au Togo depuis 2023 ?"},
+      {label:"Evolution · English", hint:"Inflation since 2023", question:"How has inflation in Togo evolved since 2023?"},
+      {label:"Variation mensuelle", hint:"Un concept différent", question:"Variation mensuelle des prix au Togo en juin 2026"},
+      {label:"Indice IHPC", hint:"Base 2023 explicitée", question:"IHPC base 2023 au Togo de janvier 2026 à juin 2026"},
+      {label:"Indice à préciser", hint:"Deux bases : clarification attendue", question:"IHPC au Togo de janvier 2026 à juin 2026"},
+      {label:"Résultat vide", hint:"Demander une période absente", question:"Inflation du Togo en 2030"},
+      {label:"Limite à 2 lignes", hint:"Troncature clairement signalée", question:"Quelle est l'évolution de l'inflation au Togo depuis 2023 ?", limit:2},
+      {label:"Clarification", hint:"Le pays manque volontairement", question:"Inflation en 2026"}
+    ];
+    const assumptions = {
+      headline_all_items:"Ensemble des produits et secteurs, agrégation totale ; correction saisonnière non renseignée.",
+      headline_inflation_yoy:"Le mot « inflation » désigne ici le glissement annuel, pas la variation mensuelle ni la moyenne.",
+      year_expanded_to_months:"Une année demande ses observations mensuelles de janvier à décembre, pas une moyenne annuelle.",
+      since_ends_at_current_month:"La plage « depuis / since » se termine au mois courant de l’horloge de test du serveur.",
+      since_ends_at_current_quarter:"La plage « depuis / since » se termine au trimestre courant de l’horloge de test du serveur."
+    };
+    const concepts = {inflation_rate_yoy:"Inflation en glissement annuel",inflation_rate_mom:"Variation mensuelle des prix",inflation_rate_3m:"Variation des prix sur trois mois",inflation_rate_12m_average:"Inflation moyenne sur douze mois",cpi_index:"Indice harmonisé des prix à la consommation"};
+    const geographies = {TG:"Togo",BJ:"Bénin",BF:"Burkina Faso",CI:"Côte d’Ivoire",GW:"Guinée-Bissau",ML:"Mali",NE:"Niger",SN:"Sénégal",WAEMU:"UEMOA"};
+    const frequencies = {monthly:"Mensuelle",quarterly:"Trimestrielle"};
+    const units = {percent:"%",index:"Indice"};
+    const revisions = {provisional:"Provisoire",revised:"Révisée",final:"Définitive"};
+    const fieldNames = {geography:"le pays ou la zone",period:"la période",price_basis:"la base de l’indice",source_variant:"la variante de source"};
+    const errorTitles = {ambiguous_series:"La série doit être précisée",clarification_required:"Il manque une précision",unsupported_question:"Cette formulation n’est pas encore prise en charge",invalid_period:"La période doit être vérifiée",query_busy:"Une vérification est déjà en cours",query_timeout:"La vérification a dépassé le délai d’attente",query_disabled:"Ce serveur n’est pas le laboratoire activé",publication_unavailable:"Restitution bloquée par les garde-fous",unknown_series:"Aucune série publiée ne correspond",database_unavailable:"Les fixtures sont indisponibles"};
+    function element(tag, text, className) {
+      const node = document.createElement(tag);
+      if (text !== undefined) node.textContent = String(text);
+      if (className) node.className = className;
+      return node;
+    }
+    function showState(title, message, className) {
+      const box = element("div",undefined,"state" + (className ? " " + className : ""));
+      box.append(element("h2",title),element("p",message));
+      result.replaceChildren(box);
+      return box;
+    }
+    function debugDetails(payload) {
+      const details = element("details",undefined,"debug");
+      details.append(element("summary","Détails techniques · réponse JSON"),element("pre",JSON.stringify(payload,null,2)));
+      return details;
+    }
+    function trace(payload) {
+      if (!payload.request_id) return;
+      const parts = ["Requête : " + payload.request_id];
+      if (payload.as_of_utc) parts.push("Vérifiée à : " + payload.as_of_utc);
+      result.append(element("p",parts.join(" · "),"trace"));
+    }
+    function renderError(payload, httpStatus) {
+      const detail = payload.error || {};
+      const box = showState(errorTitles[detail.code] || "La requête n’a pas abouti",detail.message || "Une erreur a empêché la restitution. Réessayez avec un exemple.","error");
+      if (Array.isArray(detail.fields) && detail.fields.length) {
+        box.append(element("p","À préciser : " + detail.fields.map(value => fieldNames[value] || "un champ requis").join(", ") + ".","help"));
+      }
+      if (detail.code === "ambiguous_series") box.append(element("p","Précisez la base IHPC ou la variante dans les filtres, sans supposer qu’une série est autorisée.","help"));
+      if (detail.code === "query_busy" || detail.code === "query_timeout") box.append(element("p","Attendez la fin de la vérification avant de relancer. L’expiration HTTP ne désactive pas les contrôles de publication.","help"));
+      box.append(element("p","HTTP " + httpStatus + " · " + (detail.code || "invalid_response"),"help"));
+      result.append(debugDetails(payload));
+      trace(payload);
+      announcer.textContent = "La requête a été refusée ou nécessite une précision.";
+    }
+    function metadataItem(list, label, value) {
+      const item = element("div");
+      item.append(element("dt",label),element("dd",value === undefined || value === null || value === "" ? "Non renseigné" : value));
+      list.append(item);
+    }
+    function localSourceLink(citation) {
+      try {
+        const url = new URL(citation.source_url,window.location.origin);
+        if (url.origin !== window.location.origin || !url.pathname.startsWith("/fixture-source/") || url.username || url.password) return null;
+        url.hash = "page=" + (Number.isInteger(citation.source_page) && citation.source_page > 0 ? citation.source_page : 1);
+        const link = element("a","Ouvrir le document fictif");
+        link.href = url.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        return link;
+      } catch (_) {
+        return null;
+      }
+    }
+    function renderSuccess(payload) {
+      const rows = Array.isArray(payload.rows) ? payload.rows : [];
+      const series = payload.series || {};
+      const partial = payload.has_more === true || payload.status === "truncated";
+      const panel = element("div",undefined,"panel");
+      const heading = element("div",undefined,"result-head");
+      const headingText = element("div");
+      headingText.append(element("div","RÉSULTAT SYNTHÉTIQUE · " + (payload.language === "en" ? "EN" : "FR"),"eyebrow"),element("h2",concepts[series.concept] || series.concept || "Observations publiées des fixtures"));
+      heading.append(headingText,element("span",rows.length + " ligne" + (rows.length === 1 ? "" : "s") + (partial ? " · extrait" : " · restituée" + (rows.length === 1 ? "" : "s")),"result-badge" + (partial ? " partial" : "")));
+      panel.append(heading);
+      if (payload.answer) {
+        const answer = element("p",payload.answer,"answer");
+        answer.lang = payload.language === "en" ? "en" : "fr";
+        panel.append(answer);
+      }
+      if (partial) panel.append(element("p","Résultat tronqué : d’autres observations correspondent à la demande. Augmentez la limite ou resserrez la période. Cet extrait n’est pas la série complète.","notice"));
+      const warningCodes = Array.isArray(payload.warnings) ? payload.warnings : [];
+      if (warningCodes.includes("multiple_vintages")) panel.append(element("p","Plusieurs versions de publication sont présentes. Elles restent séparées ; aucune sélection « dernière version » ni agrégation n’est appliquée.","notice"));
+      const meta = element("dl",undefined,"metadata");
+      metadataItem(meta,"Géographie",geographies[series.geography] || series.geography);
+      metadataItem(meta,"Fréquence",frequencies[series.frequency] || series.frequency);
+      metadataItem(meta,"Période demandée",(payload.period_start || "?") + " → " + (payload.period_end || "?"));
+      metadataItem(meta,"Unité",units[series.unit] || series.unit);
+      metadataItem(meta,"Base",series.price_basis === "not_applicable" ? "Non applicable" : series.price_basis === "index_2023" ? "2023" : series.price_basis === "index_2014" ? "2014" : series.price_basis);
+      metadataItem(meta,"Variante de source",series.source_variant);
+      metadataItem(meta,"Identifiant canonique",series.series_key);
+      metadataItem(meta,"Catégorie / agrégation",(series.category || "?") + " / " + (series.aggregation_level || "?"));
+      metadataItem(meta,"Secteur / correction saisonnière",(series.sector || "?") + " / " + (series.seasonal_adjustment || "?"));
+      panel.append(meta);
+      const disclosed = payload.interpretation && Array.isArray(payload.interpretation.assumptions) ? payload.interpretation.assumptions : [];
+      if (disclosed.length) {
+        const section = element("section",undefined,"assumptions");
+        section.append(element("h3","Hypothèses d’interprétation explicites"));
+        const list = element("ul");
+        disclosed.forEach(code => list.append(element("li",assumptions[code] || "Hypothèse non traduite : " + code)));
+        section.append(list);
+        panel.append(section);
+      }
+      if (!rows.length) {
+        const empty = element("div",undefined,"state empty");
+        empty.style.marginTop = "22px";
+        empty.append(element("h3","Aucune observation sur cette période"),element("p","La série a été identifiée et vérifiée, mais aucune ligne publiée des fixtures ne correspond à la période. Aucun chiffre n’est reconstitué."));
+        panel.append(empty);
+      } else {
+        panel.append(element("h3","Observations et provenance — données fictives","table-heading"));
+        const wrap = element("div",undefined,"table-wrap");
+        wrap.tabIndex = 0;
+        wrap.setAttribute("role","region");
+        wrap.setAttribute("aria-label","Tableau des observations synthétiques, défilement horizontal possible");
+        const table = element("table");
+        table.append(element("caption","Chaque ligne conserve sa version et sa citation. « Complet » signifie non tronqué par la limite, pas sans lacunes dans l’historique."));
+        const head = element("thead");
+        const headRow = element("tr");
+        ["Période","Valeur","Unité","Version de publication","Révision","Source / page"].forEach(label => {
+          const cell = element("th",label);
+          cell.scope = "col";
+          headRow.append(cell);
+        });
+        head.append(headRow);
+        table.append(head);
+        const body = element("tbody");
+        rows.forEach(row => {
+          const citation = row.citation || {};
+          const tr = element("tr");
+          tr.append(element("td",row.period,"numeric"),element("td",row.value,"numeric"),element("td",units[row.unit] || row.unit));
+          const vintage = element("td",citation.release_key || "Version non renseignée");
+          if (citation.published_on) vintage.append(element("small","Publiée le " + citation.published_on));
+          vintage.append(element("small","release_id : " + row.release_id));
+          tr.append(vintage,element("td",revisions[row.revision_status] || row.revision_status));
+          const source = element("td",(citation.source_doc || "Document non renseigné") + " · p. " + (citation.source_page || "?"),"citation");
+          if (citation.source_locator) source.append(element("small",citation.source_locator));
+          if (citation.publisher) source.append(element("small",citation.publisher));
+          if (citation.attribution) source.append(element("small",citation.attribution));
+          const sourceLink = localSourceLink(citation);
+          if (sourceLink) {
+            const line = element("small");
+            line.append(sourceLink);
+            source.append(line);
+          }
+          source.append(element("small","Observation : " + row.observation_id + " · preuve : " + citation.publication_event_id));
+          tr.append(source);
+          body.append(tr);
+        });
+        table.append(body);
+        wrap.append(table);
+        panel.append(wrap);
+      }
+      panel.append(element("p","Aucun graphique n’est dessiné : l’affichage doit préserver les versions de publication avant toute représentation en série.","help"));
+      panel.append(debugDetails(payload));
+      result.replaceChildren(panel);
+      trace(payload);
+      announcer.textContent = rows.length ? rows.length + " observations synthétiques affichées" + (partial ? ", résultat tronqué." : ".") : "La requête est valide, aucune observation sur cette période.";
+    }
+    examples.forEach(example => {
+      const button = element("button",example.label,"example");
+      button.type = "button";
+      button.append(element("small",example.hint));
+      button.addEventListener("click",() => {
+        question.value = example.question;
+        document.getElementById("limit").value = String(example.limit || 100);
+        document.getElementById("language").value = "auto";
+        document.getElementById("price-basis").value = "";
+        document.getElementById("source-variant").value = "";
+        question.focus();
+        announcer.textContent = "Exemple chargé. Cliquez sur Interroger les fixtures pour l’exécuter.";
+      });
+      document.getElementById("examples").append(button);
+    });
+    let pending = false;
+    form.addEventListener("submit",async event => {
+      event.preventDefault();
+      if (pending || !form.reportValidity()) return;
+      const filters = {};
+      const basis = document.getElementById("price-basis").value;
+      const variant = document.getElementById("source-variant").value.trim();
+      if (basis) filters.price_basis = basis;
+      if (variant) filters.source_variant = variant;
+      const payload = {version:1,question:question.value.trim(),limit:Number(document.getElementById("limit").value),language:document.getElementById("language").value,filters};
+      pending = true;
+      result.setAttribute("aria-busy","true");
+      const controls = [...document.querySelectorAll("button, input, select, textarea")];
+      controls.forEach(control => {control.disabled = true;});
+      const state = showState("Vérification en cours…","L’intention est interprétée, puis les preuves de publication sont vérifiées à nouveau sur les seules fixtures.","pending");
+      const spinner = element("span",undefined,"spinner");
+      spinner.setAttribute("aria-hidden","true");
+      state.querySelector("h2").prepend(spinner);
+      announcer.textContent = "Vérification des fixtures en cours.";
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(),15000);
+      try {
+        const response = await fetch("/v1/query",{method:"POST",headers:{"Content-Type":"application/json; charset=utf-8"},body:JSON.stringify(payload),signal:controller.signal,credentials:"same-origin",cache:"no-store",redirect:"error"});
+        const data = await response.json();
+        if (!data || typeof data !== "object" || Array.isArray(data) || !["ok","empty","truncated","error"].includes(data.status)) throw new Error("invalid_response");
+        if (!response.ok || data.status === "error") renderError(data,response.status);
+        else renderSuccess(data);
+      } catch (error) {
+        const aborted = error && error.name === "AbortError";
+        showState(aborted ? "Le serveur met plus de temps que prévu" : "Connexion au laboratoire indisponible",aborted ? "L’attente du navigateur a expiré. Une vérification peut encore être en cours : patientez avant de relancer. Aucun garde-fou n’a été désactivé." : "Vérifiez que le serveur local de fixtures est démarré, puis réessayez. La page ne bascule jamais sur les données réelles.","error");
+        announcer.textContent = "La connexion au laboratoire n’a pas abouti.";
+      } finally {
+        window.clearTimeout(timeout);
+        pending = false;
+        result.setAttribute("aria-busy","false");
+        controls.forEach(control => {control.disabled = false;});
+      }
+    });
+  </script>
+</body>
+</html>
