@@ -22,6 +22,7 @@ Source-of-truth order when documents disagree:
 
 ```
 api/main.py                 FastAPI routes, deterministic fallback, and legacy LLM router
+api/query.py                Default-disabled, fixture-confined protected query API
 app/index.html              Current single-file French-first UI with Plotly
 pipeline/extract.py         PDF -> observations + passages (LLM-assisted)
 pipeline/extract_xlsx.py    Deterministic Excel ingestion
@@ -41,6 +42,7 @@ sika/source_facts.py      Checksum-bound selected source anchors, not a complete
 sika/source_tables.py     Deterministic IHPC table evidence; no data/approval writes
 sika/query.py             Pure typed intent/resolver/compiler; no execution authority
 sika/query_execution.py   Local protected execution/results; synthetic integration only
+sika/interpretation.py    Pure closed-grammar French/English inflation interpreter
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -52,6 +54,7 @@ docs/DATA_SPEC_V2.md        Versioned canonical schema and migration commands
 docs/S0_3_INFLATION_MIGRATION.md  Inflation migration results, limits, and replay guide
 docs/S0_5_QUERY_COMPILER.md  Query preparation contract, limits, and publication boundary
 docs/S0_5_2_QUERY_EXECUTION.md  Proof-bound execution, citations, and resource limitations
+docs/S0_5_3_NATURAL_LANGUAGE_API.md  Fixture-only interpreter/API and HTTP limits
 docs/adr/                  Accepted architecture decisions
 docs/BACKLOG.md             Historical golden questions and MVP backlog
 tests/                      Extraction, validation, API, data, and UI smoke tests
@@ -95,6 +98,9 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 
 # S0.5.2: protected execution on synthetic publication fixtures, not MVP routes.
 .\.venv\Scripts\python.exe -m pytest tests/test_publication_read.py tests/test_query_execution.py -q
+
+# S0.5.3: deterministic FR/EN interpretation and isolated fixture HTTP integration.
+.\.venv\Scripts\python.exe -m pytest tests/test_interpretation.py tests/test_query_api.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
@@ -198,6 +204,18 @@ or extraction test.
   are enforced; PDF/OS deadline checks are cooperative, not hard parser isolation.
   The local service is not HTTP/tenant/PostgreSQL certification. Real publication and
   API migration still require S0.4.3 evidence/review and golden-question parity.
+  S0.5.3 extends the synthetic-only exception to a separate POST /v1/query router.
+  Keep it disabled in api.main; no environment switch or caller setting may enable
+  real-data access. Trusted fixture applications must confine explicit paths and
+  reject known real DB aliases. Interpretation consumes the entire FR/EN question;
+  disclose headline/calendar assumptions and never guess source variants or CPI
+  bases. Unknown semantics refuse before execution. Every accepted request calls
+  the protected service afresh; preserve citations, decimals, vintages and limits.
+  Bound streamed input and final encoded output. A physical worker retains its
+  nonqueueing slot after HTTP timeout/cancellation until actual cleanup. Cooperative
+  parser deadlines are not hard isolation. No legacy route/UI migration, real
+  publication, tenant authentication or full S0.5/S1 completion follows from this
+  fixture integration. Expand grammar only with reviewed semantics and tests.
 - Errors: user-facing endpoints must not 500 on invalid input or expected dependency
   failure. Return a structured message the UI can display. Preserve dignified states for
   empty data, API down, timeout, quota, and unsupported questions.

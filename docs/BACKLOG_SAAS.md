@@ -136,7 +136,7 @@ all existing QA/state counts remain unchanged.
 
 ### S0.5 Add the safe inflation query compiler
 
-Status: in progress (S0.5.1/S0.5.2 complete; API integration not delivered)
+Status: in progress (S0.5.1–S0.5.3 complete on fixtures; real enablement gated)
 
 - Define a typed query-intent contract.
 - Resolve aliases to canonical series identifiers.
@@ -187,10 +187,34 @@ intent, lowerable resource limits, lock/SQL deadlines and cleanup. Both real DB 
 are unchanged and the diff checks pass. One pre-existing Starlette/httpx deprecation
 warning remains. No real observation is approved or published by these tests.
 
-Remaining S0.5: natural-language intent/API integration and end-to-end golden-question
-parity; HTTP/transport limits and vintage-aware rendering. Local SQLite source-parser
+Delivered S0.5.3: deterministic full-match French/English interpretation for the five
+inflation concepts and nine supported geographies; strict question/filter contracts,
+explicit headline/calendar assumptions and no inferred source variant or CPI base.
+The separate POST /v1/query router delegates every accepted request to fresh protected
+execution. It preserves exact cited decimals, vintages, empty/truncated results and
+proof refusals. Streamed request bytes, body time, final encoded response bytes and
+actual concurrent execution are bounded. A timed-out/cancelled HTTP task does not
+release capacity while its physical worker still verifies source evidence.
+
+The normal application registers the route disabled; only trusted isolated fixture
+applications can inject confined configuration. No environment-only activation,
+provider call, new dependency, real database/schema/publication change, legacy route
+migration or UI change is included. See [the interpretation/API contract](S0_5_3_NATURAL_LANGUAGE_API.md)
+and [ADR 0006](adr/0006-interpret-fixture-queries-through-isolated-api.md).
+
+Validation (2026-10-15): 915 tests pass without live provider calls, including 170 new
+interpreter tests and 91 new HTTP tests. Genuine temporary QA/approve/publish fixtures
+cover FR/EN golden-question-1 equivalents, ambiguity, cited values, revision vintages,
+empty/truncated ranges, fresh proof revocation, invalid sibling cohorts, strict body
+handling, alias/configuration refusal, final response limits, sanitized errors and
+timeout/cancellation slot retention. Both real DB SHA-256 hashes are unchanged.
+One existing Starlette/httpx deprecation warning remains; no real row is approved.
+
+Remaining S0.5: complete end-to-end golden-question/domain parity, vintage-aware
+rendering and a reviewed real-data activation/migration path. Local SQLite source-parser
 deadlines are cooperative, not hard worker isolation or production load certification.
-Real public answers remain gated on S0.4.3; S1 is not unlocked.
+Real public answers remain gated on S0.4.3 evidence and genuine operator review;
+S0.5 as a whole and the S0/S1 product gates are not complete.
 
 ### S0.6 Add operational visibility
 
