@@ -19,7 +19,8 @@ from openai import BadRequestError, OpenAI, RateLimitError
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
 BASE_URL = os.getenv("OPENAI_BASE_URL", "").strip()
-client = OpenAI(api_key=API_KEY, base_url=BASE_URL or None)
+# Created lazily by get_client() so importing this module needs no credentials.
+client: OpenAI | None = None
 MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6")
 DB_PATH = os.getenv("SIKA_DB", "data/processed/sika.db")
 PAGE_BATCH_SIZE = 3
@@ -103,11 +104,23 @@ def parse_observations(content: str | None) -> list[dict]:
     return observations if isinstance(observations, list) else []
 
 
+def get_client() -> OpenAI:
+    """Return the provider client, creating it on first use.
+
+    Construction is deferred so the module imports (and its tests run) without
+    OPENAI_API_KEY; a missing key fails only when a real extraction call is made.
+    """
+    global client
+    if client is None:
+        client = OpenAI(api_key=API_KEY, base_url=BASE_URL or None)
+    return client
+
+
 def create_completion(kwargs: dict[str, object], json_mode: bool) -> object:
     for retry in range(6):
         try:
             extra = {"response_format": {"type": "json_object"}} if json_mode else {}
-            return client.chat.completions.create(**kwargs, **extra)
+            return get_client().chat.completions.create(**kwargs, **extra)
         except RateLimitError:
             if retry == 5:
                 raise

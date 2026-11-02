@@ -1,5 +1,8 @@
 """Tests for extraction batching, retry, resume, and ordering."""
+import os
 import sqlite3
+import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -176,3 +179,29 @@ def test_parse_resume_and_priority_flags() -> None:
     assert args.skip_existing is True
     assert args.priority is True
     assert args.target == "data/raw"
+
+
+def test_import_needs_no_api_key() -> None:
+    root = Path(__file__).resolve().parents[1]
+    env = {key: value for key, value in os.environ.items() if key != "OPENAI_API_KEY"}
+    probe = "import pipeline.extract as e; assert e.client is None"
+
+    result = subprocess.run(
+        [sys.executable, "-c", probe], cwd=root, env=env, capture_output=True, text=True
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_client_is_created_once_on_first_use(monkeypatch: pytest.MonkeyPatch) -> None:
+    created: list[dict] = []
+    monkeypatch.setattr(extract, "client", None)
+    monkeypatch.setattr(
+        extract, "OpenAI", lambda **kwargs: created.append(kwargs) or SimpleNamespace()
+    )
+
+    first = extract.get_client()
+
+    assert extract.get_client() is first
+    assert extract.client is first
+    assert len(created) == 1

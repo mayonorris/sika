@@ -117,9 +117,10 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 ```
 
 The application runs without an API key through its deterministic fallback. Routine
-tests must not call a live model provider. The extraction-module tests currently set a
-placeholder `OPENAI_API_KEY=test` only so the SDK can be instantiated; this is not a
-credential and no request may leave the test process. Use a real `OPENAI_API_KEY`,
+tests must not call a live model provider. `pipeline/extract.py` creates its provider
+client lazily, so the whole suite runs with no `OPENAI_API_KEY` at all; the legacy
+`OPENAI_API_KEY=test` prefix above is optional, is not a credential, and no request
+may leave the test process. Use a real `OPENAI_API_KEY`,
 `OPENAI_BASE_URL`, and `OPENAI_MODEL` only for an explicitly requested integration
 or extraction test.
 
