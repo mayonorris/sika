@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # No OPENAI_* variables are set: routine tests must never reach a model provider.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Record committed MVP database hash
+        run: sha256sum data/processed/sika.db | tee "$RUNNER_TEMP/sika_db.sha256"
+
+      - name: Run test suite (no provider key)
+        run: python -m pytest -q
+
+      - name: Alembic upgrade/downgrade round trip on a temporary SQLite database
+        env:
+          SIKA_DATABASE_URL: sqlite:///${{ runner.temp }}/sika_v2_ci.db
+        run: |
+          python -m alembic upgrade head
+          python -m alembic current
+          python -m alembic downgrade base
+          test -z "$(python -m alembic current 2>/dev/null)"
+          python -m alembic upgrade head
+
+      - name: Legacy DATA_SPEC validation on the committed database
+        # The committed corpus has known pre-existing hard failures (see AGENTS.md).
+        # They are not treated as resolved: the full report is printed, and any
+        # difference from the reviewed baseline fails the job. A new failure is a
+        # regression; a removed failure means the baseline must be shrunk.
+        run: |
+          set +e
+          python pipeline/validate.py | tee "$RUNNER_TEMP/validate.out"
+          echo "validate.py exit code: ${PIPESTATUS[0]}"
+          set -e
+          grep '^[[:space:]]*\[FAIL\]' "$RUNNER_TEMP/validate.out" \
+            | sed 's/^[[:space:]]*//' | LC_ALL=C sort > "$RUNNER_TEMP/validate_fail.txt" || true
+          if ! diff -u docs/reports/legacy_validation_baseline.txt "$RUNNER_TEMP/validate_fail.txt"; then
+            echo "::error::Legacy validation hard failures differ from docs/reports/legacy_validation_baseline.txt"
+            exit 1
+          fi
+          echo "Hard failures match the reviewed baseline ($(wc -l < docs/reports/legacy_validation_baseline.txt) known)."
+
+      - name: Verify committed MVP database is unchanged
+        run: |
+          sha256sum -c "$RUNNER_TEMP/sika_db.sha256"
+          git diff --exit-code -- data/processed/sika.db
