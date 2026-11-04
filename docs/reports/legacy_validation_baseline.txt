@@ -1,0 +1,136 @@
+[FAIL] duplicate: average_retail_price | Centrale | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | DAGL | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Kara | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Maritime | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Plateaux Est | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Plateaux Ouest | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Savanes | 2026-06 | inseed_ihpc_2026-06.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Togo - Région Centrale | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Togo - Région Centrale | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Togo - Région de la Kara | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Togo - Région de la Kara | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Togo - Région des Plateaux-Ouest | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 4 rows
+[FAIL] duplicate: average_retail_price | Togo - Région des Plateaux-Ouest | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 4 rows
+[FAIL] duplicate: average_retail_price | Togo - Région des Savanes | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: average_retail_price | Togo - Région des Savanes | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: consumer_price_index | Togo | 2025-06 | inseed_ihpc_2026-06.pdf: 13 rows
+[FAIL] duplicate: consumer_price_index | Togo | 2026-05 | inseed_ihpc_2026-05.pdf: 23 rows
+[FAIL] duplicate: consumer_price_index | Togo | 2026-05 | inseed_ihpc_2026-06.pdf: 2 rows
+[FAIL] duplicate: consumer_price_index | Togo | 2026-06 | inseed_ihpc_2026-06.pdf: 33 rows
+[FAIL] duplicate: cpi_subindex_weight | Togo | 2026 | inseed_ihpc_2026-06.pdf: 14 rows
+[FAIL] duplicate: cpi_subindex_weight | Togo | 2026-06 | inseed_ihpc_2026-06.pdf: 12 rows
+[FAIL] duplicate: credit_to_economy | Togo | 2024-09 | inseed_bulletin_mensuel_2025-09.pdf: 4 rows
+[FAIL] duplicate: credit_to_economy | Togo | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 4 rows
+[FAIL] duplicate: credit_to_economy | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 4 rows
+[FAIL] duplicate: gdp_growth | Chine | 2022-Q4 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Chine | 2023-Q1 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Inde | 2022-Q4 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Inde | 2023-Q1 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Royaume-Uni | 2022-Q4 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Royaume-Uni | 2023-Q1 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Togo | 2025-Q4 | inseed_comptes_trimestriels_2025-T4.pdf: 3 rows
+[FAIL] duplicate: gdp_growth | Zone euro | 2022-Q4 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | Zone euro | 2023-Q1 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | États-Unis | 2022-Q4 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth | États-Unis | 2023-Q1 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: gdp_growth_sector | Togo | 2023 | inseed_pib_estimations_2025.pdf: 3 rows
+[FAIL] duplicate: gdp_growth_sector | Togo | 2024 | inseed_pib_estimations_2025.pdf: 4 rows
+[FAIL] duplicate: gdp_growth_sector | Togo | 2025 | inseed_pib_estimations_2025.pdf: 8 rows
+[FAIL] duplicate: gdp_growth_sector_contribution | Togo | 2023 | inseed_pib_estimations_2025.pdf: 5 rows
+[FAIL] duplicate: gdp_growth_sector_contribution | Togo | 2024 | inseed_pib_estimations_2025.pdf: 6 rows
+[FAIL] duplicate: gdp_growth_sector_contribution | Togo | 2025 | inseed_pib_estimations_2025.pdf: 10 rows
+[FAIL] duplicate: gdp_growth_sector_contribution | Togo | 2025-Q4 | inseed_comptes_trimestriels_2025-T4.pdf: 4 rows
+[FAIL] duplicate: gdp_nominal | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: gdp_nominal | Togo | 2024 | inseed_pib_estimations_2025.pdf: 3 rows
+[FAIL] duplicate: gdp_nominal | Togo | 2025 | inseed_pib_estimations_2025.pdf: 3 rows
+[FAIL] duplicate: gdp_real | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: gdp_real | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: gdp_real | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: industrial_producer_price | Togo | 2024-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: industrial_producer_price | Togo | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: industrial_producer_price | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: industrial_producer_price_mom | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: industrial_producer_price_yoy | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: industrial_production_index | Togo | 2024-09 | inseed_bulletin_mensuel_2025-09.pdf: 5 rows
+[FAIL] duplicate: industrial_production_index | Togo | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 5 rows
+[FAIL] duplicate: industrial_production_index | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 5 rows
+[FAIL] duplicate: industrial_production_index_mom | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 5 rows
+[FAIL] duplicate: industrial_production_index_yoy | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 5 rows
+[FAIL] duplicate: inflation_rate_mom | Togo - Région Centrale | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: inflation_rate_mom | Togo - Région de la Kara | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: inflation_rate_mom | Togo - Région des Plateaux-Ouest | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 4 rows
+[FAIL] duplicate: inflation_rate_mom | Togo - Région des Savanes | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: inflation_rate_mom | Togo | 2026-05 | inseed_ihpc_2026-05.pdf: 23 rows
+[FAIL] duplicate: inflation_rate_mom | Togo | 2026-06 | inseed_ihpc_2026-06.pdf: 13 rows
+[FAIL] duplicate: inflation_rate_yoy | Afrique du Sud | 2022-12 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Afrique du Sud | 2023-03 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Chine | 2022-12 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Chine | 2023-03 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Inde | 2022-12 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Inde | 2023-03 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Royaume-Uni | 2022-12 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Royaume-Uni | 2023-03 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Togo | 2026-05 | inseed_ihpc_2026-05.pdf: 42 rows
+[FAIL] duplicate: inflation_rate_yoy | Togo | 2026-06 | inseed_ihpc_2026-06.pdf: 33 rows
+[FAIL] duplicate: inflation_rate_yoy | Zone euro | 2022-12 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | Zone euro | 2023-03 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | États-Unis | 2022-12 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: inflation_rate_yoy | États-Unis | 2023-03 | bceao_politique_monetaire_2023-06.pdf: 2 rows
+[FAIL] duplicate: net_claims_on_central_government | Togo | 2024-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: net_claims_on_central_government | Togo | 2025-08 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: net_claims_on_central_government | Togo | 2025-09 | inseed_bulletin_mensuel_2025-09.pdf: 3 rows
+[FAIL] duplicate: net_taxes_nominal | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: net_taxes_nominal | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: net_taxes_nominal | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: net_taxes_real | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: net_taxes_real | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: net_taxes_real | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: primary_sector_value_added_nominal | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: primary_sector_value_added_nominal | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: primary_sector_value_added_nominal | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: primary_sector_value_added_real | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: primary_sector_value_added_real | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: primary_sector_value_added_real | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: secondary_sector_value_added_nominal | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: secondary_sector_value_added_nominal | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: secondary_sector_value_added_nominal | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: secondary_sector_value_added_real | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: secondary_sector_value_added_real | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: secondary_sector_value_added_real | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: tertiary_sector_value_added_nominal | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: tertiary_sector_value_added_nominal | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: tertiary_sector_value_added_nominal | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: tertiary_sector_value_added_real | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: tertiary_sector_value_added_real | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: tertiary_sector_value_added_real | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: vab_growth_yoy | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: vab_growth_yoy | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: vab_growth_yoy | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: vab_growth_yoy | Togo | 2025-Q4 | inseed_comptes_trimestriels_2025-T4.pdf: 8 rows
+[FAIL] duplicate: value_added_nominal | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: value_added_nominal | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: value_added_nominal | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: value_added_real | Togo | 2023 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: value_added_real | Togo | 2024 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] duplicate: value_added_real | Togo | 2025 | inseed_pib_estimations_2025.pdf: 2 rows
+[FAIL] unit: 'FCFA': 47 rows
+[FAIL] unit: 'Index (Base 100 en 2023)': 9 rows
+[FAIL] unit: 'Index base 2015': 7 rows
+[FAIL] unit: 'Index': 20 rows
+[FAIL] unit: 'Million FCFA': 8 rows
+[FAIL] unit: 'Millions de FCFA (chainé base 2016)': 18 rows
+[FAIL] unit: 'Millions de FCFA': 18 rows
+[FAIL] unit: 'Units': 7 rows
+[FAIL] unit: 'billion_fcfa': 38 rows
+[FAIL] unit: 'milliards de FCFA': 3 rows
+[FAIL] unit: 'million FCFA': 42 rows
+[FAIL] unit: 'million de FCFA': 18 rows
+[FAIL] unit: 'mois': 3 rows
+[FAIL] unit: 'per_10000': 14 rows
+[FAIL] unit: 'percent': 20 rows
+[FAIL] unit: 'percentage points': 4 rows
+[FAIL] unit: 'percentage_points': 26 rows
+[FAIL] unit: '‰': 12 rows
