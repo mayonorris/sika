@@ -237,7 +237,7 @@ S0.5 as a whole and the S0/S1 product gates are not complete.
 
 ### S0.6 Add operational visibility
 
-Status: queued
+Status: complete for the current MVP deployment (limits below)
 
 - Add liveness and readiness endpoints.
 - Add structured request and ingestion-job logs.
@@ -247,6 +247,42 @@ Status: queued
 
 DoD: a failed database dependency, migration, validation run, or ingestion job is visible
 before it affects users.
+
+Delivered (2026-11-04): `GET /health/live` (no dependency checks) and `GET /health/ready`
+(503 with reason codes when the served legacy database is missing, unreadable, without
+its tables/provenance columns or empty, and, when `SIKA_DATABASE_URL` is set, when the
+Trust Core schema is missing, unversioned, behind the shipped Alembic head or newer than
+the code). Readiness is read-only (SQLite `mode=ro`, never creates, migrates or stamps)
+and returns no paths, URLs or credentials; `render.yaml` uses it as the health check.
+`sika/observability.py` writes one JSON line per event to stderr: `http.request` for
+every request (request ID, method, path without query string, status, duration),
+`query.completed` for `/ask`, `/brief` and `/v1/query` (latency, result count, fallback
+reason, validation status of the query plan, outcome, provider calls/tokens), and
+`job.started`/`job.succeeded`/`job.failed` plus per-document steps for the PDF, Excel
+and BCEAO ingestion scripts and `pipeline/validate.py`. A validation run with hard
+failures is reported as `job.failed`. No question, prompt, source text, exception
+message or credential is logged. The CI item was delivered separately (`ci.yml`).
+See [the S0.6 contract](S0_6_OPERATIONAL_VISIBILITY.md).
+
+Validation (2026-11-04): 1000 tests pass without a provider key, including 20 readiness
+tests (missing/blank/corrupt/empty database, missing table or provenance column,
+pending/unversioned/unknown/missing Trust Core schema, unsupported or unreachable URLs
+without credential leakage, no writes or file creation) and 26 logging tests (request
+IDs, 500 requests, every `/ask` validation status, provider failure, database and
+provider fallbacks, `/v1/query` refusal/acceptance, job success/exception/exit,
+validation hard failures, ingestion failures with progress). Uvicorn checks of
+`/indicators`, `/sources`, golden question 1 through `/ask`, `/brief` and both health
+endpoints pass, including a live 503 on a pending migration and a missing database.
+The committed `sika.db` SHA-256 is unchanged. No publication, review, quality-gate or
+lifecycle code was modified.
+
+Limits: logs are the only sink. Alerting on `level=error`, `job.failed` and
+`health.not_ready` must be configured in the hosting log platform; there is no metrics
+store, retention policy or persistent query/job table. Ingestion still writes directly
+into the served MVP database, so a failed job is visible immediately but its partial
+rows are not quarantined by this ticket. Records carry no organization or user IDs
+(none exist yet). Token counts are not converted to cost. Worker health, Trust Core CLI
+jobs, data freshness and live PostgreSQL readiness are not covered.
 
 ## S1 — Inflation Watch
 

@@ -54,6 +54,10 @@ export SIKA_DATABASE_URL='sqlite:///data/processed/sika_v2.db'
 .venv/bin/python -m dev.fixture_sandbox --port 8001
 .venv/bin/python -m pytest tests/test_fixture_sandbox.py -q
 
+# S0.6: /health/live, /health/ready and structured JSON logs on stderr.
+.venv/bin/python -m pytest tests/test_health.py tests/test_observability.py -q
+curl -s localhost:8000/health/ready
+
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
 .venv/bin/python pipeline/extract.py data/raw/one.pdf

@@ -46,6 +46,8 @@ sika/source_tables.py     Deterministic IHPC table evidence; no data/approval wr
 sika/query.py             Pure typed intent/resolver/compiler; no execution authority
 sika/query_execution.py   Local protected execution/results; synthetic integration only
 sika/interpretation.py    Pure closed-grammar French/English inflation interpreter
+sika/observability.py     JSON request/job/query logs; ids, counts and codes only
+sika/health.py            Read-only liveness/readiness checks; never creates or migrates
 migrations/                Alembic schema versions, independent of the MVP database
 alembic.ini                Explicit-target migration configuration (no default DB)
 data/raw/                   Local official source files; intentionally not committed
@@ -58,6 +60,7 @@ docs/S0_3_INFLATION_MIGRATION.md  Inflation migration results, limits, and repla
 docs/S0_5_QUERY_COMPILER.md  Query preparation contract, limits, and publication boundary
 docs/S0_5_2_QUERY_EXECUTION.md  Proof-bound execution, citations, and resource limitations
 docs/S0_5_3_NATURAL_LANGUAGE_API.md  Fixture-only interpreter/API and HTTP limits
+docs/S0_6_OPERATIONAL_VISIBILITY.md  Health endpoints, log events and their limits
 docs/adr/                  Accepted architecture decisions
 docs/BACKLOG.md             Historical golden questions and MVP backlog
 tests/                      Extraction, validation, API, data, and UI smoke tests
@@ -108,6 +111,9 @@ $env:SIKA_DATABASE_URL = 'sqlite:///data/processed/sika_v2.db'
 # Isolated manual S0.5.3 sandbox; new synthetic DB each launch, never real targets.
 .\.venv\Scripts\python.exe -m dev.fixture_sandbox --port 8001
 .\.venv\Scripts\python.exe -m pytest tests/test_fixture_sandbox.py -q
+
+# S0.6: /health/live, /health/ready and structured JSON logs on stderr.
+.\.venv\Scripts\python.exe -m pytest tests/test_health.py tests/test_observability.py -q
 
 # Optional source ingestion. PDF extraction requires a configured provider key;
 # deterministic Excel and BCEAO paths do not use the LLM for numeric values.
