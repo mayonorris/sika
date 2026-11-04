@@ -25,6 +25,7 @@ from starlette.requests import ClientDisconnect
 from sika.interpretation import (
     InterpretationError, InterpretResult, interpret_question, parse_question_request,
 )
+from sika.observability import QueryRecord, current_request_id
 from sika.query import QueryError
 from sika.query_execution import ExecutionLimits, QueryResult, execute_query
 
@@ -250,6 +251,26 @@ def _answer(result: QueryResult, language: str) -> str:
     return text
 
 
+def _record_response(record: QueryRecord, response: Response) -> None:
+    """Fill a query record from the bounded JSON body this module just encoded."""
+    try:
+        payload = json.loads(response.body)
+    except (ValueError, TypeError):
+        payload = {}
+    payload = payload if isinstance(payload, dict) else {}
+    error = payload.get("error")
+    if response.status_code == 200:
+        record.validation_status = "accepted"
+        record.result_count = int(payload.get("row_count", 0))
+        record.outcome = "answered" if record.result_count else "no_data"
+        record.extra["has_more"] = bool(payload.get("has_more"))
+    else:
+        record.validation_status = error.get("code", "unknown") if isinstance(error, dict) else "unknown"
+        record.outcome = ("refused" if response.status_code < 500 else
+                          "error" if response.status_code == 500 else "unavailable")
+    record.extra["status"] = response.status_code
+
+
 def build_query_router(settings: QueryFixtureSettings | None = None) -> APIRouter:
     """Build the isolated pilot; settings=None cannot be enabled by environment."""
     configuration = _settings(settings, existing=False) if settings is not None else None
@@ -294,7 +315,21 @@ def build_query_router(settings: QueryFixtureSettings | None = None) -> APIRoute
 
     @router.post("/v1/query")
     async def query(request: Request) -> Response:
-        request_id, language = str(uuid4()), "fr"
+        request_id = current_request_id() or str(uuid4())
+        record = QueryRecord(route="/v1/query", mode="protected", extra={"request_id": request_id})
+        try:
+            response = await handle(request, request_id)
+        except BaseException as exc:
+            record.outcome = "cancelled" if isinstance(exc, asyncio.CancelledError) else "error"
+            record.validation_status = "unknown"
+            record.emit()
+            raise
+        _record_response(record, response)
+        record.emit()
+        return response
+
+    async def handle(request: Request, request_id: str) -> Response:
+        language = "fr"
         if configuration is None:
             return _error("query_disabled", 503, language, request_id)
         try:

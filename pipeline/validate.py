@@ -4,10 +4,17 @@ import argparse
 import os
 import re
 import sqlite3
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import fmean, pstdev
+
+try:
+    from sika.observability import job_run
+except ModuleNotFoundError:  # run as `python pipeline/<script>.py`: add the repo root
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from sika.observability import job_run
 
 DEFAULT_DB_PATH = os.getenv("SIKA_DB", "data/processed/sika.db")
 MIN_ROWS_PER_DOCUMENT = 5
@@ -165,17 +172,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     database = Path(args.database)
-    if not database.is_file():
-        print(f"Sika data validation\nDatabase: {database}\n[FAIL] database not found")
-        return 1
-    try:
-        with sqlite3.connect(database) as con:
-            report = validate_database(con)
-    except sqlite3.Error as exc:
-        print(f"Sika data validation\nDatabase: {database}\n[FAIL] {exc}")
-        return 1
-    print_report(report, database)
-    return 1 if report.hard_failures else 0
+    with job_run("validation.legacy", database=database.name) as job:
+        if not database.is_file():
+            print(f"Sika data validation\nDatabase: {database}\n[FAIL] database not found")
+            job.fail("database_missing")
+            return 1
+        try:
+            with sqlite3.connect(database) as con:
+                report = validate_database(con)
+        except sqlite3.Error as exc:
+            print(f"Sika data validation\nDatabase: {database}\n[FAIL] {exc}")
+            job.fail("database_unreadable")
+            return 1
+        print_report(report, database)
+        job.update(observations=report.total_rows, hard_failures=len(report.hard_failures),
+                   warnings=sum(finding.severity == "WARN" for finding in report.findings),
+                   result="FAIL" if report.hard_failures else "PASS")
+        if report.hard_failures:
+            job.fail("hard_failures")
+            return 1
+        return 0
 
 
 if __name__ == "__main__":

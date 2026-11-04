@@ -16,6 +16,12 @@ import pdfplumber
 from dotenv import load_dotenv
 from openai import BadRequestError, OpenAI, RateLimitError
 
+try:
+    from sika.observability import job_run
+except ModuleNotFoundError:  # run as `python pipeline/<script>.py`: add the repo root
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from sika.observability import job_run
+
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
 BASE_URL = os.getenv("OPENAI_BASE_URL", "").strip()
@@ -259,18 +265,24 @@ def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     target = Path(args.target)
     pdfs = [target] if target.is_file() else sorted(target.glob("*.pdf"))
-    if not pdfs:
-        sys.exit(f"No PDFs found in {target}")
-    if args.priority:
-        pdfs = prioritize_pdfs(pdfs)
-    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
-    con = sqlite3.connect(DB_PATH)
-    con.executescript(SCHEMA)
-    for pdf in pdfs:
-        print(f"Processing {pdf.name} ...")
-        n = process_pdf(pdf, con, skip_existing=args.skip_existing)
-        print(f"  -> {n} observations")
-    con.close()
+    with job_run("ingestion.pdf", target=target.name, model=MODEL,
+                 skip_existing=args.skip_existing) as job:
+        if not pdfs:
+            sys.exit(f"No PDFs found in {target}")
+        if args.priority:
+            pdfs = prioritize_pdfs(pdfs)
+        job.update(documents=len(pdfs), documents_completed=0, observations=0)
+        Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
+        con = sqlite3.connect(DB_PATH)
+        con.executescript(SCHEMA)
+        for pdf in pdfs:
+            print(f"Processing {pdf.name} ...")
+            n = process_pdf(pdf, con, skip_existing=args.skip_existing)
+            print(f"  -> {n} observations")
+            job.step("document.processed", source_doc=pdf.name, observations=n)
+            job.update(documents_completed=job.fields["documents_completed"] + 1,
+                       observations=job.fields["observations"] + n)
+        con.close()
 
 
 if __name__ == "__main__":
