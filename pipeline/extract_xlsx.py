@@ -16,6 +16,12 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
+try:
+    from sika.observability import job_run
+except ModuleNotFoundError:  # run as `python pipeline/<script>.py`: add the repo root
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from sika.observability import job_run
+
 load_dotenv()
 DB_PATH = Path(os.getenv("SIKA_DB", "data/processed/sika.db"))
 
@@ -174,15 +180,21 @@ def process_workbook(path: Path, con: sqlite3.Connection) -> int:
 def main() -> None:
     target = Path(sys.argv[1] if len(sys.argv) > 1 else "data/raw")
     workbooks = [target] if target.is_file() else sorted(target.glob("*.xlsx"))
-    if not workbooks:
-        sys.exit(f"No XLSX files found in {target}")
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(DB_PATH) as con:
-        con.executescript(SCHEMA)
-        for workbook in workbooks:
-            print(f"Processing {workbook.name} ...")
-            changed = process_workbook(workbook, con)
-            print(f"  -> {changed} inserted or updated")
+    with job_run("ingestion.xlsx", target=target.name) as job:
+        if not workbooks:
+            sys.exit(f"No XLSX files found in {target}")
+        job.update(documents=len(workbooks), documents_completed=0, observations_changed=0)
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with sqlite3.connect(DB_PATH) as con:
+            con.executescript(SCHEMA)
+            for workbook in workbooks:
+                print(f"Processing {workbook.name} ...")
+                changed = process_workbook(workbook, con)
+                print(f"  -> {changed} inserted or updated")
+                job.step("document.processed", source_doc=workbook.name,
+                         observations_changed=changed)
+                job.update(documents_completed=job.fields["documents_completed"] + 1,
+                           observations_changed=job.fields["observations_changed"] + changed)
 
 
 if __name__ == "__main__":

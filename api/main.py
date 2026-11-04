@@ -1,9 +1,11 @@
 """Sika API: cited answers and generated briefs over official statistics."""
 import json
+import logging
 import os
 import re
 import sqlite3
 import unicodedata
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -14,6 +16,8 @@ from openai import APIError, APITimeoutError, OpenAI
 from pydantic import BaseModel, Field
 
 from api.query import build_query_router
+from sika.health import readiness
+from sika.observability import QueryRecord, RequestLogMiddleware, configure_logging, log_event
 
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -28,6 +32,9 @@ DB_PATH = os.getenv("SIKA_DB", "data/processed/sika.db")
 
 app = FastAPI(title="Sika", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+# Outermost: every request (including CORS preflights) gets an ID and one log event.
+app.add_middleware(RequestLogMiddleware)
+configure_logging()
 
 
 @app.exception_handler(APITimeoutError)
@@ -510,10 +517,21 @@ Context passages:
 
 @app.post("/ask")
 def ask(q: Ask):
+    with QueryRecord(route="/ask", extra={"question_chars": len(q.question)}) as record:
+        try:
+            return answer_question(q, record)
+        except (APIError, APITimeoutError):
+            record.outcome = "provider_error"
+            raise
+
+
+def answer_question(q: Ask, record: QueryRecord) -> dict:
     try:
         con = db()
         con.execute("SELECT 1 FROM observations LIMIT 1")
     except sqlite3.Error:
+        record.mode, record.outcome = "none", "database_unavailable"
+        record.fallback_reason = "database_unavailable"
         return {
             "answer": "La base de données est vide ou indisponible. Chargez les sources puis réessayez.",
             "rows": [],
@@ -524,33 +542,45 @@ def ask(q: Ask):
     if client is None:
         response = fallback_response(q.question, con)
         con.close()
+        record.fallback_reason = "provider_not_configured"
+        record.result_count = len(response["rows"])
+        record.outcome = "answered" if response["rows"] else "no_data"
         return response
+    record.mode = "llm"
     indicators = [
         row["indicator"]
         for row in con.execute("SELECT DISTINCT indicator FROM observations LIMIT 100")
     ]
-    route = json.loads(
-        client.chat.completions.create(
-            model=MODEL,
-            response_format={"type": "json_object"},
-            messages=[
-                {
-                    "role": "user",
-                    "content": ROUTER_PROMPT.format(
-                        indicators=", ".join(indicators), question=q.question
-                    ),
-                }
-            ],
-        ).choices[0].message.content
+    routed = client.chat.completions.create(
+        model=MODEL,
+        response_format={"type": "json_object"},
+        messages=[
+            {
+                "role": "user",
+                "content": ROUTER_PROMPT.format(
+                    indicators=", ".join(indicators), question=q.question
+                ),
+            }
+        ],
     )
+    record.provider_call(routed)
+    route = json.loads(routed.choices[0].message.content)
 
     rows = []
-    if route.get("sql") and route["sql"].strip().lower().startswith("select"):
+    if not route.get("sql"):
+        record.validation_status = "no_sql"
+    elif route["sql"].strip().lower().startswith("select"):
         try:
             rows = [dict(row) for row in con.execute(route["sql"]).fetchall()]
+            record.validation_status = "accepted"
         except sqlite3.Error:
             rows = []
+            record.validation_status = "execution_error"
+    else:
+        record.validation_status = "rejected"
     rows = filter_requested_rows(q.question, rows)
+    record.result_count = len(rows)
+    record.outcome = "answered" if rows else "no_data"
     label = canonical_label(rows)
 
     terms = [word for word in q.question.split() if len(word) > 4][:4]
@@ -564,7 +594,7 @@ def ask(q: Ask):
         ).fetchall()
     ]
 
-    answer = client.chat.completions.create(
+    answered = client.chat.completions.create(
         model=MODEL,
         messages=[
             {
@@ -576,7 +606,9 @@ def ask(q: Ask):
                 ),
             }
         ],
-    ).choices[0].message.content
+    )
+    record.provider_call(answered)
+    answer = answered.choices[0].message.content
     con.close()
     return {
         "answer": answer,
@@ -698,6 +730,11 @@ def deterministic_brief(req: BriefReq, rows: list[dict], geography: str) -> str:
 
 @app.post("/brief")
 def brief(req: BriefReq):
+    with QueryRecord(route="/brief", extra={"topic_chars": len(req.topic)}) as record:
+        return write_brief(req, record)
+
+
+def write_brief(req: BriefReq, record: QueryRecord) -> dict:
     geography = parse_geography(req.topic) or req.geography
     try:
         con = db()
@@ -705,14 +742,19 @@ def brief(req: BriefReq):
         con.close()
     except sqlite3.Error:
         rows = []
+        record.fallback_reason = "database_unavailable"
     fallback = {
         "brief": deterministic_brief(req, rows, geography),
         "n_observations": len(rows),
     }
+    record.result_count = len(rows)
+    record.outcome = "answered" if rows else "no_data"
     if client is None or not rows:
+        record.fallback_reason = record.fallback_reason or (
+            "provider_not_configured" if client is None else "no_rows")
         return fallback
     try:
-        text = client.chat.completions.create(
+        response = client.chat.completions.create(
             model=MODEL,
             messages=[
                 {
@@ -724,9 +766,13 @@ def brief(req: BriefReq):
                     ),
                 }
             ],
-        ).choices[0].message.content
+        )
+        record.provider_call(response)
+        text = response.choices[0].message.content
     except (APIError, APITimeoutError):
+        record.fallback_reason = "provider_error"
         return fallback
+    record.mode = "llm"
     return {"brief": text, "n_observations": len(rows)}
 
 
@@ -776,6 +822,23 @@ def sources():
         return result
     except sqlite3.Error:
         return []
+
+@app.get("/health/live")
+def health_live() -> JSONResponse:
+    """Liveness: the process answers HTTP. Deliberately checks no dependency."""
+    return JSONResponse({"status": "alive"}, headers={"Cache-Control": "no-store"})
+
+
+@app.get("/health/ready")
+def health_ready() -> JSONResponse:
+    """Readiness: 503 when the served database or a configured Trust Core schema is unusable."""
+    ready, body = readiness(Path(DB_PATH), os.getenv("SIKA_DATABASE_URL") or None)
+    if not ready:
+        failed = {name: check for name, check in body["checks"].items() if check["status"] == "fail"}
+        log_event("health.not_ready", logging.ERROR, checks=failed)
+    return JSONResponse(body, status_code=200 if ready else 503,
+                        headers={"Cache-Control": "no-store"})
+
 
 # The protected query pilot is disabled without trusted fixture-only injection.
 app.include_router(build_query_router())

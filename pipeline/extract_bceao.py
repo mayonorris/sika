@@ -25,6 +25,12 @@ from pathlib import Path
 import pdfplumber
 from dotenv import load_dotenv
 
+try:
+    from sika.observability import job_run
+except ModuleNotFoundError:  # run as `python pipeline/<script>.py`: add the repo root
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from sika.observability import job_run
+
 load_dotenv()
 DB_PATH = os.getenv("SIKA_DB", "data/processed/sika.db")
 RAW_DIR = Path("data/raw")
@@ -508,28 +514,35 @@ def discover() -> list[Path]:
 def main() -> None:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     dry_run = "--dry-run" in sys.argv
-    con = sqlite3.connect(DB_PATH)
-    try:
-        con.execute("SELECT 1 FROM observations LIMIT 1")
-    except sqlite3.Error:
-        sys.exit(f"Base indisponible ({DB_PATH}). {SCHEMA_HINT}")
+    with job_run("ingestion.bceao", dry_run=dry_run, discover="--discover" in sys.argv) as job:
+        con = sqlite3.connect(DB_PATH)
+        try:
+            con.execute("SELECT 1 FROM observations LIMIT 1")
+        except sqlite3.Error:
+            job.fail("database_unavailable")
+            sys.exit(f"Base indisponible ({DB_PATH}). {SCHEMA_HINT}")
 
-    targets: list[Path] = []
-    if "--discover" in sys.argv:
-        targets.extend(discover())
-    for arg in args:
-        path = Path(arg)
-        if path.is_dir():
-            targets.extend(sorted(path.glob("bceao_*.pdf")))
-        elif path.exists():
-            targets.append(path)
-    if not targets:
-        sys.exit("Aucun PDF BCEAO à traiter. Usage en tête de fichier.")
+        targets: list[Path] = []
+        if "--discover" in sys.argv:
+            targets.extend(discover())
+        for arg in args:
+            path = Path(arg)
+            if path.is_dir():
+                targets.extend(sorted(path.glob("bceao_*.pdf")))
+            elif path.exists():
+                targets.append(path)
+        if not targets:
+            sys.exit("Aucun PDF BCEAO à traiter. Usage en tête de fichier.")
 
-    total = 0
-    for pdf_path in targets:
-        total += process_pdf(pdf_path, con, dry_run)
-    con.close()
+        job.update(documents=len(targets), documents_completed=0, observations=0)
+        total = 0
+        for pdf_path in targets:
+            n = process_pdf(pdf_path, con, dry_run)
+            total += n
+            job.step("document.processed", source_doc=pdf_path.name, observations=n)
+            job.update(documents_completed=job.fields["documents_completed"] + 1,
+                       observations=total)
+        con.close()
     print(f"\nTotal : {total} observation(s) sur {len(targets)} document(s).")
 
 
